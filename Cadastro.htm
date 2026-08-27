@@ -333,5 +333,57 @@ confirmar.addEventListener('input', validarSenhas);
 
 
     </script>
+    <script>
+    const API_URL = 'https://spes-backend.onrender.com/api';
+
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Impede o envio padrão
+
+        const nome = document.getElementById('nome').value;
+        const cpf = document.getElementById('CPF').value;
+        const email = document.getElementById('email').value;
+        const senha = document.getElementById('senha').value;
+        const confirmar = document.getElementById('confirmar').value;
+
+        // Verifica se as senhas coincidem (além do HTML)
+        if (senha !== confirmar) {
+            alert('As senhas não coincidem!');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nome,
+                    cpf,
+                    email,
+                    senha
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Conta criada com sucesso!');
+                window.location.href = 'Tela de login.htm'; // Vai para o login
+            } else {
+                // Mostra o erro específico (ex: "Email já cadastrado")
+                if (data.errors && data.errors.length > 0) {
+                    alert(data.errors[0].msg);
+                } else {
+                    alert(data.error || 'Erro ao criar conta');
+                }
+            }
+        } catch (error) {
+            alert('Erro ao conectar com a API');
+        }
+    });
+</script>
 </body>
 </html>

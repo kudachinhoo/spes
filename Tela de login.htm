@@ -343,6 +343,43 @@
         </div>
 
     </div>
+<script>
+    const API_URL = 'https://spes-backend.onrender.com/api'; // Substitua pela sua URL
 
+    // Captura o formulário
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Impede o envio padrão do formulário
+
+        const email = document.getElementById('email').value;
+        const senha = document.getElementById('senha').value;
+
+        try {
+            const response = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, senha })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Salva o token e o nome do usuário no navegador
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userName', data.user.nome);
+                
+                alert('Login realizado com sucesso!');
+                window.location.href = 'index.html'; // Redireciona para a home
+            } else {
+                alert(data.error || 'Erro ao fazer login');
+            }
+        } catch (error) {
+            alert('Erro ao conectar com a API. Verifique sua internet ou o servidor.');
+        }
+    });
+</script>
 </body>
 </html>

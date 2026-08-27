@@ -624,7 +624,7 @@
             </h1>
         </div>
         <nav class="nav-menu">
-            <a href="home.htm">Início</a>
+            <a href="index.html">Início</a>
             <a href="Separação de casos.html">Desaparecidos</a>
             <a href="#">Como ajudar</a>
             <a href="#">Parceiros</a>
@@ -754,26 +754,40 @@
         </div>
     </footer>
 <script>
-    // Substitua pela URL do seu backend no Render
-    const API_URL = 'https://seu-backend.onrender.com/api'; 
+    const API_URL = 'https://spes-backend.onrender.com/api';
 
-    async function carregarPessoas() {
+    async function carregarPessoas(searchTerm = '') {
         try {
-            const response = await fetch(`${API_URL}/people`);
+            // Monta a URL de busca
+            let url = `${API_URL}/people`;
+            if (searchTerm) {
+                url += `?search=${encodeURIComponent(searchTerm)}`;
+            }
+
+            const response = await fetch(url);
             const pessoas = await response.json();
 
             const cardsGrid = document.querySelector('.cards-grid');
-            cardsGrid.innerHTML = ''; // Limpa o conteúdo atual
+            cardsGrid.innerHTML = ''; // Limpa os cards atuais
+
+            if (pessoas.length === 0) {
+                cardsGrid.innerHTML = '<p style="text-align:center; color:#888;">Nenhuma pessoa encontrada.</p>';
+                return;
+            }
 
             pessoas.forEach(pessoa => {
+                // Pega a idade e calcula dias desaparecido (exemplo simples)
+                const idade = pessoa.data_nascimento ? new Date().getFullYear() - new Date(pessoa.data_nascimento).getFullYear() : 'N/I';
+                const diasDesaparecido = pessoa.data_desaparecimento ? Math.floor((new Date() - new Date(pessoa.data_desaparecimento)) / (1000 * 60 * 60 * 24)) : 'N/A';
+
                 // Cria o HTML do card
                 const cardHTML = `
                     <div class="card">
                         <div class="name">${pessoa.nome}</div>
-                        <div class="age">${pessoa.idade ? pessoa.idade + ' anos' : 'Idade não informada'}</div>
-                        <div class="location">${pessoa.cidade || 'Local não informado'} - ${pessoa.estado_desaparecimento}</div>
+                        <div class="age">${idade} anos</div>
+                        <div class="location">${pessoa.cidade || 'Local não informado'} - ${pessoa.estado_desaparecimento || ''}</div>
                         <div><img class="desaparecidos" src="${pessoa.foto || 'Imagens do site/placeholder.png'}" alt=""></div>
-                        <div class="days">Desaparecido há ${pessoa.dias_desaparecido || 'N/A'} dias</div>
+                        <div class="days">Desaparecido há ${diasDesaparecido} dias</div>
                         <a href="#" class="btn-detail">Ver detalhes</a>
                     </div>
                 `;
@@ -783,6 +797,12 @@
             console.error('Erro ao carregar pessoas:', error);
         }
     }
+
+    // Função de pesquisa (usando o input da home)
+    const searchInput = document.querySelector('.search-box input');
+    searchInput.addEventListener('input', (e) => {
+        carregarPessoas(e.target.value);
+    });
 
     // Chama a função ao carregar a página
     carregarPessoas();

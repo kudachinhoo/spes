@@ -400,6 +400,50 @@
         </form>
 
     </div>
+<script>
+    const API_URL = 'https://spes-backend.onrender.com/api';
+    // Pega o token salvo no login
+    const token = localStorage.getItem('token');
 
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Coleta os dados do formulário
+        const formData = new FormData(form);
+        const dados = {
+            nome: formData.get('nome'),
+            data_nascimento: formData.get('data_nasc'),
+            etnia: formData.get('cor_raca'),
+            altura: formData.get('altura'),
+            peso: formData.get('peso'),
+            informacoes: formData.get('informações'),
+            estado_desaparecimento: formData.get('EPD')
+        };
+
+        try {
+            const response = await fetch(`${API_URL}/people`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // Envia o token de login
+                },
+                body: JSON.stringify(dados)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Pessoa cadastrada com sucesso!');
+                window.location.href = 'index.html'; // Volta para a home
+            } else {
+                alert(data.error || 'Erro ao cadastrar pessoa');
+            }
+        } catch (error) {
+            alert('Erro ao conectar com a API');
+        }
+    });
+</script>
 </body>
 </html>
