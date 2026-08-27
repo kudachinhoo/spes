@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SPES · Entrar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ----- RESET & BASE ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: linear-gradient(145deg, #f0f5fa 0%, #dae8f2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            margin: 0;
+        }
+
+        /* ----- CARD CONTAINER ----- */
+        .card {
+            background: #ffffff;
+            max-width: 420px;
+            width: 100%;
+            padding: 2.5rem 2.2rem 2.8rem;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px -12px rgba(0, 20, 40, 0.25);
+            border: 2px solid rgba(86, 164, 238);
+            transition: 0.2s;
+        }
+
+        /* cabeçalho */
+        .brand {
+            text-align: center;
+            margin-bottom: 1.8rem;
+        }
+
+        .brand h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+
+        .brand .subhead {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #2a5f7a;
+            background: #e6f0f8;
+            display: inline-block;
+            padding: 0.2rem 1.2rem;
+            border-radius: 40px;
+            letter-spacing: 0.3px;
+            margin-top: 0.2rem;
+        }
+
+        .brand .welcome {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1d3b55;
+            margin-top: 1.2rem;
+        }
+
+        .brand .welcome small {
+            display: block;
+            font-weight: 400;
+            font-size: 0.9rem;
+            color: #4b6f8e;
+            margin-top: 0.1rem;
+        }
+
+        /* ----- FORM ----- */
+        .form-group {
+            margin-top: 1.3rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1a3a54;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #d4e0ec;
+            border-radius: 60px;
+            font-size: 0.95rem;
+            background: #f9fcff;
+            transition: 0.2s;
+            outline: none;
+            color: #0b2b4a;
+        }
+
+        .form-group input:focus {
+            border-color: #2a6f9c;
+            box-shadow: 0 0 0 4px rgba(42, 111, 156, 0.12);
+            background: #ffffff;
+        }
+
+        .form-group input::placeholder {
+            color: #a1b9ce;
+            font-weight: 400;
+            font-size: 0.9rem;
+        }
+
+        /* forgot password */
+        .forgot-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 0.5rem;
+        }
+
+        .forgot-row a {
+            font-size: 0.85rem;
+            color: #2a6f9c;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .forgot-row a:hover {
+            text-decoration: underline;
+        }
+
+        /* botão entrar */
+        .btn-submit {
+            width: 100%;
+            padding: 0.8rem;
+            margin-top: 1.8rem;
+            background: #2a6f9c;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 6px 14px rgba(42, 111, 156, 0.25);
+            letter-spacing: 0.3px;
+        }
+
+        .btn-submit:hover {
+            background: #1d5a7e;
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(42, 111, 156, 0.35);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        /* social login */
+        .social-section {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .social-section .divider {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: #8aa3bb;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.2rem;
+        }
+
+        .social-section .divider::before,
+        .social-section .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #d4e0ec;
+        }
+
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            padding: 0.6rem 1.6rem;
+            border-radius: 60px;
+            border: 1.5px solid #d4e0ec;
+            background: #ffffff;
+            color: #1a3a54;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            flex: 0 1 auto;
+        }
+
+        .social-btn i {
+            font-size: 1.1rem;
+            color: #3b5998; /* facebook */
+        }
+
+        .social-btn.google i {
+            color: #db4437;
+        }
+
+        .social-btn:hover {
+            background: #f0f6fe;
+            border-color: #b8cee3;
+            transform: translateY(-2px);
+        }
+
+        .social-btn .fa-google {
+            color: #db4437;
+        }
+
+        .social-btn .fa-facebook {
+            color: #3b5998;
+        }
+
+        /* link cadastro */
+        .signup-link {
+            text-align: center;
+            margin-top: 1.8rem;
+            font-size: 0.95rem;
+            color: #3d6483;
+        }
+
+        .signup-link a {
+            color: #2a6f9c;
+            font-weight: 700;
+            text-decoration: none;
+            margin-left: 0.2rem;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* ----- RESPONSIVE ----- */
+        @media (max-width: 500px) {
+            .card {
+                padding: 2rem 1.5rem 2.2rem;
+            }
+
+            .brand h1 {
+                font-size: 2rem;
+            }
+
+            .brand .subhead {
+                font-size: 0.7rem;
+                padding: 0.15rem 1rem;
+            }
+
+            .brand .welcome {
+                font-size: 1.1rem;
+            }
+
+            .social-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .social-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 0.7rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .card {
+                padding: 1.5rem 1rem 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+
+        <!-- cabeçalho -->
+        <div class="brand">
+            <img style="width: 100px; height: 100px;" src="Imagens do site/Logo da SPES.png" alt="">
+            <h1>SPES</h1>
+            <div class="welcome">
+                Bem-vindo de volta!
+                <small>Faça login para continuar</small>
+            </div>
+        </div>
+
+        <!-- formulário de login -->
+        <form action="#" method="post" autocomplete="on">
+
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" placeholder="seu_email@example.com"  />
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha"   />
+            </div>
+
+            <div class="forgot-row">
+                <a href="#">Esqueceu sua senha?</a>
+            </div>
+
+            <button type="submit" class="btn-submit">Entrar</button>
+
+        </form>
+
+        <!-- login social -->
+        <div class="social-section">
+            <div class="divider">Seja-nos com</div>
+            <div class="social-buttons">
+                <a href="#" class="social-btn google">
+                    <i class="fab fa-google"></i> Google
+                </a>
+                <a href="#" class="social-btn facebook">
+                    <i class="fab fa-facebook"></i> Facebook
+                </a>
+                <!-- um terceiro botão opcional, conforme a imagem menciona "Entrar com gostar" – mas deixamos apenas dois para clean design -->
+            </div>
+        </div>
+
+        <!-- link cadastre-se -->
+        <div class="signup-link">
+            Não tem conta? <a href="Cadastro.htm">Cadastre-se</a>
+        </div>
+
+    </div>
+
+</body>
+</html>

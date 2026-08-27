@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SPES · Cadastrar desaparecido</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ----- RESET & BASE ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: linear-gradient(145deg, #f0f5fa 0%, #dae8f2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+            margin: 0;
+        }
+
+        /* ----- CARD ----- */
+        .card {
+            background: #ffffff;
+            max-width: 700px;
+            width: 100%;
+            padding: 2.5rem 2.5rem 2.8rem;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px -12px rgba(0, 20, 40, 0.25);
+            border: 2px solid rgba(86, 164, 238);
+        }
+
+        /* cabeçalho */
+        .brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            letter-spacing: -0.5px;
+        }
+
+        .brand .subhead {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #2a5f7a;
+            background: #e6f0f8;
+            display: inline-block;
+            padding: 0.2rem 1.2rem;
+            border-radius: 40px;
+            letter-spacing: 0.3px;
+            margin-top: 0.1rem;
+        }
+
+        .brand .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1d3b55;
+            margin-top: 1.2rem;
+        }
+
+        /* formulário */
+        .form-section {
+            margin-top: 1.8rem;
+        }
+
+        .form-section .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a3a54;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e6f0f8;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1a3a54;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-group label .hint {
+            font-weight: 400;
+            color: #6a8ba8;
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1.5px solid #d4e0ec;
+            border-radius: 60px;
+            font-size: 0.95rem;
+            background: #f9fcff;
+            transition: 0.2s;
+            outline: none;
+            color: #0b2b4a;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #2a6f9c;
+            box-shadow: 0 0 0 4px rgba(42, 111, 156, 0.12);
+            background: #ffffff;
+        }
+
+        .form-group input::placeholder {
+            color: #a1b9ce;
+            font-weight: 400;
+            font-size: 0.9rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        /* campo de upload (foto) */
+        .upload-area {
+            border: 2px dashed #cbddee;
+            border-radius: 60px;
+            padding: 1rem 1.5rem;
+            background: #f9fcff;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #2a5f7a;
+        }
+
+        .upload-area:hover {
+            border-color: #2a6f9c;
+            background: #f0f6fe;
+        }
+
+        .upload-area i {
+            font-size: 1.6rem;
+            color: #2a6f9c;
+        }
+
+        .upload-area span {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .upload-area input[type="file"] {
+            display: none;
+        }
+
+        /* revisão */
+        .review-box {
+            background: #eef5fc;
+            border-radius: 20px;
+            padding: 1.2rem 1.5rem;
+            margin: 1.2rem 0 0.8rem;
+            border-left: 4px solid #2a6f9c;
+        }
+
+        .review-box p {
+            font-size: 0.95rem;
+            color: #1d3b55;
+            font-weight: 500;
+        }
+
+        .review-box p i {
+            color: #2a6f9c;
+            margin-right: 0.5rem;
+        }
+
+        .review-box .next-step {
+            font-weight: 600;
+            color: #0b2b4a;
+        }
+
+        /* botão */
+        .btn-continue {
+            width: 100%;
+            padding: 0.85rem;
+            margin-top: 1.8rem;
+            background: #2a6f9c;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 6px 14px rgba(42, 111, 156, 0.25);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-continue:hover {
+            background: #1d5a7e;
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(42, 111, 156, 0.35);
+        }
+
+        .btn-continue:active {
+            transform: scale(0.98);
+        }
+
+        /* responsivo */
+        @media (max-width: 600px) {
+            .card {
+                padding: 2rem 1.5rem 2.2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .brand h1 {
+                font-size: 1.9rem;
+            }
+
+            .brand .page-title {
+                font-size: 1.3rem;
+            }
+
+            .upload-area {
+                padding: 0.8rem 1.2rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .card {
+                padding: 1.5rem 1rem 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+
+        <!-- cabeçalho -->
+        <div class="brand">
+            <img style="width: 100px; height: 100px;" src="Imagens do site/Logo da SPES.png" alt="">
+            <h1>SPES</h1>
+            <div class="page-title">Cadastrar pessoa desaparecida</div>
+        </div>
+
+        <form action="#" method="post" enctype="multipart/form-data">
+
+            <!-- Dados pessoais -->
+            <div class="form-section">
+                <div class="section-title"><i class="fas fa-user" style="margin-right:8px; color:#2a6f9c;"></i> Dados pessoais</div>
+
+                <div class="form-group">
+                    <label for="nome">Nome completo</label>
+                    <input type="text" id="nome" placeholder="Nome da pessoa desaparecida" required />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="data_nasc">Data de nascimento</label>
+                        <input type="text" id="data_nasc" placeholder="dd/mm/aaaa" />
+                    </div>
+                    <div class="form-group">
+                        <label for="cor_raca">Cor / Raça</label>
+                        <select id="cor_raca">
+                            <option value="" disabled selected>Seleccione</option>
+                            <option>Branca</option>
+                            <option>Preta</option>
+                            <option>Parda</option>
+                            <option>Amarela</option>
+                            <option>Indígena</option>
+                            <option>Outra</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="altura">Altura <span class="hint">(cm)</span></label>
+                        <input type="number" id="altura" placeholder="cm" step="0.1" />
+                    </div>
+                    <div class="form-group">
+                        <label for="peso">Peso <span class="hint">(kg)</span></label>
+                        <input type="number" id="peso" placeholder="kg" step="0.1" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contato (NOVO CAMPO) -->
+            <div class="form-section">
+                <div class="section-title"><i class="fas fa-phone" style="margin-right:8px; color:#2a6f9c;"></i> Contato</div>
+                <div class="form-group">
+                    <label for="contato">Número de contato</label>
+                    <input type="tel" id="contato" placeholder="(00) 00000-0000" />
+                </div>
+            </div>
+
+            <!-- Informações -->
+            <div class="form-section">
+                <div class="section-title"><i class="fas fa-info-circle" style="margin-right:8px; color:#2a6f9c;"></i> Informações</div>
+
+                <div class="form-group">
+                    <label for="informações">Apelido, roupas, etc.</label>
+                    <input type="text" id="informações" placeholder="Informações que ajudem no caso" />
+                </div>
+            </div>
+
+            <!-- Últimas Localizações -->
+            <div class="form-section">
+                <div class="section-title"><i class="fas fa-map-pin" style="margin-right:8px; color:#2a6f9c;"></i> Últimas Localizações</div>
+
+                <div class="form-group">
+                    <label for="localizacoes">Lugares favoritos do desaparecido</label>
+                    <input type="text" id="localizacoes" placeholder="Ex: parque, escola, trabalho..." />
+                </div>
+            </div>
+
+            <!--  Estado da pessoa desaparecida  -->
+            <div class="form-section">
+                <div class="section-title"><i class="fas fa-map-pin" style="margin-right:8px; color:#2a6f9c;"></i> Estado do desaparecimento</div>
+
+                <div class="form-group">
+                    <label for="EPD">Estados</label>
+                    <select name="EPD" id="EPD">
+                        <option value="Acre">Acre (AC)</option>
+                        <option value="Alagoas">Alagoas (AL)</option>
+                        <option value="Amapá">Amapá (AP)</option>
+                        <option value="Amazonas">Amazonas (AM)</option>
+                        <option value="Bahia">Bahia (BA)</option>
+                        <option value="Ceará">Ceará (CE)</option>
+                        <option value="Espírito SantoGoiás (GO)">Espírito Santo (ES)</option>
+                        <option value="Goiás">Goiás (GO)</option>
+                        <option value="Maranhão">Maranhão (MA)</option>
+                        <option value="Mato Grosso">Mato Grosso (MT)</option>
+                        <option value="Mato Grosso do Sul">Mato Grosso do Sul (MS)</option>
+                        <option value="Minas Gerais">Minas Gerais (MG)</option>
+                        <option value="Pará">Pará (PA)</option>
+                        <option value="Paraíba">Paraíba (PB)</option>
+                        <option value="Paraná">Paraná (PR)</option>
+                        <option value="Pernambuco">Pernambuco (PE)</option>
+                        <option value="Piauí">Piauí (PI)</option>
+                        <option value="Rio de Janeiro">Rio de Janeiro (RJ)</option>
+                        <option value="Rio Grande do Norte">Rio Grande do Norte (RN)</option>
+                        <option value="Rio Grande do Sul">Rio Grande do Sul (RS)</option>
+                        <option value="Rondônia">Rondônia (RO)</option>
+                        <option value="Roraima">Roraima (RR)</option>
+                        <option value="Santa Catarina">Santa Catarina (SC)</option>
+                        <option value="São Paulo">São Paulo (SP)</option>
+                        <option value="Sergipe">Sergipe (SE)</option>
+                        <option value="Tocantins">Tocantins (TO)</option>
+
+                    </select>
+                </div>
+            </div>
+
+            <!-- Fotos -->
+            <div class="form-section">
+                <div class="section-title"><i class="fas fa-camera" style="margin-right:8px; color:#2a6f9c;"></i> Fotos</div>
+
+                <div class="form-group">
+                    <label for="foto">Selecione</label>
+                    <div class="upload-area" onclick="document.getElementById('foto').click();">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Clique para selecionar uma foto</span>
+                        <input type="file" id="foto" accept="image/*" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revisão -->
+            <div class="form-section">
+                <div class="section-title"><i class="fas fa-check-circle" style="margin-right:8px; color:#2a6f9c;"></i> Revisão</div>
+
+                <div class="review-box">
+                    <p><i class="fas fa-arrow-right"></i> <span class="next-step">Próximo passo:</span> Preencha o máximo de informações possível. Quanto mais detalhes, maiores as chances de encontrar.</p>
+                </div>
+            </div>
+
+            <!-- Botão continuar -->
+            <button type="submit" class="btn-continue">Continuar</button>
+
+        </form>
+
+    </div>
+
+</body>
+</html>

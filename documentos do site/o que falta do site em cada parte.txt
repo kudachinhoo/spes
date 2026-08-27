@@ -1,0 +1,31 @@
+Login {
+    falta entra com conta google ou facebook
+    "Esqueceu sua Senha?"
+    e o botão de "Entrar" realmente funcionar
+}
+Cadastro {
+    Configurar as requisições mínimas de Email 
+    Fazer o botão cadastrar funcionar
+}
+Home {
+    Aba de "Como ajudar"
+    Aba de "Sobre"
+    Criar o filtro de datas e estados
+    colocar os casos se atualizando a cada cadastro
+    colocar os detalhes de cada pessoa personalizada
+    Colocar imagens das parcerias
+    Cria Aba de "Seja nosso parceiro"
+}
+Cadastro de desaparecidos{
+    Fazer o botão "Continuar" funcionar
+}
+Separação de casos {
+    Colocar todos os Estados
+    colocar cada Estado funcionando corretamente com os filtros
+    Aba de "Como Ajudar" (mesma da home)
+}
+Geral{
+
+    Fazer o banco de dados e integrar com o site
+
+}

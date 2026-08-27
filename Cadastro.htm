@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SPES · Cadastro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ----- RESET & BASE ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            background: linear-gradient(145deg, #f0f5fa 0%, #dae8f2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            margin: 0;
+        }
+
+        /* ----- CARD CONTAINER ----- */
+        .card {
+            background: #ffffff;
+            max-width: 480px;
+            width: 100%;
+            padding: 2.5rem 2.2rem 2.8rem;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px -12px rgba(0, 20, 40, 0.25);
+            border: 2px solid rgba(86, 164, 238);
+            transition: 0.2s;
+        }
+
+        /* cabeçalho */
+        .brand {
+            text-align: center;
+            margin-bottom: 1.8rem;
+        }
+
+        .brand h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+
+        .brand .subhead {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #2a5f7a;
+            background: #e6f0f8;
+            display: inline-block;
+            padding: 0.2rem 1.2rem;
+            border-radius: 40px;
+            letter-spacing: 0.3px;
+            margin-top: 0.2rem;
+        }
+
+        .brand .tagline {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1d3b55;
+            margin-top: 1.2rem;
+        }
+
+        .brand .tagline small {
+            display: block;
+            font-weight: 400;
+            font-size: 0.9rem;
+            color: #4b6f8e;
+            margin-top: 0.2rem;
+        }
+
+        /* ----- FORM ----- */
+        .form-group {
+            margin-top: 1.3rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1a3a54;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #d4e0ec;
+            border-radius: 60px;
+            font-size: 0.95rem;
+            background: #f9fcff;
+            transition: 0.2s;
+            outline: none;
+            color: #0b2b4a;
+        }
+
+        .form-group input:focus {
+            border-color: #2a6f9c;
+            box-shadow: 0 0 0 4px rgba(42, 111, 156, 0.12);
+            background: #ffffff;
+        }
+
+        .form-group input::placeholder {
+            color: #a1b9ce;
+            font-weight: 400;
+            font-size: 0.9rem;
+        }
+
+        /* checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            margin-top: 1.6rem;
+            font-size: 0.88rem;
+            color: #1e3b5c;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 1.1rem;
+            height: 1.1rem;
+            margin-top: 0.15rem;
+            accent-color: #2a6f9c;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            cursor: pointer;
+            line-height: 1.4;
+        }
+
+        .checkbox-group a {
+            color: #2a6f9c;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .checkbox-group a:hover {
+            text-decoration: underline;
+        }
+
+        /* botão */
+        .btn-submit {
+            width: 100%;
+            padding: 0.8rem;
+            margin-top: 1.8rem;
+            background: #2a6f9c;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 6px 14px rgba(42, 111, 156, 0.25);
+            letter-spacing: 0.3px;
+        }
+
+        .btn-submit:hover {
+            background: #1d5a7e;
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(42, 111, 156, 0.35);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        /* link de login */
+        .login-link {
+            text-align: center;
+            margin-top: 1.8rem;
+            font-size: 0.95rem;
+            color: #3d6483;
+        }
+
+        .login-link a {
+            color: #2a6f9c;
+            font-weight: 700;
+            text-decoration: none;
+            margin-left: 0.2rem;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* ----- RESPONSIVE ----- */
+        @media (max-width: 500px) {
+            .card {
+                padding: 2rem 1.5rem 2.2rem;
+            }
+
+            .brand h1 {
+                font-size: 2rem;
+            }
+
+            .brand .subhead {
+                font-size: 0.75rem;
+                padding: 0.15rem 1rem;
+            }
+
+            .brand .tagline {
+                font-size: 1rem;
+            }
+
+            .form-group input {
+                padding: 0.7rem 0.9rem;
+                font-size: 0.9rem;
+            }
+
+            .btn-submit {
+                font-size: 1rem;
+                padding: 0.7rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .card {
+                padding: 1.5rem 1rem 1.8rem;
+            }
+
+            .checkbox-group {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+
+        <!-- cabeçalho -->
+        <div class="brand">
+                <img style="width: 100px; height: 100px; margin-bottom: -15px;" src="Imagens do site/Logo da SPES.png" alt="">
+            
+            <h1>SPES</h1>
+            <div class="tagline">
+                Crie sua conta
+                <small>Ajude a salvar vidas.</small>
+            </div>
+        </div>
+
+        <!-- formulário -->
+        <form action="#" method="post" autocomplete="off">
+
+            <div class="form-group">
+                <label for="nome">Nome completo</label>
+                <input type="text" id="nome" placeholder="Digite seu nome" required />
+            </div>
+
+            <div class="form-group">
+                <label for="CPF">CPF</label>
+                <input type="text" id="CPF" placeholder="Digite seu CPF" required minlength="11" maxlength="11" />
+            </div>
+
+            <div class="form-group">
+                <label for="TEL">Número de telefone</label>
+                <input type="tel" id="TEL" placeholder="Digite seu telefone" required minlength="11" />
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" placeholder="seu_email@example.com" required />
+            </div>
+
+            <!--Senha-->
+            
+            <div class="form-group">
+                <label for="senha">Senha <span style="font-weight:400; color:#4b6f8e; font-size:0.8rem;">(mínimo 6 caracteres)</span></label>
+                <input type="password" id="senha" placeholder="Mínimo de 6 caracteres" minlength="6" required />
+            </div>
+
+            <div class="form-group">
+                <label for="confirmar">Confirme sua senha</label>
+                <input type="password" id="confirmar" placeholder="Digite novamente sua senha" required />
+            </div>
+            <div style="color: red; display: none;"id="erro" class="form-group">
+               As senhas não correspondem
+            </div>
+
+            <!-- checkbox -->
+            <div class="checkbox-group">
+                <input type="checkbox" id="consentimento" required />
+                <label for="consentimento">
+                    Lê e concordo com o consentimento de <a href="documentos do site/Termos_de_Uso_SPES.docx" download>Termos de Uso</a> e <a href="documentos do site/Politica_de_Privacidade_SPES.docx" download>Política de Privacidade</a>
+                </label>
+            </div>
+
+            <!--PARTE DO BOTÃO DE CADASTRAR-->
+
+            <button type="submit" class="btn-submit">Cadastrar</button>
+
+        </form>
+
+        <!-- link entrar -->
+        <div class="login-link">
+            Já tem conta? <a href="Tela de login.htm">Entrar</a>
+        </div>
+
+    </div>
+    <!--
+        Parte de programação do site
+    -->
+    <script>
+         
+        const senha = document.getElementById("senha");
+const confirmar = document.getElementById("confirmar");
+const erro = document.getElementById("erro");
+
+function validarSenhas() {
+    if (confirmar.value && senha.value !== confirmar.value) {
+        erro.style.display = "block";
+        confirmar.setCustomValidity('As senhas não coincidem');
+    } else {
+        erro.style.display = 'none';
+        confirmar.setCustomValidity('');
+    }
+}
+
+senha.addEventListener('input', validarSenhas);
+confirmar.addEventListener('input', validarSenhas);
+
+
+
+    </script>
+</body>
+</html>
