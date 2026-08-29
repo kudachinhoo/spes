@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SPES · Entrar</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         /* ----- RESET & BASE ----- */
         * {
@@ -377,6 +378,109 @@
             alert('Erro ao conectar com a API. Verifique sua internet ou o servidor.');
         }
     });
+
+    // ---------- LOGIN COM GOOGLE ----------
+    const GOOGLE_CLIENT_ID = '159287534210-dko5uuksj44r7u5th9kd91v3hipac2uv.apps.googleusercontent.com';
+    let googleClient;
+
+    window.addEventListener('load', () => {
+        googleClient = google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: 'email profile openid',
+            callback: async (tokenResponse) => {
+                if (tokenResponse.error) {
+                    alert('Erro ao entrar com Google');
+                    return;
+                }
+                try {
+                    const response = await fetch(`${API_URL}/auth/google`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ access_token: tokenResponse.access_token })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('userName', data.user.nome);
+                        window.location.href = 'index.html';
+                    } else {
+                        alert(data.error || 'Erro ao entrar com Google');
+                    }
+                } catch (error) {
+                    alert('Erro ao conectar com a API. Verifique sua internet ou o servidor.');
+                }
+            }
+        });
+    });
+
+    document.querySelector('.social-btn.google').addEventListener('click', (e) => {
+        e.preventDefault();
+        googleClient.requestAccessToken();
+    });
 </script>
 </body>
 </html>
+
+<!--
+============================================================
+CÓDIGO DE BACKEND — NÃO RODA NO NAVEGADOR
+------------------------------------------------------------
+Isto abaixo é código de SERVIDOR (Node/Express), guardado aqui
+só como referência. Ele precisa ser colado no seu servidor
+(spes-backend.onrender.com), no mesmo arquivo/router onde já
+está a rota "/api/auth/login" — nunca dentro de uma página HTML.
+
+// POST /api/auth/google
+app.post('/api/auth/google', async (req, res) => {
+    const { access_token } = req.body;
+
+    if (!access_token) {
+        return res.status(400).json({ success: false, error: 'access_token não enviado' });
+    }
+
+    try {
+        // Pergunta ao Google quem é o dono desse token
+        const googleRes = await fetch(
+            `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`
+        );
+        const googleUser = await googleRes.json();
+
+        if (!googleUser.email) {
+            return res.status(401).json({ success: false, error: 'Token do Google inválido' });
+        }
+
+        // ---- AJUSTE AQUI conforme o seu banco/ORM ----
+        let usuario = await Usuario.findOne({ email: googleUser.email });
+
+        if (!usuario) {
+            usuario = await Usuario.create({
+                nome: googleUser.name,
+                email: googleUser.email,
+                googleId: googleUser.sub,
+                senha: null // login via Google não precisa de senha
+            });
+        }
+        // -----------------------------------------------
+
+        const token = jwt.sign(
+            { id: usuario._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
+        );
+
+        res.json({
+            success: true,
+            token,
+            user: { nome: usuario.nome, email: usuario.email }
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: 'Erro ao validar login com Google' });
+    }
+});
+============================================================
+-->
+
