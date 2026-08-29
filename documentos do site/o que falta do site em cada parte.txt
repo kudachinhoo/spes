@@ -1,8 +1,3 @@
-Login {
-    falta entra com conta google ou facebook
-    "Esqueceu sua Senha?"
-    e o botão de "Entrar" realmente funcionar
-}
 Home {
     Aba de "Como ajudar"
     Aba de "Sobre"
