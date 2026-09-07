@@ -1,11 +1,11 @@
 Home {
     Aba de "Como ajudar"
     Aba de "Sobre"
-    Criar o filtro de datas e estados
-    colocar os casos se atualizando a cada cadastro
-    colocar os detalhes de cada pessoa personalizada
-    Colocar imagens das parcerias
     Cria Aba de "Seja nosso parceiro"
+    Colocar imagens das parcerias
+    colocar os detalhes de cada pessoa personalizada
+    colocar os casos se atualizando a cada cadastro
+    Criar o filtro de datas e estado
 }
 Separação de casos {
     Colocar todos os Estados

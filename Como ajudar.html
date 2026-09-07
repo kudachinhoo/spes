@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPES - Como Ajudar</title>
+    <style>
+        /* Reset e Variáveis */
+        :root {
+            --azul-escuro: #0f3e68;
+            --azul-medio: #1e5b8c;
+            --azul-claro: #e0f0fa;
+            --cinza-claro: #f4f6f9;
+            --cinza-borda: #e0e0e0;
+            --texto-escuro: #1a1a1a;
+            --texto-cinza: #555555;
+            --branco: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--branco);
+            color: var(--texto-escuro);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--cinza-claro);
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 24px;
+            color: var(--azul-escuro);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--texto-cinza);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        nav a.ativo {
+            color: var(--azul-escuro);
+            font-weight: 700;
+        }
+
+        .header-botoes {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            border: 1px solid transparent;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--azul-escuro);
+            color: var(--azul-escuro);
+        }
+
+        .btn-solid {
+            background: var(--azul-escuro);
+            color: var(--branco);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 80px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .hero-texto {
+            flex: 1;
+        }
+
+        .hero-texto .tag {
+            color: var(--azul-escuro);
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .hero-texto h1 {
+            font-size: 48px;
+            color: var(--azul-escuro);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero-texto h1 span {
+            display: block;
+        }
+
+        .hero-texto p {
+            color: var(--texto-cinza);
+            max-width: 450px;
+            margin-bottom: 20px;
+        }
+
+        .hero-imagem {
+            flex: 1;
+            height: 400px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #d2e6f5 0%, #7aa6c9 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Simulação da imagem das mãos */
+        .hero-imagem::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--azul-escuro) 20%, transparent 70%);
+            opacity: 0.3;
+            border-radius: 50%;
+        }
+
+        /* Seção Formas de Ajudar */
+        .formas-ajudar {
+            background-color: var(--branco);
+            padding: 60px 40px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .formas-ajudar h2 {
+            font-size: 32px;
+            color: var(--azul-escuro);
+            margin-bottom: 40px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--branco);
+            border: 1px solid var(--cinza-borda);
+            border-radius: 8px;
+            padding: 30px;
+            position: relative;
+            min-height: 200px;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        .card svg {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 20px;
+            color: var(--azul-escuro);
+        }
+
+        .card h3 {
+            font-size: 18px;
+            color: var(--azul-escuro);
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            font-size: 14px;
+            color: var(--texto-cinza);
+            line-height: 1.5;
+        }
+
+        .card .arrow {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: var(--azul-escuro);
+        }
+
+        /* CTA Final */
+        .cta-final {
+            background-color: var(--azul-claro);
+            padding: 40px;
+            border-radius: 10px;
+            max-width: 1300px;
+            margin: 0 auto 60px auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cta-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .cta-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--branco);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--azul-escuro);
+        }
+
+        .cta-text h3 {
+            color: var(--azul-escuro);
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .cta-text p {
+            color: var(--texto-cinza);
+            font-size: 14px;
+        }
+
+        .btn-cta {
+            background: var(--azul-escuro);
+            color: var(--branco);
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--azul-escuro);
+            color: var(--branco);
+            padding: 30px 40px;
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer-logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--branco);
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #b0c4de;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icons a {
+            color: var(--branco);
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        /* Responsividade Básica */
+        @media (max-width: 900px) {
+            .hero {
+                flex-direction: column;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .cta-final {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            .cta-content {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+         #Logo{
+            width: 60px;
+            height: 60px;
+         }
+      #main{
+     background: linear-gradient(135deg, #eaf2fa 0%, #d6e5f3 100%);
+      }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div>
+            <!-- Ícone simples para simular a logo -->
+            <img id="Logo" src="Imagens do site/Logo da SPES.png" alt="">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="Separação de casos.html">Desaparecidos</a></li>
+                <li><a href="Como ajudar.html" class="ativo">Como ajudar</a></li>
+                <li><a href="Seja nosso parceiro.html">Parceiros</a></li>
+                <li><a href="Sobre.html">Sobre</a></li>
+            </ul>
+        </nav>
+        <div class="header-botoes">
+            <a href="Tela de login.htm" class="btn btn-outline">Entrar</a>
+            <a href="Cadastro.htm" class="btn btn-solid">Cadastrar</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="main" class="hero">
+        <div class="hero-texto">
+            <span class="tag">COMO AJUDAR</span>
+            <h1>
+                <span>Sua ajuda faz</span>
+                <span>a diferença</span>
+            </h1>
+            <p>Existem várias formas de contribuir com a nossa missão. Você não precisa ser um especialista, apenas ter vontade de ajudar. Cada gesto conta!</p>
+        </div>
+        <div class="hero-imagem">
+            <!-- Container para a imagem das mãos (simulado com gradiente) -->
+        </div>
+    </section>
+
+    <!-- Formas de Ajudar -->
+    <section class="formas-ajudar">
+        <h2>Formas de ajudar</h2>
+        <p style="color: var(--texto-cinza); margin-bottom: 40px;">Veja como você pode se envolver e apoiar a causa dos desaparecidos.</p>
+        
+        <div class="cards-grid">
+            <!-- Card 1 -->
+            <div class="card">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <h3>Compartilhe informações</h3>
+                <p>Se souber de algo, mesmo que pareça pequeno, pode ser importante. Compartilhe com a nossa equipe através dos canais oficiais.</p>
+                <span class="arrow">→</span>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <h3>Divulgue</h3>
+                <p>Compartilhe nossos conteúdos nas suas redes sociais, grupos de WhatsApp e com amigos. Quanto mais pessoas souberem, maior o alcance.</p>
+                <span class="arrow">→</span>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                <h3>Seja voluntário</h3>
+                <p>Você pode atuar em campanhas, acolhimento de famílias, produção de materiais e muito mais. Seu tempo é destinação aos valiosos.</p>
+                <span class="arrow">→</span>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="card">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                <h3>Apoio emocional</h3>
+                <p>Muitas famílias enfrentam momentos difíceis e precisam de acolhimento. Se você tem disponibilidade e sensibilidade, pode ajudar oferecendo escuta e apoio.</p>
+                <span class="arrow">→</span>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="card">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <h3>Ajude com recursos</h3>
+                <p>Doações financeiras ou de materiais podem fortalecer a estrutura da nossa atuação e ampliar o alcance das buscas.</p>
+                <span class="arrow">→</span>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="card">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                <h3>Seja um multiplicador</h3>
+                <p>Converse sobre o SPES, incentive outras pessoas a se engajarem e ajude a conscientizar a sociedade sobre o desaparecimento de pessoas.</p>
+                <span class="arrow">→</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Final -->
+    <section class="cta-final">
+        <div class="cta-content">
+           
+                    <img src="Imagens do site/Logo da SPES.png" alt="" id="Logo">
+            
+            <div class="cta-text">
+                <h3>Juntos, podemos ir mais longe.</h3>
+                <p>A sua participação é essencial para que mais pessoas sejam encontradas e mais famílias tenham esperança.</p>
+            </div>
+        </div>
+        <a href="#" class="btn-cta">Quero ser voluntário →</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">SPES</div>
+            <div class="footer-text">Conectando pessoas, reunindo famílias.</div>
+            <div class="social-icons">
+        
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
