@@ -838,10 +838,15 @@
         card.appendChild(criar('div', 'days', textoDias));
 
         const detalhes = criar('a', 'btn-detail', 'Ver detalhes');
-        detalhes.href = '#';
-        const id = pessoa.id !== undefined ? pessoa.id : pessoa._id;
-        if (id !== undefined) detalhes.dataset.id = id;
-        card.appendChild(detalhes);
+const id = pessoa.id_desaparecido || pessoa.id;
+if (id !== undefined && id !== null) {
+    detalhes.href = `detalhes.html?id=${id}`;
+} else {
+    detalhes.href = '#';
+    detalhes.style.opacity = '0.5';
+    detalhes.style.pointerEvents = 'none';
+}
+card.appendChild(detalhes);
 
         return card;
     }
