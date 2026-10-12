@@ -38,9 +38,6 @@ const MissingPerson = sequelize.define('desaparecido', {
   informacoes: {
     type: DataTypes.TEXT
   },
-  locais_favoritos: {
-    type: DataTypes.TEXT
-  },
   cidade_desaparecimento: {
     type: DataTypes.STRING(100)
   },
