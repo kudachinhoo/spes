@@ -8,7 +8,8 @@ const Location = require('../models/Location');
 // (evita que alguém troque cpf_usuario, id, etc. enviando JSON extra).
 const CAMPOS_CRIACAO = [
   'nome', 'data_nascimento', 'etnia', 'altura', 'peso', 'informacoes',
-  'cidade', 'estado_desaparecimento', 'data_desaparecimento', 'foto'
+  'contato', 'locais_favoritos',
+  'cidade_desaparecimento', 'estado_desaparecimento', 'data_desaparecimento', 'foto'
 ];
 const CAMPOS_EDICAO = [...CAMPOS_CRIACAO, 'status'];
 
