@@ -7,41 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         /* ----- RESET & BASE ----- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-<script>
-    // Verifica se o usuário está logado
-    const token = localStorage.getItem('token');
-    const userName = localStorage.getItem('userName');
-    const btnEntrar = document.getElementById('btnEntrar');
-    const btnCadastrar = document.getElementById('btnCadastrar');
-    const areaUsuario = document.getElementById('areaUsuario');
-    const nomeUsuario = document.getElementById('nomeUsuario');
-    const btnSair = document.getElementById('btnSair');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    if (token && userName) {
-        // Usuário está logado
-        if (btnEntrar) btnEntrar.style.display = 'none';
-        if (btnCadastrar) btnCadastrar.style.display = 'none';
-        if (areaUsuario) areaUsuario.style.display = 'flex';
-        if (nomeUsuario) nomeUsuario.textContent = `Olá, ${userName.split(' ')[0]}`;
-    }
-
-    // Botão Sair
-    if (btnSair) {
-        btnSair.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (confirm('Deseja sair da sua conta?')) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('userName');
-                window.location.href = 'index.html';
-            }
-        });
-    }
-</script>
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: #f4f7fc;
@@ -49,12 +16,9 @@
             line-height: 1.5;
         }
 
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
+        a { text-decoration: none; color: inherit; }
 
-        /* ----- TOP BAR (logo + nav) ----- */
+        /* ----- TOP BAR ----- */
         .top-bar {
             background-color: #ffffff;
             padding: 0 2rem;
@@ -66,30 +30,19 @@
             border-bottom: 2px solid #e6edf5;
         }
 
-        .logo-area {
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
-            padding: 1rem 0;
-        }
+        .logo-area { display: flex; align-items: baseline; gap: 6px; padding: 1rem 0; }
 
         .logo-area h1 {
             font-size: 1.9rem;
             font-weight: 700;
             color: #0b2b4a;
             letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .logo-area .subtitle {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: #3a6b8f;
-            background: #e9f0f8;
-            padding: 0.2rem 0.8rem;
-            border-radius: 20px;
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-        }
+        #Logo { width: 70px; height: 70px; margin-bottom: -10px; }
 
         .nav-menu {
             display: flex;
@@ -108,10 +61,7 @@
             transition: 0.2s;
         }
 
-        .nav-menu a:hover {
-            border-bottom-color: #2a6f9c;
-            color: #0b2b4a;
-        }
+        .nav-menu a:hover { border-bottom-color: #2a6f9c; color: #0b2b4a; }
 
         .nav-menu .btn-outline {
             border: 1.5px solid #2a6f9c;
@@ -123,11 +73,7 @@
             transition: 0.2s;
         }
 
-        .nav-menu .btn-outline:hover {
-            background: #2a6f9c;
-            color: #fff;
-            border-color: #2a6f9c;
-        }
+        .nav-menu .btn-outline:hover { background: #2a6f9c; color: #fff; }
 
         .nav-menu .btn-solid {
             background: #2a6f9c;
@@ -138,16 +84,46 @@
             transition: 0.2s;
         }
 
-        .nav-menu .btn-solid:hover {
-            background: #1d4f73;
+        .nav-menu .btn-solid:hover { background: #1d4f73; }
+
+        #areaUsuario {
+            display: none;
+            align-items: center;
+            gap: 0.8rem;
         }
 
-        /* ----- HERO SECTION ----- */
+        #nomeUsuario { color: #1e3b5c; font-weight: 600; }
+
+        /* ----- HERO ----- */
         .hero {
             background: linear-gradient(135deg, #eaf2fa 0%, #d6e5f3 100%);
-            padding: 3rem 2rem 2.5rem;
+            padding: 4rem 2rem 3rem;
             text-align: center;
             border-bottom: 1px solid #cbddee;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(42, 111, 156, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(42, 111, 156, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
         }
 
         .hero h2 {
@@ -157,6 +133,8 @@
             max-width: 800px;
             margin: 0 auto 0.5rem;
             letter-spacing: -0.3px;
+            position: relative;
+            z-index: 1;
         }
 
         .hero p {
@@ -164,6 +142,8 @@
             color: #2c4b6a;
             max-width: 650px;
             margin: 0 auto 2rem;
+            position: relative;
+            z-index: 1;
         }
 
         .search-box {
@@ -173,6 +153,8 @@
             gap: 0.8rem;
             max-width: 780px;
             margin: 0 auto 1.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .search-box input {
@@ -192,20 +174,18 @@
             box-shadow: 0 0 0 3px rgba(42, 111, 156, 0.15);
         }
 
-        .search-box input::placeholder {
-            color: #8aa3bb;
-            font-weight: 400;
-        }
-
         .filter-pills {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 0.6rem 1rem;
             margin-top: 0.2rem;
+            position: relative;
+            z-index: 1;
         }
 
-        .filter-pills span {
+        .filter-pills a span,
+        .filter-pills > span {
             background: #ffffff;
             padding: 0.4rem 1.4rem;
             border-radius: 60px;
@@ -213,33 +193,69 @@
             font-weight: 500;
             color: #1e3b5c;
             border: 1px solid #b8cee3;
-            cursor: default;
+            cursor: pointer;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
-            transition: 0.1s;
+            transition: 0.2s;
+            display: inline-block;
         }
 
-        .filter-pills span i {
-            margin-right: 6px;
-            color: #3a6b8f;
-            font-size: 0.8rem;
-        }
-
-        .filter-pills .pill-highlight {
+        .filter-pills a span:hover,
+        .filter-pills > span:hover {
             background: #2a6f9c;
             color: #fff;
             border-color: #2a6f9c;
+            transform: translateY(-2px);
         }
 
-        .filter-pills .pill-highlight i {
+        .filter-pills i { margin-right: 6px; }
+
+        /* Botões principais do hero */
+        .hero-botoes {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-botoes a {
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .hero-botoes .btn-primario {
+            background: #2a6f9c;
             color: #fff;
+            border: 2px solid #2a6f9c;
         }
 
-        /* ----- MAIN CONTENT ----- */
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem 3rem;
+        .hero-botoes .btn-primario:hover {
+            background: #1d5a7e;
+            transform: translateY(-2px);
         }
+
+        .hero-botoes .btn-secundario {
+            background: transparent;
+            color: #2a6f9c;
+            border: 2px solid #2a6f9c;
+        }
+
+        .hero-botoes .btn-secundario:hover {
+            background: #2a6f9c;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* ----- CONTAINER ----- */
+        .container { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
 
         .section-title {
             font-size: 1.8rem;
@@ -249,6 +265,7 @@
             letter-spacing: -0.2px;
         }
 
+        /* ----- CARDS ----- */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -265,31 +282,42 @@
             transition: 0.2s;
             display: flex;
             flex-direction: column;
+            min-height: 480px;
         }
 
         .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 28px rgba(0, 20, 40, 0.10);
-            border-color: #b8d0e5;
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -12px rgba(0, 20, 40, 0.15);
+            border-color: #2a6f9c;
         }
 
-        .card .name {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #0b2b4a;
-            margin-bottom: 0.15rem;
-        }
-
-        .card .age {
-            font-size: 0.95rem;
-            color: #3a5f7a;
-            font-weight: 500;
-        }
+        .card .name { font-size: 1.3rem; font-weight: 700; color: #0b2b4a; margin-bottom: 0.3rem; }
+        .card .age { font-size: 0.95rem; color: #3a5f7a; font-weight: 500; }
 
         .card .location {
             font-size: 0.9rem;
             color: #4b6f8e;
-            margin: 0.2rem 0 0.1rem;
+            margin: 0.3rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .card .location::before {
+            content: '\f3c5';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: #2a6f9c;
+            font-size: 0.85rem;
+        }
+
+        .desaparecidos {
+            display: block;
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 0.8rem 0;
         }
 
         .card .days {
@@ -315,70 +343,25 @@
             text-align: center;
             transition: 0.2s;
             font-size: 0.9rem;
+            display: block;
         }
 
-        .card .btn-detail:hover {
-            background: #2a6f9c;
-            color: #fff;
-        }
+        .card .btn-detail:hover { background: #2a6f9c; color: #fff; }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1.5rem;
-            background: #ffffff;
-            border-radius: 28px;
-            padding: 2rem 1.8rem;
-            border: 1px solid #dce8f2;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-            margin-top: 1rem;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-item .number {
-            font-size: 2.1rem;
-            font-weight: 800;
-            color: #0b2b4a;
-            letter-spacing: -0.5px;
-            line-height: 1.2;
-        }
-
-        .stat-item .label {
-            font-size: 0.95rem;
-            color: #3d6483;
-            font-weight: 500;
-            margin-top: 0.1rem;
-        }
-
-        .stat-item .icon {
-            color: #2a6f9c;
-            font-size: 1.4rem;
-            margin-right: 6px;
-        }
-
-        /* ===== FOOTER / PARCERIAS  ===== */
+        /* ----- FOOTER ----- */
         .footer-partners {
             background: #ffffff;
             border-top: 2px solid #e6edf5;
             padding: 2.5rem 2rem 2rem;
-            margin-top: 0;
         }
 
-        .footer-partners .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0;
-        }
+        .footer-partners .container { padding: 0; }
 
         .footer-partners h2 {
             font-size: 1.8rem;
             font-weight: 700;
             color: #0b2b4a;
             margin-bottom: 0.5rem;
-            letter-spacing: -0.2px;
         }
 
         .footer-partners .desc {
@@ -392,7 +375,6 @@
             flex-wrap: wrap;
             gap: 1rem 2rem;
             justify-content: center;
-            align-items: center;
             margin-bottom: 2rem;
         }
 
@@ -405,7 +387,6 @@
             color: #1a3a54;
             border: 1px solid #dce8f2;
             transition: 0.2s;
-            white-space: nowrap;
         }
 
         .partners-grid .partner-item:hover {
@@ -414,17 +395,13 @@
             transform: translateY(-2px);
         }
 
-        .partners-grid .partner-item i {
-            margin-right: 6px;
-            color: #2a6f9c;
-        }
+        .partners-grid .partner-item i { margin-right: 6px; color: #2a6f9c; }
 
         .footer-actions {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 1.2rem 2rem;
-            margin-top: 0.5rem;
             padding-top: 1.5rem;
             border-top: 1px solid #e6edf5;
         }
@@ -435,38 +412,13 @@
             padding: 0.6rem 2rem;
             border-radius: 60px;
             font-weight: 600;
-            font-size: 1rem;
             transition: 0.2s;
-            border: none;
-            cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 0.6rem;
         }
 
-        .footer-actions .btn-partner:hover {
-            background: #1d5a7e;
-            transform: scale(1.02);
-        }
-
-        .footer-actions .btn-partner-outline {
-            background: transparent;
-            color: #2a6f9c;
-            border: 1.5px solid #2a6f9c;
-            padding: 0.6rem 2rem;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: 0.2s;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
-
-        .footer-actions .btn-partner-outline:hover {
-            background: #e6f0f8;
-        }
+        .footer-actions .btn-partner:hover { background: #1d5a7e; transform: scale(1.02); }
 
         .support-bar {
             background: #eaf2fa;
@@ -477,21 +429,10 @@
             gap: 0.8rem;
             font-weight: 600;
             color: #0b2b4a;
-            margin-right: auto;
-            margin-left: auto;
             border: 1px solid #cbddee;
         }
 
-        .support-bar i {
-            color: #2a6f9c;
-            font-size: 1.2rem;
-        }
-
-        .support-bar .number {
-            color: #1d4f73;
-            font-size: 1.1rem;
-            letter-spacing: 0.5px;
-        }
+        .support-bar i { color: #2a6f9c; font-size: 1.2rem; }
 
         .footer-bottom {
             display: flex;
@@ -502,148 +443,9 @@
             margin-top: 1.5rem;
         }
 
-        .footer-copy {
-            font-size: 0.85rem;
-            color: #6a8ba8;
-        }
-        #Logo{
-            margin-bottom: -30px;
-        }
-       
-        /* ----- RESPONSIVE (mantido o original + ajustes do footer) ----- */
-        @media (max-width: 1600px) {
-                        #Logo{
-                width: 7.5vw;
-                height: 10vh;
-            }
-             
-        }
-        @media(max-width: 820px){
-                        #Logo{
-                width: 8.5vw;
-                height: 10vh;
-            }
-             
-        }
-        @media (max-width: 620px) {
-            .top-bar {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 0 1rem;
-            }
-            .logo-area {
-                justify-content: center;
-                flex-wrap: wrap;
-                padding: 0.8rem 0 0.2rem;
-            }
-            .logo-area h1 {
-                font-size: 1.7rem;
-            }
-            .nav-menu {
-                justify-content: center;
-                gap: 0.2rem 0.9rem;
-                padding: 0.6rem 0 1rem;
-            }
-            .hero h2 {
-                font-size: 1.8rem;
-            }
-            .hero p {
-                font-size: 1rem;
-            }
-            .footer-partners {
-                padding: 2rem 1rem 1.5rem;
-            }
-            .footer-bottom {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-            .support-bar {
-                margin-right: 0;
-            }
-            .partners-grid .partner-item {
-                white-space: normal;
-                font-size: 0.85rem;
-                padding: 0.4rem 1rem;
-            }
-                        #Logo{
-                width: 75px;
-                height: 75px;
-            }
-        }
-        
+        .footer-copy { font-size: 0.85rem; color: #6a8ba8; }
 
-        @media (max-width: 480px) {
-            
-            .hero {
-                padding: 2rem 1rem 1.8rem;
-            }
-            .hero h2 {
-                font-size: 1.5rem;
-            }
-            .search-box input {
-                flex: 1 1 100%;
-            }
-            .filter-pills span {
-                font-size: 0.8rem;
-                padding: 0.3rem 1rem;
-            }
-            .cards-grid {
-                grid-template-columns: 1fr;
-                gap: 1.2rem;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                padding: 1.5rem 0.8rem;
-                gap: 1rem;
-            }
-            .stat-item .number {
-                font-size: 1.7rem;
-            }
-            .container {
-                padding: 1.5rem 1rem;
-            }
-            .nav-menu a {
-                font-size: 0.85rem;
-            }
-            .footer-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-            .footer-actions .btn-partner,
-            .footer-actions .btn-partner-outline {
-                width: 100%;
-                justify-content: center;
-            }
-            .support-bar {
-                padding: 0.6rem 1.2rem;
-                font-size: 0.9rem;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            #Logo{
-                width: 50px;
-                height: 50px;
-            }
-            
-        }
-    
-        /* ----- FOTO DOS CARDS (não deforma, qualquer proporção) ----- */
-        .desaparecidos {
-            display: block;
-            width: 100%;
-            height: 260px;
-            object-fit: cover;
-            border-radius: 12px;
-        }
-
-        @media (max-width: 480px) {
-            .desaparecidos {
-                height: 220px;
-            }
-        }
-
-        /* ----- MENSAGENS DA GRADE (carregando / erro / vazio) ----- */
+        /* ----- MENSAGENS NA GRADE ----- */
         .grid-msg {
             grid-column: 1 / -1;
             text-align: center;
@@ -663,9 +465,33 @@
             cursor: pointer;
         }
 
-        .grid-msg button:hover {
-            background: #2a6f9c;
-            color: #ffffff;
+        .grid-msg button:hover { background: #2a6f9c; color: #ffffff; }
+
+        /* ----- RESPONSIVO ----- */
+        @media (max-width: 820px) {
+            #Logo { width: 60px; height: 60px; }
+        }
+
+        @media (max-width: 620px) {
+            .top-bar { flex-direction: column; align-items: stretch; padding: 0 1rem; }
+            .logo-area { justify-content: center; padding: 0.8rem 0 0.2rem; }
+            .logo-area h1 { font-size: 1.7rem; }
+            .nav-menu { justify-content: center; gap: 0.2rem 0.9rem; padding: 0.6rem 0 1rem; }
+            .hero h2 { font-size: 1.8rem; }
+            .hero p { font-size: 1rem; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+            #Logo { width: 55px; height: 55px; }
+        }
+
+        @media (max-width: 480px) {
+            .hero { padding: 2.5rem 1rem 2rem; }
+            .hero h2 { font-size: 1.5rem; }
+            .search-box input { flex: 1 1 100%; }
+            .cards-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+            .container { padding: 1.5rem 1rem; }
+            .nav-menu a { font-size: 0.85rem; }
+            .desaparecidos { height: 220px; }
+            #Logo { width: 50px; height: 50px; }
         }
     </style>
 </head>
@@ -674,29 +500,28 @@
     <!-- ===== TOP BAR ===== -->
     <header class="top-bar">
         <div class="logo-area">
-            
             <h1>
-                <span><img id="Logo" src="Imagens do site/Logo da SPES.png" alt="Logo da SPES"></span>
+                <img id="Logo" src="Imagens do site/Logo da SPES.png" alt="Logo da SPES">
                 SPES
             </h1>
         </div>
-       <nav class="nav-menu">
-    <a href="index.html">Início</a>
-    <a href="Separação de casos.html">Desaparecidos</a>
-    <a href="Como ajudar.html">Como ajudar</a>
-    <a href="Seja nosso parceiro.html">Parceiros</a>
-    <a href="Sobre.html">Sobre Nós</a>
-    
-    <!-- Botões mostrados quando NÃO está logado -->
-    <a href="Tela de login.htm" class="btn-outline" id="btnEntrar">Entrar</a>
-    <a href="Cadastro.htm" class="btn-solid" id="btnCadastrar">Cadastrar</a>
-    
-    <!-- Área do usuário logado (escondida por padrão) -->
-    <div id="areaUsuario" style="display:none; align-items:center; gap:0.8rem;">
-        <span id="nomeUsuario" style="color:#1e3b5c; font-weight:600;"></span>
-        <a href="#" id="btnSair" class="btn-outline">Sair</a>
-    </div>
-</nav>
+        <nav class="nav-menu">
+            <a href="index.html">Início</a>
+            <a href="Separação de casos.html">Desaparecidos</a>
+            <a href="Como ajudar.html">Como ajudar</a>
+            <a href="Seja nosso parceiro.html">Parceiros</a>
+            <a href="Sobre.html">Sobre Nós</a>
+
+            <!-- Botões mostrados quando NÃO está logado -->
+            <a href="Tela de login.htm" class="btn-outline" id="btnEntrar">Entrar</a>
+            <a href="Cadastro.htm" class="btn-solid" id="btnCadastrar">Cadastrar</a>
+
+            <!-- Área do usuário logado -->
+            <div id="areaUsuario">
+                <span id="nomeUsuario"></span>
+                <a href="#" id="btnSair" class="btn-outline">Sair</a>
+            </div>
+        </nav>
     </header>
 
     <!-- ===== HERO ===== -->
@@ -710,58 +535,28 @@
 
         <div class="filter-pills">
             <span><i class="fas fa-calendar-alt"></i> Data</span>
-           <a href="Separação de casos.html"><span><i class="fas fa-map-pin"></i>Estados</span></a> 
+            <a href="Separação de casos.html"><span><i class="fas fa-map-pin"></i> Estados</span></a>
             <a href="Cadastro de desparecidos.html"><span><i class="fas fa-exclamation-triangle"></i> Cadastro de Desaparecido</span></a>
+        </div>
+
+        <!-- Botões de ação -->
+        <div class="hero-botoes">
+            <a href="Cadastro de desparecidos.html" class="btn-primario">
+                <i class="fas fa-exclamation-triangle"></i> Cadastrar desaparecido
+            </a>
+            <a href="Como ajudar.html" class="btn-secundario">
+                <i class="fas fa-hands-helping"></i> Como ajudar
+            </a>
         </div>
     </section>
 
     <!-- ===== MAIN ===== -->
     <div class="container">
-
         <h2 class="section-title">Pessoas Desaparecidas</h2>
-        <div class="cards-grid">
-
-            <div class="card">
-                <div class="name">Nathan Marques</div>
-                <div class="age">17 anos</div>
-                <div class="location">Taboão City</div>
-                <div><img class="desaparecidos" src="Imagens do site/Nathan desaparecido.jpeg" alt="Foto de Nathan Marques"></div>
-                <div class="days">Desaparecido há 67 dias</div>
-                <a href="#" class="btn-detail">Ver detalhes</a>
-            </div>
-
-            <div class="card">
-                <div class="name">Maria Clara</div>
-                <div class="age">12 anos</div>
-                <div class="location">Rio de Janeiro - RJ</div>
-                <div><img class="desaparecidos" src="Imagens do site/maria clara.png" alt="Foto de Maria Clara"></div>
-                <div class="days">Desaparecido há 3 dias</div>
-                <a href="#" class="btn-detail">Ver detalhes</a>
-            </div>
-
-            <div class="card">
-                <div class="name">Ana Beatriz</div>
-                <div class="age">22 anos</div>
-                <div class="location">Belaíntorrentes - MG</div>
-                <div><img class="desaparecidos" src="Imagens do site/Mulher.png" alt="Foto de Ana Beatriz"></div>
-                <div class="days">Desaparecido há 6 dias</div>
-                <a href="#" class="btn-detail">Ver detalhes</a>
-            </div>
-
-            <div class="card">
-                <div class="name">José Alencar</div>
-                <div class="age">63 anos</div>
-                <div class="location">Curitiba - PR</div>
-                <div><img class="desaparecidos" src="Imagens do site/Idoso.png" alt="Foto de José Alencar"></div>
-                <div class="days">Desaparecido há 6 dias</div>
-                <a href="#" class="btn-detail">Ver detalhes</a>
-            </div>
-
-        </div>
-
+        <div class="cards-grid"></div>
     </div>
 
-    <!-- ===== FOOTER / PARCERIAS (adicionado ao final) ===== -->
+    <!-- ===== FOOTER ===== -->
     <footer class="footer-partners">
         <div class="container">
             <h2>Parcerias</h2>
@@ -771,11 +566,13 @@
                 <span class="partner-item"><i class="fas fa-shield-alt"></i> POLÍCIA CIVIL</span>
                 <span class="partner-item"><i class="fas fa-shield-alt"></i> POLÍCIA MILITAR</span>
                 <span class="partner-item"><i class="fas fa-user-shield"></i> SEGURANÇA PÚBLICA</span>
-                <span class="partner-item"><i class="fas fa-balance-scale"></i> Ministério da Justiça e Segurança Pública (MJSP)</span>
+                <span class="partner-item"><i class="fas fa-balance-scale"></i> Ministério da Justiça e Segurança Pública</span>
             </div>
 
-            <div id="parcerias" class="footer-actions">
-                <a href="#" class="btn-partner"><i class="fas fa-handshake"></i> Seja nosso parceiro</a>
+            <div class="footer-actions">
+                <a href="Seja nosso parceiro.html" class="btn-partner">
+                    <i class="fas fa-handshake"></i> Seja nosso parceiro
+                </a>
             </div>
 
             <div class="footer-bottom">
@@ -783,7 +580,7 @@
                     <i class="fas fa-headset"></i>
                     <span>Suporte:</span>
                     <span class="number">0800 123 4567</span>
-                    <i class="fas fa-clock" style="margin-left:0.5rem; font-size:0.9rem;"></i>
+                    <i class="fas fa-clock"></i>
                     <span style="font-weight:400; font-size:0.85rem;">24h</span>
                 </div>
                 <div class="footer-copy">
@@ -792,157 +589,180 @@
             </div>
         </div>
     </footer>
-<script>
-    const API_URL = 'https://spes-backend.onrender.com/api';
-    const FOTO_PADRAO = 'Imagens do site/placeholder.png';
 
-    const cardsGrid = document.querySelector('.cards-grid');
-    const searchInput = document.querySelector('.search-box input');
+    <!-- ===== SCRIPT DE LOGIN/LOGOUT ===== -->
+    <script>
+        const token = localStorage.getItem('token');
+        const userName = localStorage.getItem('userName');
+        const btnEntrar = document.getElementById('btnEntrar');
+        const btnCadastrar = document.getElementById('btnCadastrar');
+        const areaUsuario = document.getElementById('areaUsuario');
+        const nomeUsuario = document.getElementById('nomeUsuario');
+        const btnSair = document.getElementById('btnSair');
 
-    let numeroDaBusca = 0;     // ignora respostas antigas se o usuário digitar rápido
-    let primeiraCarga = true;
-
-    // ---------- utilitários ----------
-    // Cria um elemento só com texto (textContent nunca interpreta HTML => sem XSS)
-    function criar(tag, classe, texto) {
-        const el = document.createElement(tag);
-        if (classe) el.className = classe;
-        if (texto !== undefined) el.textContent = texto;
-        return el;
-    }
-
-    // Lê "2010-05-03" ou "2010-05-03T00:00:00.000Z" como data LOCAL (evita erro de fuso)
-    function lerData(valor) {
-        if (!valor) return null;
-        const m = String(valor).match(/^(\d{4})-(\d{2})-(\d{2})/);
-        const d = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(valor);
-        return isNaN(d.getTime()) ? null : d;
-    }
-
-    function calcularIdade(nascimento) {
-        if (!nascimento) return null;
-        const hoje = new Date();
-        let idade = hoje.getFullYear() - nascimento.getFullYear();
-        const jaFezAniversario =
-            hoje.getMonth() > nascimento.getMonth() ||
-            (hoje.getMonth() === nascimento.getMonth() && hoje.getDate() >= nascimento.getDate());
-        if (!jaFezAniversario) idade--;
-        return idade >= 0 ? idade : null;
-    }
-
-    function diasDesde(data) {
-        if (!data) return null;
-        const hoje = new Date();
-        hoje.setHours(0, 0, 0, 0);
-        return Math.max(0, Math.round((hoje - data) / 86400000));
-    }
-
-    // Só aceita imagem em base64 ou URL http(s); qualquer outra coisa vira a foto padrão
-    function fotoSegura(src) {
-        if (typeof src !== 'string') return FOTO_PADRAO;
-        if (/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(src)) return src;
-        if (/^https?:\/\//i.test(src)) return src;
-        return FOTO_PADRAO;
-    }
-
-    // ---------- card ----------
-    function criarCard(pessoa) {
-        const nome = pessoa.nome || 'Nome não informado';
-        const card = criar('div', 'card');
-
-        card.appendChild(criar('div', 'name', nome));
-
-        const idade = calcularIdade(lerData(pessoa.data_nascimento));
-        card.appendChild(criar('div', 'age',
-            idade === null ? 'Idade não informada' : `${idade} ${idade === 1 ? 'ano' : 'anos'}`));
-
-        const local = [pessoa.cidade, pessoa.estado_desaparecimento].filter(Boolean).join(' - ');
-        card.appendChild(criar('div', 'location', local || 'Local não informado'));
-
-        const fotoBox = document.createElement('div');
-        const img = criar('img', 'desaparecidos');
-        img.loading = 'lazy';
-        img.alt = `Foto de ${nome}`;
-        img.src = fotoSegura(pessoa.foto);
-        img.onerror = () => { img.onerror = null; img.src = FOTO_PADRAO; };
-        fotoBox.appendChild(img);
-        card.appendChild(fotoBox);
-
-        const dias = diasDesde(lerData(pessoa.data_desaparecimento));
-        let textoDias = 'Data do desaparecimento não informada';
-        if (dias === 0) textoDias = 'Desaparecido hoje';
-        else if (dias !== null) textoDias = `Desaparecido há ${dias} ${dias === 1 ? 'dia' : 'dias'}`;
-        card.appendChild(criar('div', 'days', textoDias));
-
-        const detalhes = criar('a', 'btn-detail', 'Ver detalhes');
-const id = pessoa.id_desaparecido || pessoa.id;
-if (id !== undefined && id !== null) {
-    detalhes.href = `detalhes.html?id=${id}`;
-} else {
-    detalhes.href = '#';
-    detalhes.style.opacity = '0.5';
-    detalhes.style.pointerEvents = 'none';
-}
-card.appendChild(detalhes);
-
-        return card;
-    }
-
-    // ---------- mensagens na grade ----------
-    function mostrarMensagem(texto, comBotao) {
-        const msg = criar('p', 'grid-msg', texto);
-        if (comBotao) {
-            msg.appendChild(document.createElement('br'));
-            const botao = criar('button', '', 'Tentar de novo');
-            botao.type = 'button';
-            botao.addEventListener('click', () => carregarPessoas(searchInput.value.trim()));
-            msg.appendChild(botao);
+        if (token && userName) {
+            if (btnEntrar) btnEntrar.style.display = 'none';
+            if (btnCadastrar) btnCadastrar.style.display = 'none';
+            if (areaUsuario) areaUsuario.style.display = 'flex';
+            if (nomeUsuario) nomeUsuario.textContent = `Olá, ${userName.split(' ')[0]}`;
         }
-        cardsGrid.replaceChildren(msg);
-    }
 
-    // ---------- busca na API ----------
-    async function carregarPessoas(termo = '') {
-        const minhaBusca = ++numeroDaBusca;
+        if (btnSair) {
+            btnSair.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (confirm('Deseja sair da sua conta?')) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userName');
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+    </script>
 
-        mostrarMensagem(primeiraCarga
-            ? 'Carregando casos... Se o servidor estiver inativo, a primeira busca pode levar até 1 minuto.'
-            : 'Buscando...');
+    <!-- ===== SCRIPT DE CARREGAR PESSOAS ===== -->
+    <script>
+        const API_URL = 'https://spes-backend.onrender.com/api';
+        const FOTO_PADRAO = 'Imagens do site/placeholder.png';
 
-        try {
-            let url = `${API_URL}/people`;
-            if (termo) url += `?search=${encodeURIComponent(termo)}`;
+        const cardsGrid = document.querySelector('.cards-grid');
+        const searchInput = document.querySelector('.search-box input');
 
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const resposta = await response.json();
+        let numeroDaBusca = 0;
+        let primeiraCarga = true;
 
-            if (minhaBusca !== numeroDaBusca) return; // chegou uma busca mais nova
+        function criar(tag, classe, texto) {
+            const el = document.createElement(tag);
+            if (classe) el.className = classe;
+            if (texto !== undefined) el.textContent = texto;
+            return el;
+        }
 
-            const pessoas = Array.isArray(resposta) ? resposta : (resposta.data || resposta.people || []);
-            primeiraCarga = false;
+        function lerData(valor) {
+            if (!valor) return null;
+            const m = String(valor).match(/^(\d{4})-(\d{2})-(\d{2})/);
+            const d = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(valor);
+            return isNaN(d.getTime()) ? null : d;
+        }
 
-            if (pessoas.length === 0) {
-                mostrarMensagem('Nenhuma pessoa encontrada.');
-                return;
+        function calcularIdade(nascimento) {
+            if (!nascimento) return null;
+            const hoje = new Date();
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+            const jaFezAniversario =
+                hoje.getMonth() > nascimento.getMonth() ||
+                (hoje.getMonth() === nascimento.getMonth() && hoje.getDate() >= nascimento.getDate());
+            if (!jaFezAniversario) idade--;
+            return idade >= 0 ? idade : null;
+        }
+
+        function diasDesde(data) {
+            if (!data) return null;
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            return Math.max(0, Math.round((hoje - data) / 86400000));
+        }
+
+        function fotoSegura(src) {
+            if (typeof src !== 'string') return FOTO_PADRAO;
+            if (/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(src)) return src;
+            if (/^https?:\/\//i.test(src)) return src;
+            return FOTO_PADRAO;
+        }
+
+        function criarCard(pessoa) {
+            const nome = pessoa.nome || 'Nome não informado';
+            const card = criar('div', 'card');
+
+            card.appendChild(criar('div', 'name', nome));
+
+            const idade = calcularIdade(lerData(pessoa.data_nascimento));
+            card.appendChild(criar('div', 'age',
+                idade === null ? 'Idade não informada' : `${idade} ${idade === 1 ? 'ano' : 'anos'}`));
+
+            const local = [pessoa.cidade, pessoa.estado_desaparecimento].filter(Boolean).join(' - ');
+            card.appendChild(criar('div', 'location', local || 'Local não informado'));
+
+            const fotoBox = document.createElement('div');
+            const img = criar('img', 'desaparecidos');
+            img.loading = 'lazy';
+            img.alt = `Foto de ${nome}`;
+            img.src = fotoSegura(pessoa.foto);
+            img.onerror = () => { img.onerror = null; img.src = FOTO_PADRAO; };
+            fotoBox.appendChild(img);
+            card.appendChild(fotoBox);
+
+            const dias = diasDesde(lerData(pessoa.data_desaparecimento));
+            let textoDias = 'Data do desaparecimento não informada';
+            if (dias === 0) textoDias = 'Desaparecido hoje';
+            else if (dias !== null) textoDias = `Desaparecido há ${dias} ${dias === 1 ? 'dia' : 'dias'}`;
+            card.appendChild(criar('div', 'days', textoDias));
+
+            const detalhes = criar('a', 'btn-detail', 'Ver detalhes');
+            const id = pessoa.id_desaparecido || pessoa.id;
+            if (id !== undefined && id !== null) {
+                detalhes.href = `detalhes.html?id=${id}`;
+            } else {
+                detalhes.href = '#';
+                detalhes.style.opacity = '0.5';
+                detalhes.style.pointerEvents = 'none';
             }
+            card.appendChild(detalhes);
 
-            cardsGrid.replaceChildren(...pessoas.map(criarCard));
-        } catch (error) {
-            if (minhaBusca !== numeroDaBusca) return;
-            console.error('Erro ao carregar pessoas:', error);
-            mostrarMensagem('Não foi possível carregar os casos agora. Verifique sua conexão e tente de novo.', true);
+            return card;
         }
-    }
 
-    // Pesquisa: espera o usuário parar de digitar (350 ms) antes de chamar a API
-    let temporizador;
-    searchInput.addEventListener('input', (e) => {
-        clearTimeout(temporizador);
-        temporizador = setTimeout(() => carregarPessoas(e.target.value.trim()), 350);
-    });
+        function mostrarMensagem(texto, comBotao) {
+            const msg = criar('p', 'grid-msg', texto);
+            if (comBotao) {
+                msg.appendChild(document.createElement('br'));
+                const botao = criar('button', '', 'Tentar de novo');
+                botao.type = 'button';
+                botao.addEventListener('click', () => carregarPessoas(searchInput.value.trim()));
+                msg.appendChild(botao);
+            }
+            cardsGrid.replaceChildren(msg);
+        }
 
-    carregarPessoas();
-</script>
+        async function carregarPessoas(termo = '') {
+            const minhaBusca = ++numeroDaBusca;
+
+            mostrarMensagem(primeiraCarga
+                ? 'Carregando casos... Se o servidor estiver inativo, a primeira busca pode levar até 1 minuto.'
+                : 'Buscando...');
+
+            try {
+                let url = `${API_URL}/people`;
+                if (termo) url += `?search=${encodeURIComponent(termo)}`;
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const resposta = await response.json();
+
+                if (minhaBusca !== numeroDaBusca) return;
+
+                const pessoas = Array.isArray(resposta) ? resposta : (resposta.data || resposta.people || []);
+                primeiraCarga = false;
+
+                if (pessoas.length === 0) {
+                    mostrarMensagem('Nenhuma pessoa encontrada.');
+                    return;
+                }
+
+                cardsGrid.replaceChildren(...pessoas.map(criarCard));
+            } catch (error) {
+                if (minhaBusca !== numeroDaBusca) return;
+                console.error('Erro ao carregar pessoas:', error);
+                mostrarMensagem('Não foi possível carregar os casos agora. Verifique sua conexão e tente de novo.', true);
+            }
+        }
+
+        let temporizador;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(temporizador);
+            temporizador = setTimeout(() => carregarPessoas(e.target.value.trim()), 350);
+        });
+
+        carregarPessoas();
+    </script>
 </body>
 </html>
