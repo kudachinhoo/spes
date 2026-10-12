@@ -249,6 +249,56 @@
                 padding: 1.5rem 1rem 1.8rem;
             }
         }
+    
+        /* ----- MENSAGEM DE STATUS / NOME DA FOTO ----- */
+        .status {
+            display: none;
+            margin-top: 1.2rem;
+            padding: 0.8rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .status.erro {
+            display: block;
+            background: #fdeaea;
+            color: #9b2c2c;
+            border-left: 4px solid #b13e3e;
+        }
+
+        .status.ok {
+            display: block;
+            background: #e8f6ee;
+            color: #1f6b43;
+            border-left: 4px solid #2e9a62;
+        }
+
+        .status.info {
+            display: block;
+            background: #eef5fc;
+            color: #1d3b55;
+            border-left: 4px solid #2a6f9c;
+        }
+
+        .status a {
+            color: inherit;
+            font-weight: 700;
+            text-decoration: underline;
+        }
+
+        .btn-continue:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .upload-area .file-name {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #6a8ba8;
+        }
     </style>
 </head>
 <body>
@@ -257,12 +307,12 @@
 
         <!-- cabeçalho -->
         <div class="brand">
-            <img style="width: 100px; height: 100px;" src="Imagens do site/Logo da SPES.png" alt="">
+            <img style="width: 100px; height: 100px;" src="Imagens do site/Logo da SPES.png" alt="Logo da SPES">
             <h1>SPES</h1>
             <div class="page-title">Cadastrar pessoa desaparecida</div>
         </div>
 
-        <form action="#" method="post" enctype="multipart/form-data">
+        <form id="form-desaparecido" action="#" method="post">
 
             <!-- Dados pessoais -->
             <div class="form-section">
@@ -270,18 +320,18 @@
 
                 <div class="form-group">
                     <label for="nome">Nome completo</label>
-                    <input type="text" id="nome" placeholder="Nome da pessoa desaparecida" required />
+                    <input type="text" id="nome" name="nome" placeholder="Nome da pessoa desaparecida" required />
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="data_nasc">Data de nascimento</label>
-                        <input type="text" id="data_nasc" placeholder="dd/mm/aaaa" />
+                        <input type="date" id="data_nasc" name="data_nasc" />
                     </div>
                     <div class="form-group">
                         <label for="cor_raca">Cor / Raça</label>
-                        <select id="cor_raca">
-                            <option value="" disabled selected>Seleccione</option>
+                        <select id="cor_raca" name="cor_raca">
+                            <option value="" selected>Selecione</option>
                             <option>Branca</option>
                             <option>Preta</option>
                             <option>Parda</option>
@@ -295,21 +345,21 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="altura">Altura <span class="hint">(cm)</span></label>
-                        <input type="number" id="altura" placeholder="cm" step="0.1" />
+                        <input type="number" id="altura" name="altura" placeholder="cm" step="0.1" min="30" max="250" />
                     </div>
                     <div class="form-group">
                         <label for="peso">Peso <span class="hint">(kg)</span></label>
-                        <input type="number" id="peso" placeholder="kg" step="0.1" />
+                        <input type="number" id="peso" name="peso" placeholder="kg" step="0.1" min="1" max="400" />
                     </div>
                 </div>
             </div>
 
-            <!-- Contato (NOVO CAMPO) -->
+            <!-- Contato -->
             <div class="form-section">
                 <div class="section-title"><i class="fas fa-phone" style="margin-right:8px; color:#2a6f9c;"></i> Contato</div>
                 <div class="form-group">
                     <label for="contato">Número de contato</label>
-                    <input type="tel" id="contato" placeholder="(00) 00000-0000" />
+                    <input type="tel" id="contato" name="contato" placeholder="(00) 00000-0000" />
                 </div>
             </div>
 
@@ -318,8 +368,8 @@
                 <div class="section-title"><i class="fas fa-info-circle" style="margin-right:8px; color:#2a6f9c;"></i> Informações</div>
 
                 <div class="form-group">
-                    <label for="informações">Apelido, roupas, etc.</label>
-                    <input type="text" id="informações" placeholder="Informações que ajudem no caso" />
+                    <label for="informacoes">Apelido, roupas, etc.</label>
+                    <input type="text" id="informacoes" name="informacoes" placeholder="Informações que ajudem no caso" />
                 </div>
             </div>
 
@@ -328,25 +378,28 @@
                 <div class="section-title"><i class="fas fa-map-pin" style="margin-right:8px; color:#2a6f9c;"></i> Últimas Localizações</div>
 
                 <div class="form-group">
-                    <label for="localizacoes">Lugares favoritos do desaparecido</label>
-                    <input type="text" id="localizacoes" placeholder="Ex: parque, escola, trabalho..." />
+                    <label for="ultimas_localizacoes">Lugares favoritos do desaparecido</label>
+                    <input type="text" id="ultimas_localizacoes" name="ultimas_localizacoes" placeholder="Ex: parque, escola, trabalho..." />
                 </div>
             </div>
 
-            <!--  Estado da pessoa desaparecida  -->
+            <!-- Local e data do desaparecimento -->
             <div class="form-section">
-                <div class="section-title"><i class="fas fa-map-pin" style="margin-right:8px; color:#2a6f9c;"></i> Estado do desaparecimento</div>
+                <div class="section-title"><i class="fas fa-calendar-alt" style="margin-right:8px; color:#2a6f9c;"></i> Local e data do desaparecimento</div>
 
-                <div class="form-group">
-                    <label for="EPD">Estados</label>
-                    <select name="EPD" id="EPD">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="EPD">Estado</label>
+                        <select name="EPD" id="EPD" required>
+                            <option value="" selected disabled>Selecione</option>
                         <option value="Acre">Acre (AC)</option>
                         <option value="Alagoas">Alagoas (AL)</option>
                         <option value="Amapá">Amapá (AP)</option>
                         <option value="Amazonas">Amazonas (AM)</option>
                         <option value="Bahia">Bahia (BA)</option>
                         <option value="Ceará">Ceará (CE)</option>
-                        <option value="Espírito SantoGoiás (GO)">Espírito Santo (ES)</option>
+                        <option value="Distrito Federal">Distrito Federal (DF)</option>
+                        <option value="Espírito Santo">Espírito Santo (ES)</option>
                         <option value="Goiás">Goiás (GO)</option>
                         <option value="Maranhão">Maranhão (MA)</option>
                         <option value="Mato Grosso">Mato Grosso (MT)</option>
@@ -366,8 +419,17 @@
                         <option value="São Paulo">São Paulo (SP)</option>
                         <option value="Sergipe">Sergipe (SE)</option>
                         <option value="Tocantins">Tocantins (TO)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cidade">Cidade</label>
+                        <input type="text" id="cidade" name="cidade" placeholder="Cidade onde desapareceu" />
+                    </div>
+                </div>
 
-                    </select>
+                <div class="form-group">
+                    <label for="data_desaparecimento">Data do desaparecimento</label>
+                    <input type="date" id="data_desaparecimento" name="data_desaparecimento" required />
                 </div>
             </div>
 
@@ -379,8 +441,8 @@
                     <label for="foto">Selecione</label>
                     <div class="upload-area" onclick="document.getElementById('foto').click();">
                         <i class="fas fa-cloud-upload-alt"></i>
-                        <span>Clique para selecionar uma foto</span>
-                        <input type="file" id="foto" accept="image/*" />
+                        <span id="foto-texto">Clique para selecionar uma foto<span class="file-name" id="foto-nome"></span></span>
+                        <input type="file" id="foto" name="foto" accept="image/*" />
                     </div>
                 </div>
             </div>
@@ -394,6 +456,8 @@
                 </div>
             </div>
 
+            <div id="status" class="status" role="alert" aria-live="polite"></div>
+
             <!-- Botão continuar -->
             <button type="submit" class="btn-continue">Continuar</button>
 
@@ -402,47 +466,146 @@
     </div>
 <script>
     const API_URL = 'https://spes-backend.onrender.com/api';
-    // Pega o token salvo no login
     const token = localStorage.getItem('token');
 
-    const form = document.querySelector('form');
+    const form = document.getElementById('form-desaparecido');
+    const statusEl = document.getElementById('status');
+    const botao = form.querySelector('button[type="submit"]');
+    const fotoInput = document.getElementById('foto');
+    const fotoNome = document.getElementById('foto-nome');
+
+    // ---------- mensagens na tela (no lugar de alert) ----------
+    function mostrarStatus(texto, tipo) {
+        statusEl.className = 'status ' + tipo;
+        statusEl.textContent = texto;
+    }
+
+    function avisoDeLogin() {
+        statusEl.className = 'status info';
+        statusEl.textContent = 'Você precisa estar logado para cadastrar uma pessoa. ';
+        const link = document.createElement('a');
+        link.href = 'Tela de login.htm';
+        link.textContent = 'Entrar';
+        statusEl.appendChild(link);
+    }
+
+    if (!token) avisoDeLogin();
+
+    // ---------- datas: não permitir datas no futuro ----------
+    const agora = new Date();
+    const hojeISO = new Date(agora.getTime() - agora.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    document.getElementById('data_nasc').max = hojeISO;
+    document.getElementById('data_desaparecimento').max = hojeISO;
+
+    // ---------- nome da foto escolhida ----------
+    fotoInput.addEventListener('change', () => {
+        fotoNome.textContent = fotoInput.files[0] ? fotoInput.files[0].name : '';
+    });
+
+    // ---------- reduz a foto antes de enviar (evita payload gigante) ----------
+    function lerFoto(arquivo, maxLado = 520, qualidade = 0.7) {
+        return new Promise((resolve, reject) => {
+            const url = URL.createObjectURL(arquivo);
+            const img = new Image();
+            img.onload = () => {
+                const escala = Math.min(1, maxLado / Math.max(img.width, img.height));
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.round(img.width * escala);
+                canvas.height = Math.round(img.height * escala);
+                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                URL.revokeObjectURL(url);
+                resolve(canvas.toDataURL('image/jpeg', qualidade));
+            };
+            img.onerror = () => {
+                URL.revokeObjectURL(url);
+                reject(new Error('Não foi possível ler a imagem. Tente outro arquivo.'));
+            };
+            img.src = url;
+        });
+    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Coleta os dados do formulário
-        const formData = new FormData(form);
-        const dados = {
-            nome: formData.get('nome'),
-            data_nascimento: formData.get('data_nasc'),
-            etnia: formData.get('cor_raca'),
-            altura: formData.get('altura'),
-            peso: formData.get('peso'),
-            informacoes: formData.get('informações'),
-            estado_desaparecimento: formData.get('EPD')
-        };
+        if (!token) {
+            avisoDeLogin();
+            return;
+        }
+
+        botao.disabled = true;
+        botao.textContent = 'Enviando...';
+        statusEl.className = 'status';
 
         try {
+            // FormData só lê campos com atributo "name" (todos agora têm)
+            const fd = new FormData(form);
+            const texto = (campo) => (fd.get(campo) || '').toString().trim();
+            const numero = (campo) => {
+                const v = texto(campo);
+                return v === '' ? '' : Number(v);
+            };
+
+            const dados = {
+                nome: texto('nome'),
+                data_nascimento: texto('data_nasc'),
+                etnia: texto('cor_raca'),
+                altura: numero('altura'),
+                peso: numero('peso'),
+                contato: texto('contato'),
+                informacoes: texto('informacoes'),
+                ultimas_localizacoes: texto('ultimas_localizacoes'),
+                cidade: texto('cidade'),
+                estado_desaparecimento: texto('EPD'),
+                data_desaparecimento: texto('data_desaparecimento')
+            };
+
+            // não envia campos vazios
+            Object.keys(dados).forEach((k) => {
+                if (dados[k] === '') delete dados[k];
+            });
+
+            const arquivo = fotoInput.files[0];
+            if (arquivo) {
+                if (arquivo.size > 15 * 1024 * 1024) {
+                    throw new Error('A foto é muito grande (máximo 15 MB).');
+                }
+                dados.foto = await lerFoto(arquivo);
+            }
+
             const response = await fetch(`${API_URL}/people`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // Envia o token de login
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(dados)
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if (data.success) {
-                alert('Pessoa cadastrada com sucesso!');
-                window.location.href = 'index.html'; // Volta para a home
+                mostrarStatus('Pessoa cadastrada com sucesso! Voltando para a página inicial...', 'ok');
+                setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+                return;
+            }
+
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                avisoDeLogin();
+                statusEl.prepend('Sua sessão expirou. ');
             } else {
-                alert(data.error || 'Erro ao cadastrar pessoa');
+                const msg = (data.errors && data.errors[0] && data.errors[0].msg) || data.error || 'Erro ao cadastrar pessoa.';
+                mostrarStatus(msg, 'erro');
             }
         } catch (error) {
-            alert('Erro ao conectar com a API');
+            const aviso = error instanceof TypeError
+                ? 'Erro ao conectar com a API. Se o servidor estava inativo, aguarde um minuto e tente de novo.'
+                : error.message;
+            mostrarStatus(aviso, 'erro');
         }
+
+        botao.disabled = false;
+        botao.textContent = 'Continuar';
     });
 </script>
 </body>

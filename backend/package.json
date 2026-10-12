@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Backend para o sistema SPES - Sistema de Pessoas Desaparecidas",
   "main": "src/app.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js"

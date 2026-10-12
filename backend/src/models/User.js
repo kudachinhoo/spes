@@ -20,6 +20,9 @@ const User = sequelize.define('usuario', {
       isEmail: true
     }
   },
+  telefone: {
+    type: DataTypes.STRING(20)
+  },
   senha: {
     type: DataTypes.STRING(255),
     allowNull: false

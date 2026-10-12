@@ -1,4 +1,3 @@
-
 services:
   - type: web
     name: spes-backend
@@ -6,6 +5,7 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: npm start
+    healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -15,28 +15,14 @@ services:
         generateValue: true
       - key: JWT_EXPIRE
         value: 7d
+      # Client ID do Google (é público, o mesmo que está na tela de login)
+      - key: GOOGLE_CLIENT_ID
+        value: 159287534210-dko5uuksj44r7u5th9kd91v3hipac2uv.apps.googleusercontent.com
+      # "true" faz o Sequelize criar/ajustar colunas na inicialização.
+      # Deixe "true" no primeiro deploy após esta atualização e depois mude para "false".
+      - key: DB_SYNC_ALTER
+        value: "true"
 
 databases:
   - name: spes-database
-=======
-services:
-  - type: web
-    name: spes-backend
-    runtime: node
-    plan: free
-    buildCommand: npm install
-    startCommand: npm start
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: spes-database
-          property: connectionString
-      - key: JWT_SECRET
-        generateValue: true
-      - key: JWT_EXPIRE
-        value: 7d
-
-databases:
-  - name: spes-database
-
     plan: free
