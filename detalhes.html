@@ -7,7 +7,36 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+<script>
+    // Verifica se o usuário está logado
+    const token = localStorage.getItem('token');
+    const userName = localStorage.getItem('userName');
+    const btnEntrar = document.getElementById('btnEntrar');
+    const btnCadastrar = document.getElementById('btnCadastrar');
+    const areaUsuario = document.getElementById('areaUsuario');
+    const nomeUsuario = document.getElementById('nomeUsuario');
+    const btnSair = document.getElementById('btnSair');
 
+    if (token && userName) {
+        // Usuário está logado
+        if (btnEntrar) btnEntrar.style.display = 'none';
+        if (btnCadastrar) btnCadastrar.style.display = 'none';
+        if (areaUsuario) areaUsuario.style.display = 'flex';
+        if (nomeUsuario) nomeUsuario.textContent = `Olá, ${userName.split(' ')[0]}`;
+    }
+
+    // Botão Sair
+    if (btnSair) {
+        btnSair.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('Deseja sair da sua conta?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userName');
+                window.location.href = 'index.html';
+            }
+        });
+    }
+</script>
         body {
             font-family: 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(145deg, #f0f5fa 0%, #dae8f2 100%);
