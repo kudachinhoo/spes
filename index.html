@@ -651,15 +651,23 @@
                 SPES
             </h1>
         </div>
-        <nav class="nav-menu">
-            <a href="index.html">Início</a>
-            <a href="Separação de casos.html">Desaparecidos</a>
-            <a href="Como ajudar.html">Como ajudar</a>
-            <a href="Seja nosso parceiro.html">Parceiros</a>
-            <a href="Sobre.html">Sobre Nós</a>
-            <a href="Tela de login.htm" class="btn-outline">Entrar</a>
-            <a href="Cadastro.htm" class="btn-solid">Cadastrar</a>
-        </nav>
+       <nav class="nav-menu">
+    <a href="index.html">Início</a>
+    <a href="Separação de casos.html">Desaparecidos</a>
+    <a href="Como ajudar.html">Como ajudar</a>
+    <a href="Seja nosso parceiro.html">Parceiros</a>
+    <a href="Sobre.html">Sobre Nós</a>
+    
+    <!-- Botões mostrados quando NÃO está logado -->
+    <a href="Tela de login.htm" class="btn-outline" id="btnEntrar">Entrar</a>
+    <a href="Cadastro.htm" class="btn-solid" id="btnCadastrar">Cadastrar</a>
+    
+    <!-- Área do usuário logado (escondida por padrão) -->
+    <div id="areaUsuario" style="display:none; align-items:center; gap:0.8rem;">
+        <span id="nomeUsuario" style="color:#1e3b5c; font-weight:600;"></span>
+        <a href="#" id="btnSair" class="btn-outline">Sair</a>
+    </div>
+</nav>
     </header>
 
     <!-- ===== HERO ===== -->
