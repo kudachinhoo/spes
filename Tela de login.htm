@@ -7,54 +7,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
-        /* ----- RESET & BASE ----- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-<script>
-    // Verifica se o usuário está logado
-    const token = localStorage.getItem('token');
-    const userName = localStorage.getItem('userName');
-    const btnEntrar = document.getElementById('btnEntrar');
-    const btnCadastrar = document.getElementById('btnCadastrar');
-    const areaUsuario = document.getElementById('areaUsuario');
-    const nomeUsuario = document.getElementById('nomeUsuario');
-    const btnSair = document.getElementById('btnSair');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    if (token && userName) {
-        // Usuário está logado
-        if (btnEntrar) btnEntrar.style.display = 'none';
-        if (btnCadastrar) btnCadastrar.style.display = 'none';
-        if (areaUsuario) areaUsuario.style.display = 'flex';
-        if (nomeUsuario) nomeUsuario.textContent = `Olá, ${userName.split(' ')[0]}`;
-    }
-
-    // Botão Sair
-    if (btnSair) {
-        btnSair.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (confirm('Deseja sair da sua conta?')) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('userName');
-                window.location.href = 'index.html';
-            }
-        });
-    }
-</script>
         body {
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(145deg, #f0f5fa 0%, #dae8f2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
-            margin: 0;
         }
 
-        /* ----- CARD CONTAINER ----- */
         .card {
             background: #ffffff;
             max-width: 420px;
@@ -63,33 +27,15 @@
             border-radius: 32px;
             box-shadow: 0 20px 40px -12px rgba(0, 20, 40, 0.25);
             border: 2px solid rgba(86, 164, 238);
-            transition: 0.2s;
         }
 
-        /* cabeçalho */
-        .brand {
-            text-align: center;
-            margin-bottom: 1.8rem;
-        }
+        .brand { text-align: center; margin-bottom: 1.8rem; }
 
         .brand h1 {
             font-size: 2.4rem;
             font-weight: 700;
             color: #0b2b4a;
-            letter-spacing: -0.5px;
             line-height: 1.1;
-        }
-
-        .brand .subhead {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: #2a5f7a;
-            background: #e6f0f8;
-            display: inline-block;
-            padding: 0.2rem 1.2rem;
-            border-radius: 40px;
-            letter-spacing: 0.3px;
-            margin-top: 0.2rem;
         }
 
         .brand .welcome {
@@ -104,13 +50,9 @@
             font-weight: 400;
             font-size: 0.9rem;
             color: #4b6f8e;
-            margin-top: 0.1rem;
         }
 
-        /* ----- FORM ----- */
-        .form-group {
-            margin-top: 1.3rem;
-        }
+        .form-group { margin-top: 1.3rem; }
 
         .form-group label {
             display: block;
@@ -135,16 +77,9 @@
         .form-group input:focus {
             border-color: #2a6f9c;
             box-shadow: 0 0 0 4px rgba(42, 111, 156, 0.12);
-            background: #ffffff;
+            background: #fff;
         }
 
-        .form-group input::placeholder {
-            color: #a1b9ce;
-            font-weight: 400;
-            font-size: 0.9rem;
-        }
-
-        /* forgot password */
         .forgot-row {
             display: flex;
             justify-content: flex-end;
@@ -155,14 +90,10 @@
             font-size: 0.85rem;
             color: #2a6f9c;
             font-weight: 500;
-            text-decoration: none;
         }
 
-        .forgot-row a:hover {
-            text-decoration: underline;
-        }
+        .forgot-row a:hover { text-decoration: underline; }
 
-        /* botão entrar */
         .btn-submit {
             width: 100%;
             padding: 0.8rem;
@@ -176,24 +107,11 @@
             cursor: pointer;
             transition: 0.2s;
             box-shadow: 0 6px 14px rgba(42, 111, 156, 0.25);
-            letter-spacing: 0.3px;
         }
 
-        .btn-submit:hover {
-            background: #1d5a7e;
-            transform: scale(1.02);
-            box-shadow: 0 8px 20px rgba(42, 111, 156, 0.35);
-        }
+        .btn-submit:hover { background: #1d5a7e; transform: scale(1.02); }
 
-        .btn-submit:active {
-            transform: scale(0.98);
-        }
-
-        /* social login */
-        .social-section {
-            margin-top: 2rem;
-            text-align: center;
-        }
+        .social-section { margin-top: 2rem; text-align: center; }
 
         .social-section .divider {
             display: flex;
@@ -201,7 +119,6 @@
             gap: 0.8rem;
             color: #8aa3bb;
             font-size: 0.85rem;
-            font-weight: 500;
             margin-bottom: 1.2rem;
         }
 
@@ -234,17 +151,6 @@
             font-size: 0.9rem;
             cursor: pointer;
             transition: 0.2s;
-            text-decoration: none;
-            flex: 0 1 auto;
-        }
-
-        .social-btn i {
-            font-size: 1.1rem;
-            color: #3b5998; /* facebook */
-        }
-
-        .social-btn.google i {
-            color: #db4437;
         }
 
         .social-btn:hover {
@@ -253,15 +159,8 @@
             transform: translateY(-2px);
         }
 
-        .social-btn .fa-google {
-            color: #db4437;
-        }
+        .social-btn .fa-google { color: #db4437; }
 
-        .social-btn .fa-facebook {
-            color: #3b5998;
-        }
-
-        /* link cadastro */
         .signup-link {
             text-align: center;
             margin-top: 1.8rem;
@@ -269,185 +168,20 @@
             color: #3d6483;
         }
 
-        .signup-link a {
-            color: #2a6f9c;
-            font-weight: 700;
-            text-decoration: none;
-            margin-left: 0.2rem;
-        }
+        .signup-link a { color: #2a6f9c; font-weight: 700; }
 
-        .signup-link a:hover {
-            text-decoration: underline;
-        }
-
-        /* ----- RESPONSIVE ----- */
         @media (max-width: 500px) {
-            .card {
-                padding: 2rem 1.5rem 2.2rem;
-            }
-
-            .brand h1 {
-                font-size: 2rem;
-            }
-
-            .brand .subhead {
-                font-size: 0.7rem;
-                padding: 0.15rem 1rem;
-            }
-
-            .brand .welcome {
-                font-size: 1.1rem;
-            }
-
-            .social-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .social-btn {
-                width: 100%;
-                justify-content: center;
-                padding: 0.7rem;
-            }
-        }
-
-        @media (max-width: 380px) {
-            .card {
-                padding: 1.5rem 1rem 1.8rem;
-            }
-            /* ----- TOP BAR (cabeçalho padrão) ----- */
-.top-bar {
-    background-color: #ffffff;
-    padding: 0 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 2px solid #e6edf5;
-}
-
-.logo-area {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 1rem 0;
-}
-
-.logo-area h1 {
-    font-size: 1.9rem;
-    font-weight: 700;
-    color: #0b2b4a;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-#Logo {
-    width: 70px;
-    height: 70px;
-    margin-bottom: -10px;
-}
-
-.nav-menu {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.2rem 1.2rem;
-    padding: 0.8rem 0;
-}
-
-.nav-menu a {
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: #1e3b5c;
-    padding: 0.3rem 0.2rem;
-    border-bottom: 2px solid transparent;
-    transition: 0.2s;
-    text-decoration: none;
-}
-
-.nav-menu a:hover {
-    border-bottom-color: #2a6f9c;
-    color: #0b2b4a;
-}
-
-.nav-menu .btn-outline {
-    border: 1.5px solid #2a6f9c;
-    border-radius: 30px;
-    padding: 0.3rem 1.2rem;
-    font-weight: 600;
-    color: #2a6f9c;
-    background: transparent;
-}
-
-.nav-menu .btn-outline:hover {
-    background: #2a6f9c;
-    color: #fff;
-}
-
-.nav-menu .btn-solid {
-    background: #2a6f9c;
-    border-radius: 30px;
-    padding: 0.3rem 1.4rem;
-    font-weight: 600;
-    color: #fff;
-}
-
-.nav-menu .btn-solid:hover {
-    background: #1d4f73;
-}
-
-#areaUsuario {
-    display: none;
-    align-items: center;
-    gap: 0.8rem;
-}
-
-#nomeUsuario {
-    color: #1e3b5c;
-    font-weight: 600;
-}
-
-/* ----- CONTEÚDO PRINCIPAL (centralizado, mas com largura total) ----- */
-.conteudo-pagina {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 3rem 1.5rem;
-}
-
-/* ----- RESPONSIVO DO CABEÇALHO ----- */
-@media (max-width: 620px) {
-    .top-bar {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 0 1rem;
-    }
-    .logo-area {
-        justify-content: center;
-    }
-    .nav-menu {
-        justify-content: center;
-        padding: 0.6rem 0 1rem;
-    }
-    #Logo { width: 55px; height: 55px; }
-}
-
-@media (max-width: 480px) {
-    #Logo { width: 50px; height: 50px; }
-    .nav-menu a { font-size: 0.85rem; }
-    .conteudo-pagina { padding: 2rem 1rem; }
-}
+            .card { padding: 2rem 1.5rem 2.2rem; }
+            .brand h1 { font-size: 2rem; }
+            .social-btn { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
 
     <div class="card">
-
-        <!-- cabeçalho -->
         <div class="brand">
-            <img style="width: 100px; height: 100px;" src="Imagens do site/Logo da SPES.png" alt="">
+            <img style="width: 100px; height: 100px;" src="Imagens do site/Logo da SPES.png" alt="Logo SPES">
             <h1>SPES</h1>
             <div class="welcome">
                 Bem-vindo de volta!
@@ -455,17 +189,15 @@
             </div>
         </div>
 
-        <!-- formulário de login -->
         <form action="#" method="post" autocomplete="on">
-
             <div class="form-group">
                 <label for="email">E-mail</label>
-                <input type="email" id="email" placeholder="seu_email@example.com"  />
+                <input type="email" id="email" placeholder="seu_email@example.com" />
             </div>
 
             <div class="form-group">
                 <label for="senha">Senha</label>
-                <input type="password" id="senha"   />
+                <input type="password" id="senha" />
             </div>
 
             <div class="forgot-row">
@@ -473,166 +205,88 @@
             </div>
 
             <button type="submit" class="btn-submit">Entrar</button>
-
         </form>
 
-        <!-- login social -->
         <div class="social-section">
             <div class="divider">Entre também pelo Google</div>
             <div class="social-buttons">
                 <a href="#" class="social-btn google">
                     <i class="fab fa-google"></i> Google
                 </a>
-                <!-- um terceiro botão opcional, conforme a imagem menciona "Entrar com gostar" – mas deixamos apenas dois para clean design -->
             </div>
         </div>
 
-        <!-- link cadastre-se -->
         <div class="signup-link">
             Não tem conta? <a href="Cadastro.htm">Cadastre-se</a>
         </div>
-
     </div>
-<script>
-    const API_URL = 'https://spes-backend.onrender.com/api'; // Substitua pela sua URL
 
-    // Captura o formulário
-    const form = document.querySelector('form');
+    <script>
+        const API_URL = 'https://spes-backend.onrender.com/api';
+        const form = document.querySelector('form');
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Impede o envio padrão do formulário
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
 
-        const email = document.getElementById('email').value;
-        const senha = document.getElementById('senha').value;
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha })
+                });
 
-        try {
-            const response = await fetch(`${API_URL}/auth/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, senha })
-            });
+                const data = await response.json();
 
-            const data = await response.json();
-
-            if (data.success) {
-                // Salva o token e o nome do usuário no navegador
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('userName', data.user.nome);
-                
-                alert('Login realizado com sucesso!');
-                window.location.href = 'index.html'; // Redireciona para a home
-            } else {
-                alert(data.error || 'Erro ao fazer login');
-            }
-        } catch (error) {
-            alert('Erro ao conectar com a API. Verifique sua internet ou o servidor.');
-        }
-    });
-
-    // ---------- LOGIN COM GOOGLE ----------
-    const GOOGLE_CLIENT_ID = '159287534210-dko5uuksj44r7u5th9kd91v3hipac2uv.apps.googleusercontent.com';
-    let googleClient;
-
-    window.addEventListener('load', () => {
-        googleClient = google.accounts.oauth2.initTokenClient({
-            client_id: GOOGLE_CLIENT_ID,
-            scope: 'email profile openid',
-            callback: async (tokenResponse) => {
-                if (tokenResponse.error) {
-                    alert('Erro ao entrar com Google');
-                    return;
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userName', data.user.nome);
+                    alert('Login realizado com sucesso!');
+                    window.location.href = 'index.html';
+                } else {
+                    alert(data.error || 'Erro ao fazer login');
                 }
-                try {
-                    const response = await fetch(`${API_URL}/auth/google`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ access_token: tokenResponse.access_token })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        localStorage.setItem('token', data.token);
-                        localStorage.setItem('userName', data.user.nome);
-                        window.location.href = 'index.html';
-                    } else {
-                        alert(data.error || 'Erro ao entrar com Google');
-                    }
-                } catch (error) {
-                    alert('Erro ao conectar com a API. Verifique sua internet ou o servidor.');
-                }
+            } catch (error) {
+                alert('Erro ao conectar com a API.');
             }
         });
-    });
 
-    document.querySelector('.social-btn.google').addEventListener('click', (e) => {
-        e.preventDefault();
-        googleClient.requestAccessToken();
-    });
-</script>
+        // LOGIN COM GOOGLE
+        const GOOGLE_CLIENT_ID = '159287534210-dko5uuksj44r7u5th9kd91v3hipac2uv.apps.googleusercontent.com';
+        let googleClient;
+
+        window.addEventListener('load', () => {
+            googleClient = google.accounts.oauth2.initTokenClient({
+                client_id: GOOGLE_CLIENT_ID,
+                scope: 'email profile openid',
+                callback: async (tokenResponse) => {
+                    if (tokenResponse.error) { alert('Erro ao entrar com Google'); return; }
+                    try {
+                        const response = await fetch(`${API_URL}/auth/google`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ access_token: tokenResponse.access_token })
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            localStorage.setItem('token', data.token);
+                            localStorage.setItem('userName', data.user.nome);
+                            window.location.href = 'index.html';
+                        } else {
+                            alert(data.error || 'Erro ao entrar com Google');
+                        }
+                    } catch (error) {
+                        alert('Erro ao conectar com a API.');
+                    }
+                }
+            });
+        });
+
+        document.querySelector('.social-btn.google').addEventListener('click', (e) => {
+            e.preventDefault();
+            googleClient.requestAccessToken();
+        });
+    </script>
 </body>
 </html>
-
-<!--
-============================================================
-CÓDIGO DE BACKEND — NÃO RODA NO NAVEGADOR
-------------------------------------------------------------
-Isto abaixo é código de SERVIDOR (Node/Express), guardado aqui
-só como referência. Ele precisa ser colado no seu servidor
-(spes-backend.onrender.com), no mesmo arquivo/router onde já
-está a rota "/api/auth/login" — nunca dentro de uma página HTML.
-
-// POST /api/auth/google
-app.post('/api/auth/google', async (req, res) => {
-    const { access_token } = req.body;
-
-    if (!access_token) {
-        return res.status(400).json({ success: false, error: 'access_token não enviado' });
-    }
-
-    try {
-        // Pergunta ao Google quem é o dono desse token
-        const googleRes = await fetch(
-            `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`
-        );
-        const googleUser = await googleRes.json();
-
-        if (!googleUser.email) {
-            return res.status(401).json({ success: false, error: 'Token do Google inválido' });
-        }
-
-        // ---- AJUSTE AQUI conforme o seu banco/ORM ----
-        let usuario = await Usuario.findOne({ email: googleUser.email });
-
-        if (!usuario) {
-            usuario = await Usuario.create({
-                nome: googleUser.name,
-                email: googleUser.email,
-                googleId: googleUser.sub,
-                senha: null // login via Google não precisa de senha
-            });
-        }
-        // -----------------------------------------------
-
-        const token = jwt.sign(
-            { id: usuario._id },
-            process.env.JWT_SECRET,
-            { expiresIn: '7d' }
-        );
-
-        res.json({
-            success: true,
-            token,
-            user: { nome: usuario.nome, email: usuario.email }
-        });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, error: 'Erro ao validar login com Google' });
-    }
-});
-============================================================
--->
-
