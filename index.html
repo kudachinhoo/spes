@@ -621,6 +621,21 @@
 
     <!-- ===== SCRIPT DE CARREGAR PESSOAS ===== -->
     <script>
+        const params = new URLSearchParams(window.location.search);
+const estadoFiltro = params.get('estado');
+
+async function carregarPessoas(termo = '') {
+    const minhaBusca = ++numeroDaBusca;
+    mostrarMensagem('Buscando...');
+
+    try {
+        let url = `${API_URL}/people`;
+        const query = [];
+        if (termo) query.push(`search=${encodeURIComponent(termo)}`);
+        if (estadoFiltro) query.push(`estado=${encodeURIComponent(estadoFiltro)}`);
+        if (query.length) url += '?' + query.join('&');
+
+        const response = await fetch(url);
         const API_URL = 'https://spes-backend.onrender.com/api';
         const FOTO_PADRAO = 'Imagens do site/placeholder.png';
 
