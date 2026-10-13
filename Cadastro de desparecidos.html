@@ -328,6 +328,129 @@
             font-weight: 400;
             color: #6a8ba8;
         }
+        /* ----- TOP BAR (cabeçalho padrão) ----- */
+.top-bar {
+    background-color: #ffffff;
+    padding: 0 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid #e6edf5;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 1rem 0;
+}
+
+.logo-area h1 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: #0b2b4a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#Logo {
+    width: 70px;
+    height: 70px;
+    margin-bottom: -10px;
+}
+
+.nav-menu {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.2rem 1.2rem;
+    padding: 0.8rem 0;
+}
+
+.nav-menu a {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #1e3b5c;
+    padding: 0.3rem 0.2rem;
+    border-bottom: 2px solid transparent;
+    transition: 0.2s;
+    text-decoration: none;
+}
+
+.nav-menu a:hover {
+    border-bottom-color: #2a6f9c;
+    color: #0b2b4a;
+}
+
+.nav-menu .btn-outline {
+    border: 1.5px solid #2a6f9c;
+    border-radius: 30px;
+    padding: 0.3rem 1.2rem;
+    font-weight: 600;
+    color: #2a6f9c;
+    background: transparent;
+}
+
+.nav-menu .btn-outline:hover {
+    background: #2a6f9c;
+    color: #fff;
+}
+
+.nav-menu .btn-solid {
+    background: #2a6f9c;
+    border-radius: 30px;
+    padding: 0.3rem 1.4rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.nav-menu .btn-solid:hover {
+    background: #1d4f73;
+}
+
+#areaUsuario {
+    display: none;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+#nomeUsuario {
+    color: #1e3b5c;
+    font-weight: 600;
+}
+
+/* ----- CONTEÚDO PRINCIPAL (centralizado, mas com largura total) ----- */
+.conteudo-pagina {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+}
+
+/* ----- RESPONSIVO DO CABEÇALHO ----- */
+@media (max-width: 620px) {
+    .top-bar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0 1rem;
+    }
+    .logo-area {
+        justify-content: center;
+    }
+    .nav-menu {
+        justify-content: center;
+        padding: 0.6rem 0 1rem;
+    }
+    #Logo { width: 55px; height: 55px; }
+}
+
+@media (max-width: 480px) {
+    #Logo { width: 50px; height: 50px; }
+    .nav-menu a { font-size: 0.85rem; }
+    .conteudo-pagina { padding: 2rem 1rem; }
+}
     </style>
 </head>
 <body>
