@@ -620,164 +620,178 @@
     </script>
 
     <!-- ===== SCRIPT DE CARREGAR PESSOAS ===== -->
-    <script>
-        const params = new URLSearchParams(window.location.search);
-const estadoFiltro = params.get('estado');
+   <script>
+    // ==================== CONFIGURAÇÕES ====================
+    const API_URL = 'https://spes-backend.onrender.com/api';
+    const FOTO_PADRAO = 'Imagens do site/placeholder.png';
 
-async function carregarPessoas(termo = '') {
-    const minhaBusca = ++numeroDaBusca;
-    mostrarMensagem('Buscando...');
+    const cardsGrid = document.querySelector('.cards-grid');
+    const searchInput = document.querySelector('.search-box input');
+    const sectionTitle = document.querySelector('.section-title');
 
-    try {
-        let url = `${API_URL}/people`;
-        const query = [];
-        if (termo) query.push(`search=${encodeURIComponent(termo)}`);
-        if (estadoFiltro) query.push(`estado=${encodeURIComponent(estadoFiltro)}`);
-        if (query.length) url += '?' + query.join('&');
+    // Pega o parâmetro "estado" da URL (ex: index.html?estado=Pernambuco)
+    const params = new URLSearchParams(window.location.search);
+    const estadoFiltro = params.get('estado');
 
-        const response = await fetch(url);
-        const API_URL = 'https://spes-backend.onrender.com/api';
-        const FOTO_PADRAO = 'Imagens do site/placeholder.png';
+    let numeroDaBusca = 0;
+    let primeiraCarga = true;
 
-        const cardsGrid = document.querySelector('.cards-grid');
-        const searchInput = document.querySelector('.search-box input');
+    // ==================== UTILITÁRIOS ====================
+    function criar(tag, classe, texto) {
+        const el = document.createElement(tag);
+        if (classe) el.className = classe;
+        if (texto !== undefined) el.textContent = texto;
+        return el;
+    }
 
-        let numeroDaBusca = 0;
-        let primeiraCarga = true;
+    function lerData(valor) {
+        if (!valor) return null;
+        const m = String(valor).match(/^(\d{4})-(\d{2})-(\d{2})/);
+        const d = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(valor);
+        return isNaN(d.getTime()) ? null : d;
+    }
 
-        function criar(tag, classe, texto) {
-            const el = document.createElement(tag);
-            if (classe) el.className = classe;
-            if (texto !== undefined) el.textContent = texto;
-            return el;
+    function calcularIdade(nascimento) {
+        if (!nascimento) return null;
+        const hoje = new Date();
+        let idade = hoje.getFullYear() - nascimento.getFullYear();
+        const jaFezAniversario =
+            hoje.getMonth() > nascimento.getMonth() ||
+            (hoje.getMonth() === nascimento.getMonth() && hoje.getDate() >= nascimento.getDate());
+        if (!jaFezAniversario) idade--;
+        return idade >= 0 ? idade : null;
+    }
+
+    function diasDesde(data) {
+        if (!data) return null;
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        return Math.max(0, Math.round((hoje - data) / 86400000));
+    }
+
+    function fotoSegura(src) {
+        if (typeof src !== 'string') return FOTO_PADRAO;
+        if (/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(src)) return src;
+        if (/^https?:\/\//i.test(src)) return src;
+        return FOTO_PADRAO;
+    }
+
+    // ==================== CARD ====================
+    function criarCard(pessoa) {
+        const nome = pessoa.nome || 'Nome não informado';
+        const card = criar('div', 'card');
+
+        card.appendChild(criar('div', 'name', nome));
+
+        const idade = calcularIdade(lerData(pessoa.data_nascimento));
+        card.appendChild(criar('div', 'age',
+            idade === null ? 'Idade não informada' : `${idade} ${idade === 1 ? 'ano' : 'anos'}`));
+
+        const local = [pessoa.cidade, pessoa.estado_desaparecimento].filter(Boolean).join(' - ');
+        card.appendChild(criar('div', 'location', local || 'Local não informado'));
+
+        const fotoBox = document.createElement('div');
+        const img = criar('img', 'desaparecidos');
+        img.loading = 'lazy';
+        img.alt = `Foto de ${nome}`;
+        img.src = fotoSegura(pessoa.foto);
+        img.onerror = () => { img.onerror = null; img.src = FOTO_PADRAO; };
+        fotoBox.appendChild(img);
+        card.appendChild(fotoBox);
+
+        const dias = diasDesde(lerData(pessoa.data_desaparecimento));
+        let textoDias = 'Data do desaparecimento não informada';
+        if (dias === 0) textoDias = 'Desaparecido hoje';
+        else if (dias !== null) textoDias = `Desaparecido há ${dias} ${dias === 1 ? 'dia' : 'dias'}`;
+        card.appendChild(criar('div', 'days', textoDias));
+
+        const detalhes = criar('a', 'btn-detail', 'Ver detalhes');
+        const id = pessoa.id_desaparecido || pessoa.id;
+        if (id !== undefined && id !== null) {
+            detalhes.href = `detalhes.html?id=${id}`;
+        } else {
+            detalhes.href = '#';
+            detalhes.style.opacity = '0.5';
+            detalhes.style.pointerEvents = 'none';
         }
+        card.appendChild(detalhes);
 
-        function lerData(valor) {
-            if (!valor) return null;
-            const m = String(valor).match(/^(\d{4})-(\d{2})-(\d{2})/);
-            const d = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(valor);
-            return isNaN(d.getTime()) ? null : d;
+        return card;
+    }
+
+    // ==================== MENSAGENS NA GRADE ====================
+    function mostrarMensagem(texto, comBotao) {
+        const msg = criar('p', 'grid-msg', texto);
+        if (comBotao) {
+            msg.appendChild(document.createElement('br'));
+            const botao = criar('button', '', 'Tentar de novo');
+            botao.type = 'button';
+            botao.addEventListener('click', () => carregarPessoas(searchInput.value.trim()));
+            msg.appendChild(botao);
         }
+        cardsGrid.replaceChildren(msg);
+    }
 
-        function calcularIdade(nascimento) {
-            if (!nascimento) return null;
-            const hoje = new Date();
-            let idade = hoje.getFullYear() - nascimento.getFullYear();
-            const jaFezAniversario =
-                hoje.getMonth() > nascimento.getMonth() ||
-                (hoje.getMonth() === nascimento.getMonth() && hoje.getDate() >= nascimento.getDate());
-            if (!jaFezAniversario) idade--;
-            return idade >= 0 ? idade : null;
-        }
+    // ==================== CARREGAR PESSOAS ====================
+    async function carregarPessoas(termo = '') {
+        const minhaBusca = ++numeroDaBusca;
 
-        function diasDesde(data) {
-            if (!data) return null;
-            const hoje = new Date();
-            hoje.setHours(0, 0, 0, 0);
-            return Math.max(0, Math.round((hoje - data) / 86400000));
-        }
-
-        function fotoSegura(src) {
-            if (typeof src !== 'string') return FOTO_PADRAO;
-            if (/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(src)) return src;
-            if (/^https?:\/\//i.test(src)) return src;
-            return FOTO_PADRAO;
-        }
-
-        function criarCard(pessoa) {
-            const nome = pessoa.nome || 'Nome não informado';
-            const card = criar('div', 'card');
-
-            card.appendChild(criar('div', 'name', nome));
-
-            const idade = calcularIdade(lerData(pessoa.data_nascimento));
-            card.appendChild(criar('div', 'age',
-                idade === null ? 'Idade não informada' : `${idade} ${idade === 1 ? 'ano' : 'anos'}`));
-
-            const local = [pessoa.cidade, pessoa.estado_desaparecimento].filter(Boolean).join(' - ');
-            card.appendChild(criar('div', 'location', local || 'Local não informado'));
-
-            const fotoBox = document.createElement('div');
-            const img = criar('img', 'desaparecidos');
-            img.loading = 'lazy';
-            img.alt = `Foto de ${nome}`;
-            img.src = fotoSegura(pessoa.foto);
-            img.onerror = () => { img.onerror = null; img.src = FOTO_PADRAO; };
-            fotoBox.appendChild(img);
-            card.appendChild(fotoBox);
-
-            const dias = diasDesde(lerData(pessoa.data_desaparecimento));
-            let textoDias = 'Data do desaparecimento não informada';
-            if (dias === 0) textoDias = 'Desaparecido hoje';
-            else if (dias !== null) textoDias = `Desaparecido há ${dias} ${dias === 1 ? 'dia' : 'dias'}`;
-            card.appendChild(criar('div', 'days', textoDias));
-
-            const detalhes = criar('a', 'btn-detail', 'Ver detalhes');
-            const id = pessoa.id_desaparecido || pessoa.id;
-            if (id !== undefined && id !== null) {
-                detalhes.href = `detalhes.html?id=${id}`;
-            } else {
-                detalhes.href = '#';
-                detalhes.style.opacity = '0.5';
-                detalhes.style.pointerEvents = 'none';
-            }
-            card.appendChild(detalhes);
-
-            return card;
-        }
-
-        function mostrarMensagem(texto, comBotao) {
-            const msg = criar('p', 'grid-msg', texto);
-            if (comBotao) {
-                msg.appendChild(document.createElement('br'));
-                const botao = criar('button', '', 'Tentar de novo');
-                botao.type = 'button';
-                botao.addEventListener('click', () => carregarPessoas(searchInput.value.trim()));
-                msg.appendChild(botao);
-            }
-            cardsGrid.replaceChildren(msg);
-        }
-
-        async function carregarPessoas(termo = '') {
-            const minhaBusca = ++numeroDaBusca;
-
-            mostrarMensagem(primeiraCarga
+        const msgCarregando = estadoFiltro
+            ? `Carregando casos de ${estadoFiltro}...`
+            : (primeiraCarga
                 ? 'Carregando casos... Se o servidor estiver inativo, a primeira busca pode levar até 1 minuto.'
                 : 'Buscando...');
+        mostrarMensagem(msgCarregando);
 
-            try {
-                let url = `${API_URL}/people`;
-                if (termo) url += `?search=${encodeURIComponent(termo)}`;
+        try {
+            let url = `${API_URL}/people`;
+            const query = [];
+            if (termo) query.push(`search=${encodeURIComponent(termo)}`);
+            if (estadoFiltro) query.push(`estado=${encodeURIComponent(estadoFiltro)}`);
+            if (query.length) url += '?' + query.join('&');
 
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const resposta = await response.json();
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const resposta = await response.json();
 
-                if (minhaBusca !== numeroDaBusca) return;
+            if (minhaBusca !== numeroDaBusca) return;
 
-                const pessoas = Array.isArray(resposta) ? resposta : (resposta.data || resposta.people || []);
-                primeiraCarga = false;
+            const pessoas = Array.isArray(resposta) ? resposta : (resposta.data || resposta.people || []);
+            primeiraCarga = false;
 
-                if (pessoas.length === 0) {
-                    mostrarMensagem('Nenhuma pessoa encontrada.');
-                    return;
-                }
-
-                cardsGrid.replaceChildren(...pessoas.map(criarCard));
-            } catch (error) {
-                if (minhaBusca !== numeroDaBusca) return;
-                console.error('Erro ao carregar pessoas:', error);
-                mostrarMensagem('Não foi possível carregar os casos agora. Verifique sua conexão e tente de novo.', true);
+            if (pessoas.length === 0) {
+                mostrarMensagem(
+                    estadoFiltro
+                        ? `Nenhum caso encontrado em ${estadoFiltro}.`
+                        : 'Nenhuma pessoa encontrada.'
+                );
+                return;
             }
-        }
 
+            // Atualiza o título se houver filtro por estado
+            if (estadoFiltro && sectionTitle) {
+                sectionTitle.textContent = `Pessoas Desaparecidas em ${estadoFiltro}`;
+            }
+
+            cardsGrid.replaceChildren(...pessoas.map(criarCard));
+        } catch (error) {
+            if (minhaBusca !== numeroDaBusca) return;
+            console.error('Erro ao carregar pessoas:', error);
+            mostrarMensagem('Não foi possível carregar os casos agora. Verifique sua conexão e tente de novo.', true);
+        }
+    }
+
+    // ==================== PESQUISA ====================
+    if (searchInput) {
         let temporizador;
         searchInput.addEventListener('input', (e) => {
             clearTimeout(temporizador);
             temporizador = setTimeout(() => carregarPessoas(e.target.value.trim()), 350);
         });
+    }
 
-        carregarPessoas();
-    </script>
+    // ==================== INICIAR ====================
+    carregarPessoas();
+</script>
 </body>
 </html>
