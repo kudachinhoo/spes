@@ -548,6 +548,9 @@
                 });
 
                 const data = await response.json().catch(() => ({}));
+                console.log('Status HTTP:', response.status);
+                console.log('Resposta completa do backend:', data);
+                console.log('Dados enviados:', dados);
 
                 if (data.success) {
                     mostrarStatus('Cadastrado com sucesso! Redirecionando...', 'ok');
@@ -559,11 +562,16 @@
                     localStorage.removeItem('token');
                     mostrarStatus('Sessão expirada. Faça login novamente.', 'erro');
                 } else {
-                    const msg = data.errors?.[0]?.msg || data.error || 'Erro ao cadastrar.';
+                    const msg =
+                        (Array.isArray(data.errors) && data.errors.map(erro => erro.msg || erro.message || JSON.stringify(erro)).join(' | ')) ||
+                        data.message ||
+                        data.error ||
+                        'Erro ao cadastrar. HTTP ' + response.status;
                     mostrarStatus(msg, 'erro');
                 }
             } catch (error) {
-                mostrarStatus('Erro ao conectar com a API.', 'erro');
+                console.error('Erro ao cadastrar:', error);
+                mostrarStatus(error.message || 'Erro ao conectar com a API.', 'erro');
             }
 
             botao.disabled = false;
