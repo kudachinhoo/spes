@@ -4,13 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SPES - Sistema de Pessoas de Sua Fase Comum</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         /* ----- RESET & BASE ----- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: #f4f7fc;
             color: #1a2639;
             line-height: 1.5;
@@ -28,6 +30,9 @@
             align-items: center;
             justify-content: space-between;
             border-bottom: 2px solid #e6edf5;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .logo-area { display: flex; align-items: baseline; gap: 6px; padding: 1rem 0; }
@@ -174,40 +179,54 @@
             box-shadow: 0 0 0 3px rgba(42, 111, 156, 0.15);
         }
 
+        /* ----- FILTROS ----- */
         .filter-pills {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 0.6rem 1rem;
-            margin-top: 0.2rem;
+            gap: 0.6rem;
+            margin-top: 0.5rem;
             position: relative;
             z-index: 1;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .filter-pills a span,
-        .filter-pills > span {
-            background: #ffffff;
-            padding: 0.4rem 1.4rem;
-            border-radius: 60px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #1e3b5c;
-            border: 1px solid #b8cee3;
+        .filtro-select, .filtro-input {
+            padding: 0.5rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            color: #0f172a;
             cursor: pointer;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
             transition: 0.2s;
-            display: inline-block;
+            outline: none;
         }
 
-        .filter-pills a span:hover,
-        .filter-pills > span:hover {
-            background: #2a6f9c;
-            color: #fff;
+        .filtro-select:focus, .filtro-input:focus {
             border-color: #2a6f9c;
-            transform: translateY(-2px);
+            box-shadow: 0 0 0 3px rgba(42, 111, 156, 0.1);
         }
 
-        .filter-pills i { margin-right: 6px; }
+        .filtro-input { max-width: 130px; }
+
+        .filtro-limpar {
+            padding: 0.5rem 1.2rem;
+            border: 1.5px solid #dc2626;
+            background: transparent;
+            color: #dc2626;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .filtro-limpar:hover { background: #dc2626; color: #fff; }
 
         /* Botões principais do hero */
         .hero-botoes {
@@ -492,6 +511,7 @@
             .nav-menu a { font-size: 0.85rem; }
             .desaparecidos { height: 220px; }
             #Logo { width: 50px; height: 50px; }
+            .filtro-input { max-width: 100%; flex: 1 1 45%; }
         }
     </style>
 </head>
@@ -512,11 +532,9 @@
             <a href="Seja nosso parceiro.html">Parceiros</a>
             <a href="Sobre.html">Sobre Nós</a>
 
-            <!-- Botões mostrados quando NÃO está logado -->
             <a href="Tela de login.htm" class="btn-outline" id="btnEntrar">Entrar</a>
             <a href="Cadastro.htm" class="btn-solid" id="btnCadastrar">Cadastrar</a>
 
-            <!-- Área do usuário logado -->
             <div id="areaUsuario">
                 <span id="nomeUsuario"></span>
                 <a href="#" id="btnSair" class="btn-outline">Sair</a>
@@ -533,13 +551,10 @@
             <input type="text" placeholder="Pesquisar por nome, cidade ou estado..." aria-label="Pesquisar pessoa desaparecida" />
         </div>
 
-        <div class="filter-pills">
-            <span><i class="fas fa-calendar-alt"></i> Data</span>
-            <a href="Separação de casos.html"><span><i class="fas fa-map-pin"></i> Estados</span></a>
-            <a href="Cadastro de desparecidos.html"><span><i class="fas fa-exclamation-triangle"></i> Cadastro de Desaparecido</span></a>
+        <div class="filter-pills" id="filtros-container">
+            <!-- Filtros serão injetados pelo JS -->
         </div>
 
-        <!-- Botões de ação -->
         <div class="hero-botoes">
             <a href="Cadastro de desparecidos.html" class="btn-primario">
                 <i class="fas fa-exclamation-triangle"></i> Cadastrar desaparecido
@@ -619,179 +634,327 @@
         }
     </script>
 
-    <!-- ===== SCRIPT DE CARREGAR PESSOAS ===== -->
-   <script>
-    // ==================== CONFIGURAÇÕES ====================
-    const API_URL = 'https://spes-backend.onrender.com/api';
-    const FOTO_PADRAO = 'Imagens do site/placeholder.png';
+    <!-- ===== SCRIPT DE CARREGAR PESSOAS + FILTROS ===== -->
+    <script>
+        // ==================== CONFIGURAÇÕES ====================
+        const API_URL = 'https://spes-backend.onrender.com/api';
+        const FOTO_PADRAO = 'Imagens do site/placeholder.png';
 
-    const cardsGrid = document.querySelector('.cards-grid');
-    const searchInput = document.querySelector('.search-box input');
-    const sectionTitle = document.querySelector('.section-title');
+        const cardsGrid = document.querySelector('.cards-grid');
+        const searchInput = document.querySelector('.search-box input');
+        const sectionTitle = document.querySelector('.section-title');
+        const filtrosContainer = document.getElementById('filtros-container');
 
-    // Pega o parâmetro "estado" da URL (ex: index.html?estado=Pernambuco)
-    const params = new URLSearchParams(window.location.search);
-    const estadoFiltro = params.get('estado');
+        const params = new URLSearchParams(window.location.search);
+        const estadoFiltro = params.get('estado');
 
-    let numeroDaBusca = 0;
-    let primeiraCarga = true;
+        let numeroDaBusca = 0;
+        let primeiraCarga = true;
 
-    // ==================== UTILITÁRIOS ====================
-    function criar(tag, classe, texto) {
-        const el = document.createElement(tag);
-        if (classe) el.className = classe;
-        if (texto !== undefined) el.textContent = texto;
-        return el;
-    }
+        // Filtros ativos
+        let filtrosAtivos = {
+            estado: estadoFiltro || '',
+            sexo: '',
+            idadeMin: '',
+            idadeMax: '',
+            dataInicio: '',
+            dataFim: ''
+        };
 
-    function lerData(valor) {
-        if (!valor) return null;
-        const m = String(valor).match(/^(\d{4})-(\d{2})-(\d{2})/);
-        const d = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(valor);
-        return isNaN(d.getTime()) ? null : d;
-    }
-
-    function calcularIdade(nascimento) {
-        if (!nascimento) return null;
-        const hoje = new Date();
-        let idade = hoje.getFullYear() - nascimento.getFullYear();
-        const jaFezAniversario =
-            hoje.getMonth() > nascimento.getMonth() ||
-            (hoje.getMonth() === nascimento.getMonth() && hoje.getDate() >= nascimento.getDate());
-        if (!jaFezAniversario) idade--;
-        return idade >= 0 ? idade : null;
-    }
-
-    function diasDesde(data) {
-        if (!data) return null;
-        const hoje = new Date();
-        hoje.setHours(0, 0, 0, 0);
-        return Math.max(0, Math.round((hoje - data) / 86400000));
-    }
-
-    function fotoSegura(src) {
-        if (typeof src !== 'string') return FOTO_PADRAO;
-        if (/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(src)) return src;
-        if (/^https?:\/\//i.test(src)) return src;
-        return FOTO_PADRAO;
-    }
-
-    // ==================== CARD ====================
-    function criarCard(pessoa) {
-        const nome = pessoa.nome || 'Nome não informado';
-        const card = criar('div', 'card');
-
-        card.appendChild(criar('div', 'name', nome));
-
-        const idade = calcularIdade(lerData(pessoa.data_nascimento));
-        card.appendChild(criar('div', 'age',
-            idade === null ? 'Idade não informada' : `${idade} ${idade === 1 ? 'ano' : 'anos'}`));
-
-        const local = [pessoa.cidade, pessoa.estado_desaparecimento].filter(Boolean).join(' - ');
-        card.appendChild(criar('div', 'location', local || 'Local não informado'));
-
-        const fotoBox = document.createElement('div');
-        const img = criar('img', 'desaparecidos');
-        img.loading = 'lazy';
-        img.alt = `Foto de ${nome}`;
-        img.src = fotoSegura(pessoa.foto);
-        img.onerror = () => { img.onerror = null; img.src = FOTO_PADRAO; };
-        fotoBox.appendChild(img);
-        card.appendChild(fotoBox);
-
-        const dias = diasDesde(lerData(pessoa.data_desaparecimento));
-        let textoDias = 'Data do desaparecimento não informada';
-        if (dias === 0) textoDias = 'Desaparecido hoje';
-        else if (dias !== null) textoDias = `Desaparecido há ${dias} ${dias === 1 ? 'dia' : 'dias'}`;
-        card.appendChild(criar('div', 'days', textoDias));
-
-        const detalhes = criar('a', 'btn-detail', 'Ver detalhes');
-        const id = pessoa.id_desaparecido || pessoa.id;
-        if (id !== undefined && id !== null) {
-            detalhes.href = `detalhes.html?id=${id}`;
-        } else {
-            detalhes.href = '#';
-            detalhes.style.opacity = '0.5';
-            detalhes.style.pointerEvents = 'none';
+        // ==================== UTILITÁRIOS ====================
+        function criar(tag, classe, texto) {
+            const el = document.createElement(tag);
+            if (classe) el.className = classe;
+            if (texto !== undefined) el.textContent = texto;
+            return el;
         }
-        card.appendChild(detalhes);
 
-        return card;
-    }
-
-    // ==================== MENSAGENS NA GRADE ====================
-    function mostrarMensagem(texto, comBotao) {
-        const msg = criar('p', 'grid-msg', texto);
-        if (comBotao) {
-            msg.appendChild(document.createElement('br'));
-            const botao = criar('button', '', 'Tentar de novo');
-            botao.type = 'button';
-            botao.addEventListener('click', () => carregarPessoas(searchInput.value.trim()));
-            msg.appendChild(botao);
+        function lerData(valor) {
+            if (!valor) return null;
+            const m = String(valor).match(/^(\d{4})-(\d{2})-(\d{2})/);
+            const d = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(valor);
+            return isNaN(d.getTime()) ? null : d;
         }
-        cardsGrid.replaceChildren(msg);
-    }
 
-    // ==================== CARREGAR PESSOAS ====================
-    async function carregarPessoas(termo = '') {
-        const minhaBusca = ++numeroDaBusca;
+        function calcularIdade(nascimento) {
+            if (!nascimento) return null;
+            const hoje = new Date();
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+            const jaFezAniversario =
+                hoje.getMonth() > nascimento.getMonth() ||
+                (hoje.getMonth() === nascimento.getMonth() && hoje.getDate() >= nascimento.getDate());
+            if (!jaFezAniversario) idade--;
+            return idade >= 0 ? idade : null;
+        }
 
-        const msgCarregando = estadoFiltro
-            ? `Carregando casos de ${estadoFiltro}...`
-            : (primeiraCarga
+        function diasDesde(data) {
+            if (!data) return null;
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            return Math.max(0, Math.round((hoje - data) / 86400000));
+        }
+
+        function fotoSegura(src) {
+            if (typeof src !== 'string') return FOTO_PADRAO;
+            if (/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(src)) return src;
+            if (/^https?:\/\//i.test(src)) return src;
+            return FOTO_PADRAO;
+        }
+
+        // ==================== CARD ====================
+        function criarCard(pessoa) {
+            const nome = pessoa.nome || 'Nome não informado';
+            const card = criar('div', 'card');
+
+            card.style.borderLeft = pessoa.status === 'encontrado'
+                ? '4px solid #16a34a'
+                : '4px solid #dc2626';
+
+            card.appendChild(criar('div', 'name', nome));
+
+            const idade = calcularIdade(lerData(pessoa.data_nascimento));
+            card.appendChild(criar('div', 'age',
+                idade === null ? 'Idade não informada' : `${idade} ${idade === 1 ? 'ano' : 'anos'}`));
+
+            const local = [pessoa.cidade, pessoa.estado_desaparecimento].filter(Boolean).join(' - ');
+            card.appendChild(criar('div', 'location', local || 'Local não informado'));
+
+            const fotoBox = document.createElement('div');
+            const img = criar('img', 'desaparecidos');
+            img.loading = 'lazy';
+            img.alt = `Foto de ${nome}`;
+            img.src = fotoSegura(pessoa.foto);
+            img.onerror = () => { img.onerror = null; img.src = FOTO_PADRAO; };
+            fotoBox.appendChild(img);
+            card.appendChild(fotoBox);
+
+            const dias = diasDesde(lerData(pessoa.data_desaparecimento));
+            let textoDias = 'Data do desaparecimento não informada';
+            if (dias === 0) textoDias = 'Desaparecido hoje';
+            else if (dias !== null) textoDias = `Desaparecido há ${dias} ${dias === 1 ? 'dia' : 'dias'}`;
+
+            const badge = criar('div', 'days', textoDias);
+            if (pessoa.status === 'encontrado') {
+                badge.textContent = '✅ ENCONTRADO';
+                badge.style.background = '#f0fdf4';
+                badge.style.color = '#166534';
+            }
+            card.appendChild(badge);
+
+            const detalhes = criar('a', 'btn-detail', 'Ver detalhes');
+            const id = pessoa.id_desaparecido || pessoa.id;
+            if (id !== undefined && id !== null) {
+                detalhes.href = `detalhes.html?id=${id}`;
+            } else {
+                detalhes.href = '#';
+                detalhes.style.opacity = '0.5';
+                detalhes.style.pointerEvents = 'none';
+            }
+            card.appendChild(detalhes);
+
+            return card;
+        }
+
+        // ==================== MENSAGENS ====================
+        function mostrarMensagem(texto, comBotao) {
+            const msg = criar('p', 'grid-msg', texto);
+            if (comBotao) {
+                msg.appendChild(document.createElement('br'));
+                const botao = criar('button', '', 'Tentar de novo');
+                botao.type = 'button';
+                botao.addEventListener('click', () => carregarPessoas(searchInput.value.trim()));
+                msg.appendChild(botao);
+            }
+            cardsGrid.replaceChildren(msg);
+        }
+
+        // ==================== BARRA DE FILTROS ====================
+        function montarBarraFiltros() {
+            filtrosContainer.innerHTML = '';
+
+            // Estado
+            const selectEstado = document.createElement('select');
+            selectEstado.className = 'filtro-select';
+            selectEstado.innerHTML = `
+                <option value="">Todos os estados</option>
+                <option value="Acre">Acre</option>
+                <option value="Alagoas">Alagoas</option>
+                <option value="Amapá">Amapá</option>
+                <option value="Amazonas">Amazonas</option>
+                <option value="Bahia">Bahia</option>
+                <option value="Ceará">Ceará</option>
+                <option value="Distrito Federal">Distrito Federal</option>
+                <option value="Espírito Santo">Espírito Santo</option>
+                <option value="Goiás">Goiás</option>
+                <option value="Maranhão">Maranhão</option>
+                <option value="Mato Grosso">Mato Grosso</option>
+                <option value="Mato Grosso do Sul">Mato Grosso do Sul</option>
+                <option value="Minas Gerais">Minas Gerais</option>
+                <option value="Pará">Pará</option>
+                <option value="Paraíba">Paraíba</option>
+                <option value="Paraná">Paraná</option>
+                <option value="Pernambuco">Pernambuco</option>
+                <option value="Piauí">Piauí</option>
+                <option value="Rio de Janeiro">Rio de Janeiro</option>
+                <option value="Rio Grande do Norte">Rio Grande do Norte</option>
+                <option value="Rio Grande do Sul">Rio Grande do Sul</option>
+                <option value="Rondônia">Rondônia</option>
+                <option value="Roraima">Roraima</option>
+                <option value="Santa Catarina">Santa Catarina</option>
+                <option value="São Paulo">São Paulo</option>
+                <option value="Sergipe">Sergipe</option>
+                <option value="Tocantins">Tocantins</option>
+            `;
+            selectEstado.value = filtrosAtivos.estado || '';
+            selectEstado.addEventListener('change', (e) => {
+                filtrosAtivos.estado = e.target.value;
+                carregarPessoas(searchInput.value.trim());
+            });
+            filtrosContainer.appendChild(selectEstado);
+
+            // Sexo
+            const selectSexo = document.createElement('select');
+            selectSexo.className = 'filtro-select';
+            selectSexo.innerHTML = `
+                <option value="">Todos os sexos</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Outro">Outro</option>
+            `;
+            selectSexo.value = filtrosAtivos.sexo || '';
+            selectSexo.addEventListener('change', (e) => {
+                filtrosAtivos.sexo = e.target.value;
+                carregarPessoas(searchInput.value.trim());
+            });
+            filtrosContainer.appendChild(selectSexo);
+
+            // Idade mínima
+            const inputIdadeMin = document.createElement('input');
+            inputIdadeMin.type = 'number';
+            inputIdadeMin.placeholder = 'Idade mín.';
+            inputIdadeMin.className = 'filtro-input';
+            inputIdadeMin.min = 0;
+            inputIdadeMin.value = filtrosAtivos.idadeMin || '';
+            inputIdadeMin.addEventListener('change', (e) => {
+                filtrosAtivos.idadeMin = e.target.value;
+                carregarPessoas(searchInput.value.trim());
+            });
+            filtrosContainer.appendChild(inputIdadeMin);
+
+            // Idade máxima
+            const inputIdadeMax = document.createElement('input');
+            inputIdadeMax.type = 'number';
+            inputIdadeMax.placeholder = 'Idade máx.';
+            inputIdadeMax.className = 'filtro-input';
+            inputIdadeMax.min = 0;
+            inputIdadeMax.value = filtrosAtivos.idadeMax || '';
+            inputIdadeMax.addEventListener('change', (e) => {
+                filtrosAtivos.idadeMax = e.target.value;
+                carregarPessoas(searchInput.value.trim());
+            });
+            filtrosContainer.appendChild(inputIdadeMax);
+
+            // Data início
+            const inputDataInicio = document.createElement('input');
+            inputDataInicio.type = 'date';
+            inputDataInicio.className = 'filtro-input';
+            inputDataInicio.title = 'Data do desaparecimento (de)';
+            inputDataInicio.value = filtrosAtivos.dataInicio || '';
+            inputDataInicio.addEventListener('change', (e) => {
+                filtrosAtivos.dataInicio = e.target.value;
+                carregarPessoas(searchInput.value.trim());
+            });
+            filtrosContainer.appendChild(inputDataInicio);
+
+            // Data fim
+            const inputDataFim = document.createElement('input');
+            inputDataFim.type = 'date';
+            inputDataFim.className = 'filtro-input';
+            inputDataFim.title = 'Data do desaparecimento (até)';
+            inputDataFim.value = filtrosAtivos.dataFim || '';
+            inputDataFim.addEventListener('change', (e) => {
+                filtrosAtivos.dataFim = e.target.value;
+                carregarPessoas(searchInput.value.trim());
+            });
+            filtrosContainer.appendChild(inputDataFim);
+
+            // Botão limpar
+            const btnLimpar = document.createElement('button');
+            btnLimpar.textContent = 'Limpar filtros';
+            btnLimpar.className = 'filtro-limpar';
+            btnLimpar.type = 'button';
+            btnLimpar.addEventListener('click', () => {
+                filtrosAtivos = { estado: '', sexo: '', idadeMin: '', idadeMax: '', dataInicio: '', dataFim: '' };
+                montarBarraFiltros();
+                carregarPessoas(searchInput.value.trim());
+            });
+            filtrosContainer.appendChild(btnLimpar);
+        }
+
+        // ==================== CARREGAR PESSOAS ====================
+        async function carregarPessoas(termo = '') {
+            const minhaBusca = ++numeroDaBusca;
+
+            const msgCarregando = primeiraCarga
                 ? 'Carregando casos... Se o servidor estiver inativo, a primeira busca pode levar até 1 minuto.'
-                : 'Buscando...');
-        mostrarMensagem(msgCarregando);
+                : 'Buscando...';
+            mostrarMensagem(msgCarregando);
 
-        try {
-            let url = `${API_URL}/people`;
-            const query = [];
-            if (termo) query.push(`search=${encodeURIComponent(termo)}`);
-            if (estadoFiltro) query.push(`estado=${encodeURIComponent(estadoFiltro)}`);
-            if (query.length) url += '?' + query.join('&');
+            try {
+                let url = `${API_URL}/people`;
+                const query = [];
 
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const resposta = await response.json();
+                if (termo) query.push(`search=${encodeURIComponent(termo)}`);
+                if (filtrosAtivos.estado) query.push(`estado=${encodeURIComponent(filtrosAtivos.estado)}`);
+                if (filtrosAtivos.sexo) query.push(`sexo=${encodeURIComponent(filtrosAtivos.sexo)}`);
+                if (filtrosAtivos.idadeMin) query.push(`idadeMin=${filtrosAtivos.idadeMin}`);
+                if (filtrosAtivos.idadeMax) query.push(`idadeMax=${filtrosAtivos.idadeMax}`);
+                if (filtrosAtivos.dataInicio) query.push(`startDate=${filtrosAtivos.dataInicio}`);
+                if (filtrosAtivos.dataFim) query.push(`endDate=${filtrosAtivos.dataFim}`);
 
-            if (minhaBusca !== numeroDaBusca) return;
+                if (query.length) url += '?' + query.join('&');
 
-            const pessoas = Array.isArray(resposta) ? resposta : (resposta.data || resposta.people || []);
-            primeiraCarga = false;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const resposta = await response.json();
 
-            if (pessoas.length === 0) {
-                mostrarMensagem(
-                    estadoFiltro
-                        ? `Nenhum caso encontrado em ${estadoFiltro}.`
-                        : 'Nenhuma pessoa encontrada.'
-                );
-                return;
+                if (minhaBusca !== numeroDaBusca) return;
+
+                const pessoas = Array.isArray(resposta) ? resposta : (resposta.data || resposta.people || []);
+                primeiraCarga = false;
+
+                if (pessoas.length === 0) {
+                    mostrarMensagem('Nenhum caso encontrado com esses filtros.');
+                    return;
+                }
+
+                // Atualiza o título
+                if (sectionTitle) {
+                    let titulo = 'Pessoas Desaparecidas';
+                    if (filtrosAtivos.estado) titulo += ` em ${filtrosAtivos.estado}`;
+                    sectionTitle.textContent = titulo;
+                }
+
+                cardsGrid.replaceChildren(...pessoas.map(criarCard));
+            } catch (error) {
+                if (minhaBusca !== numeroDaBusca) return;
+                console.error('Erro ao carregar pessoas:', error);
+                mostrarMensagem('Não foi possível carregar os casos agora. Verifique sua conexão e tente de novo.', true);
             }
-
-            // Atualiza o título se houver filtro por estado
-            if (estadoFiltro && sectionTitle) {
-                sectionTitle.textContent = `Pessoas Desaparecidas em ${estadoFiltro}`;
-            }
-
-            cardsGrid.replaceChildren(...pessoas.map(criarCard));
-        } catch (error) {
-            if (minhaBusca !== numeroDaBusca) return;
-            console.error('Erro ao carregar pessoas:', error);
-            mostrarMensagem('Não foi possível carregar os casos agora. Verifique sua conexão e tente de novo.', true);
         }
-    }
 
-    // ==================== PESQUISA ====================
-    if (searchInput) {
-        let temporizador;
-        searchInput.addEventListener('input', (e) => {
-            clearTimeout(temporizador);
-            temporizador = setTimeout(() => carregarPessoas(e.target.value.trim()), 350);
-        });
-    }
+        // ==================== PESQUISA ====================
+        if (searchInput) {
+            let temporizador;
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(temporizador);
+                temporizador = setTimeout(() => carregarPessoas(e.target.value.trim()), 350);
+            });
+        }
 
-    // ==================== INICIAR ====================
-    carregarPessoas();
-</script>
+        // ==================== INICIAR ====================
+        montarBarraFiltros();
+        carregarPessoas();
+    </script>
 </body>
 </html>
