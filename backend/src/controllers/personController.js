@@ -4,16 +4,16 @@ const MissingPerson = require('../models/MissingPerson');
 const Contact = require('../models/Contact');
 const Location = require('../models/Location');
 
-// Campos que o usuário pode enviar. Qualquer outro campo do body é ignorado
-// (evita que alguém troque cpf_usuario, id, etc. enviando JSON extra).
+// Campos que o usuário pode enviar
 const CAMPOS_CRIACAO = [
   'nome', 'rg', 'data_nascimento', 'sexo', 'etnia', 'altura', 'peso',
   'contato', 'informacoes', 'locais_favoritos',
-  'cidade', 'estado_desaparecimento', 'data_desaparecimento', 'foto'
+  'cidade', 'estado_desaparecimento', 'data_desaparecimento',
+  'latitude', 'longitude', 'foto'
 ];
 const CAMPOS_EDICAO = [...CAMPOS_CRIACAO, 'status'];
 
-// O CPF de quem cadastrou nunca deve sair em respostas públicas
+// Dados que NÃO aparecem publicamente
 const ATRIBUTOS_PUBLICOS = {
   exclude: ['cpf_usuario', 'rg', 'contato', 'locais_favoritos']
 };
@@ -48,7 +48,6 @@ const dataValida = (valor) => {
   return isNaN(d.getTime()) ? null : d;
 };
 
-// Aceita o formato antigo (array "contatos") e o campo simples "contato" do formulário
 const montarContatos = (body) => {
   const lista = [];
   if (Array.isArray(body.contatos)) {
@@ -63,7 +62,6 @@ const montarContatos = (body) => {
   return lista;
 };
 
-// Aceita o formato antigo (array "localizacoes") e o texto livre "ultimas_localizacoes"
 const montarLocalizacoes = (body) => {
   const lista = [];
   if (Array.isArray(body.localizacoes)) {
@@ -117,52 +115,6 @@ exports.create = async (req, res) => {
 // ---------- listar (home) ----------
 exports.findAll = async (req, res) => {
   try {
-    const { search, estado, startDate, endDate, status } = req.query;
-
-    const where = { status: status === 'encontrado' ? 'encontrado' : 'desaparecido' };
-
-    if (typeof search === 'string' && search.trim()) {
-      // escapa \ % _ para o texto digitado não virar curinga do LIKE
-      const termo = `%${search.trim().slice(0, 100).replace(/[\\%_]/g, '\\$&')}%`;
-      where[Op.or] = [
-        { nome: { [Op.iLike]: termo } },
-        { cidade: { [Op.iLike]: termo } },
-        { estado_desaparecimento: { [Op.iLike]: termo } },
-        { informacoes: { [Op.iLike]: termo } }
-      ];
-    }
-
-    if (typeof estado === 'string' && estado) {
-      where.estado_desaparecimento = estado;
-    }
-
-    const formatoData = /^\d{4}-\d{2}-\d{2}$/;
-    if (formatoData.test(startDate) && formatoData.test(endDate)) {
-      where.data_desaparecimento = { [Op.between]: [startDate, endDate] };
-    }
-
-    const limit = Math.min(parseInt(req.query.limit, 10) || LIMITE_PADRAO, LIMITE_MAXIMO);
-    const offset = Math.max(parseInt(req.query.offset, 10) || 0, 0);
-
-    // Na lista não vão contatos nem localizações (o card não usa; ficam no detalhe)
-    const people = await MissingPerson.findAll({
-      where,
-      attributes: ATRIBUTOS_PUBLICOS,
-      order: [['data_desaparecimento', 'DESC'], ['id_desaparecido', 'DESC']],
-      limit,
-      offset
-    });
-
-    res.json(people);
-  } catch (error) {
-    console.error('Erro ao buscar pessoas:', error);
-    res.status(500).json({ error: 'Erro ao buscar casos' });
-  }
-};
-
-// ---------- detalhe ----------
-exports.findAll = async (req, res) => {
-  try {
     const { search, estado, sexo, idadeMin, idadeMax, startDate, endDate, status } = req.query;
 
     const where = { status: status === 'encontrado' ? 'encontrado' : 'desaparecido' };
@@ -184,7 +136,7 @@ exports.findAll = async (req, res) => {
       where.sexo = sexo;
     }
 
-    // Filtro por idade (calculado a partir da data de nascimento)
+    // Filtro por idade
     const idadeMinNum = parseInt(idadeMin, 10);
     const idadeMaxNum = parseInt(idadeMax, 10);
 
@@ -207,7 +159,7 @@ exports.findAll = async (req, res) => {
       where.data_desaparecimento = { [Op.between]: [startDate, endDate] };
     }
 
-    const limit = Math.min(parseInt(req.query.limit, 10) || 60, 100);
+    const limit = Math.min(parseInt(req.query.limit, 10) || LIMITE_PADRAO, LIMITE_MAXIMO);
     const offset = Math.max(parseInt(req.query.offset, 10) || 0, 0);
 
     const people = await MissingPerson.findAll({
@@ -225,7 +177,25 @@ exports.findAll = async (req, res) => {
   }
 };
 
-// ---------- editar (só quem cadastrou) ----------
+// ---------- detalhe ----------
+exports.findOne = async (req, res) => {
+  try {
+    const person = await MissingPerson.findByPk(req.params.id, {
+      attributes: ATRIBUTOS_PUBLICOS,
+      include: INCLUDES_DETALHE
+    });
+
+    if (!person) {
+      return res.status(404).json({ error: 'Pessoa não encontrada' });
+    }
+    res.json(person);
+  } catch (error) {
+    console.error('Erro ao buscar detalhes:', error);
+    res.status(500).json({ error: 'Erro ao buscar detalhes' });
+  }
+};
+
+// ---------- editar ----------
 exports.update = async (req, res) => {
   try {
     const person = await MissingPerson.findByPk(req.params.id);
@@ -244,7 +214,7 @@ exports.update = async (req, res) => {
   }
 };
 
-// ---------- remover (só quem cadastrou) ----------
+// ---------- remover ----------
 exports.delete = async (req, res) => {
   try {
     const person = await MissingPerson.findByPk(req.params.id);
