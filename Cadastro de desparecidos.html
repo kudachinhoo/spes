@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SPES · Cadastrar desaparecido</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoT8bqVJ7YqK2qg=" crossorigin="" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -396,30 +397,32 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
-        let mapa, marcador;
+        // O clique no mapa define a localização; não é necessário informar cidade ou estado.
         function initMap() {
-            mapa = new google.maps.Map(document.getElementById('mapa'), {
-                zoom: 4,
-                center: { lat: -15.7801, lng: -47.9292 },
-                mapTypeControl: false,
-                streetViewControl: false
-            });
-            mapa.addListener('click', (event) => {
-                const lat = event.latLng.lat();
-                const lng = event.latLng.lng();
-                if (marcador) marcador.setMap(null);
-                marcador = new google.maps.Marker({ position: event.latLng, map: mapa });
+            const feedback = document.getElementById('localizacao-feedback');
+            if (typeof L === 'undefined') {
+                feedback.textContent = 'Não foi possível carregar o mapa. Verifique a conexão com a internet.';
+                return;
+            }
+            const mapa = L.map('mapa').setView([-15.7801, -47.9292], 4);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors'
+            }).addTo(mapa);
+            let marcador = null;
+            mapa.on('click', (evento) => {
+                const { lat, lng } = evento.latlng;
+                if (marcador) mapa.removeLayer(marcador);
+                marcador = L.marker([lat, lng]).addTo(mapa);
                 document.getElementById('latitude').value = lat.toFixed(6);
                 document.getElementById('longitude').value = lng.toFixed(6);
-                document.getElementById('localizacao-feedback').textContent = 'Localização selecionada!';
+                feedback.textContent = 'Localização selecionada no mapa!';
             });
         }
-        function erroMapa() {
-            document.getElementById('localizacao-feedback').textContent = 'Não foi possível carregar o mapa. Verifique a chave da API.';
-        }
+        document.addEventListener('DOMContentLoaded', initMap);
     </script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1pXRAOScoMFbAMLagMqHx5DcZe6uN8mk&amp;callback=initMap" onerror="erroMapa()"></script>
 
     <script>
         // ---------- LOGIN / LOGOUT ----------
