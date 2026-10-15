@@ -7,7 +7,8 @@ const Location = require('../models/Location');
 // Campos que o usuário pode enviar. Qualquer outro campo do body é ignorado
 // (evita que alguém troque cpf_usuario, id, etc. enviando JSON extra).
 const CAMPOS_CRIACAO = [
-  'nome', 'data_nascimento', 'etnia', 'altura', 'peso', 'informacoes',
+  'nome', 'rg', 'data_nascimento', 'sexo', 'etnia', 'altura', 'peso',
+  'contato', 'informacoes', 'locais_favoritos',
   'cidade', 'estado_desaparecimento', 'data_desaparecimento', 'foto'
 ];
 const CAMPOS_EDICAO = [...CAMPOS_CRIACAO, 'status'];
