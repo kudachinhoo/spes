@@ -11,17 +11,20 @@ const MissingPerson = sequelize.define('desaparecido', {
   cpf_usuario: {
     type: DataTypes.STRING(11),
     allowNull: false,
-    references: {
-      model: 'usuario',
-      key: 'cpf'
-    }
+    references: { model: 'usuario', key: 'cpf' }
   },
   nome: {
     type: DataTypes.STRING(150),
     allowNull: false
   },
+  rg: {
+    type: DataTypes.STRING(20)
+  },
   data_nascimento: {
     type: DataTypes.DATEONLY
+  },
+  sexo: {
+    type: DataTypes.STRING(20)
   },
   etnia: {
     type: DataTypes.STRING(30)
@@ -38,7 +41,10 @@ const MissingPerson = sequelize.define('desaparecido', {
   informacoes: {
     type: DataTypes.TEXT
   },
-  cidade_desaparecimento: {
+  locais_favoritos: {
+    type: DataTypes.TEXT
+  },
+  cidade: {
     type: DataTypes.STRING(100)
   },
   estado_desaparecimento: {
@@ -47,7 +53,6 @@ const MissingPerson = sequelize.define('desaparecido', {
   data_desaparecimento: {
     type: DataTypes.DATEONLY
   },
-  // Imagem em base64 (data:image/jpeg;base64,...)
   foto: {
     type: DataTypes.TEXT
   },
