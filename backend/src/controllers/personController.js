@@ -14,7 +14,9 @@ const CAMPOS_CRIACAO = [
 const CAMPOS_EDICAO = [...CAMPOS_CRIACAO, 'status'];
 
 // O CPF de quem cadastrou nunca deve sair em respostas públicas
-const ATRIBUTOS_PUBLICOS = { exclude: ['cpf_usuario'] };
+const ATRIBUTOS_PUBLICOS = {
+  exclude: ['cpf_usuario', 'rg', 'contato', 'locais_favoritos']
+};
 
 const LIMITE_PADRAO = 60;
 const LIMITE_MAXIMO = 100;
@@ -159,20 +161,67 @@ exports.findAll = async (req, res) => {
 };
 
 // ---------- detalhe ----------
-exports.findOne = async (req, res) => {
+exports.findAll = async (req, res) => {
   try {
-    const person = await MissingPerson.findByPk(req.params.id, {
+    const { search, estado, sexo, idadeMin, idadeMax, startDate, endDate, status } = req.query;
+
+    const where = { status: status === 'encontrado' ? 'encontrado' : 'desaparecido' };
+
+    if (typeof search === 'string' && search.trim()) {
+      const termo = `%${search.trim().slice(0, 100).replace(/[\\%_]/g, '\\$&')}%`;
+      where[Op.or] = [
+        { nome: { [Op.iLike]: termo } },
+        { cidade: { [Op.iLike]: termo } },
+        { estado_desaparecimento: { [Op.iLike]: termo } }
+      ];
+    }
+
+    if (typeof estado === 'string' && estado) {
+      where.estado_desaparecimento = estado;
+    }
+
+    if (typeof sexo === 'string' && sexo) {
+      where.sexo = sexo;
+    }
+
+    // Filtro por idade (calculado a partir da data de nascimento)
+    const idadeMinNum = parseInt(idadeMin, 10);
+    const idadeMaxNum = parseInt(idadeMax, 10);
+
+    if (!isNaN(idadeMinNum) || !isNaN(idadeMaxNum)) {
+      const hoje = new Date();
+      const anoAtual = hoje.getFullYear();
+
+      if (!isNaN(idadeMaxNum)) {
+        const dataNascMin = `${anoAtual - idadeMaxNum - 1}-12-31`;
+        where.data_nascimento = { ...where.data_nascimento, [Op.gte]: dataNascMin };
+      }
+      if (!isNaN(idadeMinNum)) {
+        const dataNascMax = `${anoAtual - idadeMinNum}-01-01`;
+        where.data_nascimento = { ...where.data_nascimento, [Op.lte]: dataNascMax };
+      }
+    }
+
+    const formatoData = /^\d{4}-\d{2}-\d{2}$/;
+    if (formatoData.test(startDate) && formatoData.test(endDate)) {
+      where.data_desaparecimento = { [Op.between]: [startDate, endDate] };
+    }
+
+    const limit = Math.min(parseInt(req.query.limit, 10) || 60, 100);
+    const offset = Math.max(parseInt(req.query.offset, 10) || 0, 0);
+
+    const people = await MissingPerson.findAll({
+      where,
       attributes: ATRIBUTOS_PUBLICOS,
-      include: INCLUDES_DETALHE
+      order: [['data_desaparecimento', 'DESC'], ['id_desaparecido', 'DESC']],
+      limit,
+      offset
     });
 
-    if (!person) {
-      return res.status(404).json({ error: 'Pessoa não encontrada' });
-    }
-    res.json(person);
+    res.json(people);
   } catch (error) {
-    console.error('Erro ao buscar detalhes:', error);
-    res.status(500).json({ error: 'Erro ao buscar detalhes' });
+    console.error('Erro ao buscar pessoas:', error);
+    res.status(500).json({ error: 'Erro ao buscar casos' });
   }
 };
 
