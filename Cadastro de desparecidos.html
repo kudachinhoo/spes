@@ -361,19 +361,9 @@
                         <div id="mapa" style="width:100%; height:350px; border-radius:20px; border:2px solid #d4e0ec;"></div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="cidade">Cidade</label>
-                            <input type="text" id="cidade" name="cidade" placeholder="Clique no mapa" readonly />
-                        </div>
-                        <div class="form-group">
-                            <label for="EPD">Estado</label>
-                            <input type="text" id="EPD" name="EPD" placeholder="Clique no mapa" readonly />
-                        </div>
-                    </div>
-
                     <input type="hidden" id="latitude" name="latitude" />
                     <input type="hidden" id="longitude" name="longitude" />
+                    <p id="localizacao-feedback" role="status" style="margin:8px 0 18px;color:#2a6f9c;">Nenhum ponto selecionado.</p>
 
                     <div class="form-group">
                         <label for="data_desaparecimento">Data do desaparecimento</label>
@@ -406,63 +396,30 @@
         </div>
     </div>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPuAmw_6VjQQyZK77MGA-UbId4QUhpqrU&libraries=places"></script>
     <script>
-        let mapa, marcador, geocoder;
-
+        let mapa, marcador;
         function initMap() {
-            const centroBrasil = { lat: -15.7801, lng: -47.9292 };
-
             mapa = new google.maps.Map(document.getElementById('mapa'), {
                 zoom: 4,
-                center: centroBrasil,
+                center: { lat: -15.7801, lng: -47.9292 },
                 mapTypeControl: false,
                 streetViewControl: false
             });
-
-            geocoder = new google.maps.Geocoder();
-
             mapa.addListener('click', (event) => {
                 const lat = event.latLng.lat();
                 const lng = event.latLng.lng();
-
                 if (marcador) marcador.setMap(null);
-
-                marcador = new google.maps.Marker({
-                    position: { lat, lng },
-                    map: mapa,
-                    animation: google.maps.Animation.DROP
-                });
-
+                marcador = new google.maps.Marker({ position: event.latLng, map: mapa });
                 document.getElementById('latitude').value = lat.toFixed(6);
                 document.getElementById('longitude').value = lng.toFixed(6);
-
-                geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-                    if (status === 'OK' && results[0]) {
-                        let cidade = '';
-                        let estado = '';
-
-                        for (const componente of results[0].address_components) {
-                            if (componente.types.includes('administrative_area_level_2')) {
-                                cidade = componente.long_name;
-                            }
-                            if (componente.types.includes('administrative_area_level_1')) {
-                                estado = componente.long_name;
-                            }
-                        }
-
-                        document.getElementById('cidade').value = cidade || 'Não identificado';
-                        document.getElementById('EPD').value = estado || 'Não identificado';
-                    } else {
-                        document.getElementById('cidade').value = '';
-                        document.getElementById('EPD').value = '';
-                    }
-                });
+                document.getElementById('localizacao-feedback').textContent = 'Localização selecionada!';
             });
         }
-
-        window.addEventListener('load', initMap);
+        function erroMapa() {
+            document.getElementById('localizacao-feedback').textContent = 'Não foi possível carregar o mapa. Verifique a chave da API.';
+        }
     </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1pXRAOScoMFbAMLagMqHx5DcZe6uN8mk&amp;callback=initMap" onerror="erroMapa()"></script>
 
     <script>
         // ---------- LOGIN / LOGOUT ----------
@@ -545,6 +502,12 @@
             e.preventDefault();
             if (!token) { alert('Faça login primeiro.'); return; }
 
+            if (!document.getElementById('latitude').value || !document.getElementById('longitude').value) {
+                mostrarStatus('Selecione no mapa o local do desaparecimento antes de enviar.', 'erro');
+                document.getElementById('mapa').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
             botao.disabled = true;
             botao.textContent = 'Enviando...';
 
@@ -562,11 +525,9 @@
                     contato: texto('contato'),
                     informacoes: texto('informacoes'),
                     ultimas_localizacoes: texto('ultimas_localizacoes'),
-                    cidade: texto('cidade'),
-                    estado_desaparecimento: texto('EPD'),
                     data_desaparecimento: texto('data_desaparecimento'),
-                    latitude: texto('latitude'),
-                    longitude: texto('longitude')
+                    latitude: numero('latitude'),
+                    longitude: numero('longitude')
                 };
 
                 Object.keys(dados).forEach(k => { if (dados[k] === '') delete dados[k]; });
