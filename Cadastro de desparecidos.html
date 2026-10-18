@@ -384,8 +384,14 @@
 
                     <div class="form-group">
                         <label>Clique no mapa onde a pessoa desapareceu <span class="obrigatorio">*</span></label>
+                        <p class="mapa-ajuda">Clique no mapa para adicionar até 3 locais conhecidos da pessoa desaparecida.</p>
                         <div id="mapa"></div>
-                        <span id="localizacao-feedback">Nenhum ponto selecionado no mapa.</span>
+                        <div class="mapa-acoes">
+                            <span id="contador-pontos">0 pontos selecionados</span>
+                            <button type="button" id="limpar-pontos">Limpar pontos</button>
+                        </div>
+                        <ol id="lista-pontos"></ol>
+                        <span id="localizacao-feedback" aria-live="polite">Carregando mapa...</span>
                         <input type="hidden" id="latitude" name="latitude" />
                         <input type="hidden" id="longitude" name="longitude" />
                     </div>
@@ -466,75 +472,141 @@
         </div>
     </div>
 
-    <!-- Google Maps -->
+    <!-- Google Maps JavaScript API -->
     <script>
-        let mapa, marcador, geocoder;
+        let mapa;
+        let geocoder;
+        const pontosLocalizacao = [];
+        const marcadoresLocalizacao = [];
+        const LIMITE_PONTOS = 3;
 
-        function initMap() {
-            const centroBrasil = { lat: -15.7801, lng: -47.9292 };
+        function atualizarListaPontos() {
+            const lista = document.getElementById('lista-pontos');
+            const contador = document.getElementById('contador-pontos');
+            lista.replaceChildren();
+
+            pontosLocalizacao.forEach((ponto, indice) => {
+                const item = document.createElement('li');
+                item.textContent = `Ponto ${indice + 1}: ${ponto.latitude.toFixed(6)}, ${ponto.longitude.toFixed(6)}`;
+                lista.appendChild(item);
+            });
+
+            contador.textContent = `${pontosLocalizacao.length} de ${LIMITE_PONTOS} pontos selecionados`;
+            document.getElementById('latitude').value = pontosLocalizacao[0]?.latitude ?? '';
+            document.getElementById('longitude').value = pontosLocalizacao[0]?.longitude ?? '';
+        }
+
+        function preencherCidadeEstado(latitude, longitude) {
+            const feedback = document.getElementById('localizacao-feedback');
+            feedback.textContent = 'Ponto adicionado. Buscando cidade e estado...';
+
+            geocoder.geocode({ location: { lat: latitude, lng: longitude } }, (resultados, status) => {
+                if (status !== 'OK' || !resultados || !resultados.length) {
+                    feedback.textContent = `Ponto adicionado: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}. Preencha cidade e estado manualmente se necessário.`;
+                    return;
+                }
+
+                const componentes = resultados[0].address_components || [];
+                const encontrar = (tipo) => componentes.find(item => item.types.includes(tipo))?.long_name || '';
+                const cidade = encontrar('locality') || encontrar('administrative_area_level_2') || encontrar('sublocality');
+                const estado = encontrar('administrative_area_level_1');
+
+                const campoCidade = document.getElementById('cidade');
+                if (cidade && !campoCidade.value.trim()) campoCidade.value = cidade;
+
+                const selectEstado = document.getElementById('EPD');
+                if (estado && !selectEstado.value) {
+                    const opcao = [...selectEstado.options].find(op => op.value.toLowerCase() === estado.toLowerCase());
+                    if (opcao) selectEstado.value = opcao.value;
+                }
+
+                feedback.textContent = `Ponto adicionado: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}. Confira cidade e estado e preencha-os se necessário.`;
+            });
+        }
+
+        // Esta função é chamada pelo callback da Google Maps JavaScript API.
+        window.initMap = function () {
+            const feedback = document.getElementById('localizacao-feedback');
+            if (!window.google || !google.maps) {
+                feedback.textContent = 'Não foi possível carregar o Google Maps. Confira a chave e as APIs habilitadas.';
+                return;
+            }
 
             mapa = new google.maps.Map(document.getElementById('mapa'), {
+                center: { lat: -15.7801, lng: -47.9292 },
                 zoom: 4,
-                center: centroBrasil,
-                mapTypeControl: false,
-                streetViewControl: false
+                mapTypeControl: true,
+                streetViewControl: false,
+                fullscreenControl: true
             });
-
             geocoder = new google.maps.Geocoder();
 
-            mapa.addListener('click', (event) => {
-                const lat = event.latLng.lat();
-                const lng = event.latLng.lng();
+            mapa.addListener('click', (evento) => {
+                if (!evento.latLng) return;
 
-                if (marcador) marcador.setMap(null);
-                marcador = new google.maps.Marker({
-                    position: event.latLng,
+                if (pontosLocalizacao.length >= LIMITE_PONTOS) {
+                    feedback.textContent = `Você já selecionou o limite de ${LIMITE_PONTOS} pontos. Limpe os pontos para selecionar outros.`;
+                    return;
+                }
+
+                const latitude = Number(evento.latLng.lat().toFixed(6));
+                const longitude = Number(evento.latLng.lng().toFixed(6));
+                const duplicado = pontosLocalizacao.some(ponto =>
+                    Math.abs(ponto.latitude - latitude) < 0.0001 &&
+                    Math.abs(ponto.longitude - longitude) < 0.0001
+                );
+
+                if (duplicado) {
+                    feedback.textContent = 'Esse local já foi selecionado. Clique em outro ponto do mapa.';
+                    return;
+                }
+
+                const ponto = { latitude, longitude };
+                pontosLocalizacao.push(ponto);
+                const marcador = new google.maps.Marker({
+                    position: { lat: latitude, lng: longitude },
                     map: mapa,
-                    animation: google.maps.Animation.DROP
+                    label: String(pontosLocalizacao.length),
+                    title: `Ponto ${pontosLocalizacao.length}`
                 });
+                marcadoresLocalizacao.push(marcador);
+                atualizarListaPontos();
 
-                document.getElementById('latitude').value = lat.toFixed(6);
-                document.getElementById('longitude').value = lng.toFixed(6);
-                document.getElementById('localizacao-feedback').textContent = 'Buscando endereço...';
+                const info = new google.maps.InfoWindow({
+                    content: `<strong>Ponto ${pontosLocalizacao.length}</strong><br>${latitude.toFixed(5)}, ${longitude.toFixed(5)}`
+                });
+                info.open({ map: mapa, anchor: marcador });
 
-                // Converte lat/lng em cidade/estado (se a Geocoding API estiver ativa)
-                if (geocoder) {
-                    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-                        if (status === 'OK' && results[0]) {
-                            let cidade = '', estado = '';
-                            for (const c of results[0].address_components) {
-                                if (c.types.includes('administrative_area_level_2')) cidade = c.long_name;
-                                if (c.types.includes('administrative_area_level_1')) estado = c.long_name;
-                            }
-                            if (cidade) document.getElementById('cidade').value = cidade;
-                            if (estado) {
-                                const select = document.getElementById('EPD');
-                                for (let opt of select.options) {
-                                    if (opt.value.toLowerCase() === estado.toLowerCase()) {
-                                        select.value = opt.value;
-                                        break;
-                                    }
-                                }
-                            }
-                            document.getElementById('localizacao-feedback').textContent =
-                                `📍 ${cidade || 'Cidade'} - ${estado || 'Estado'} | Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
-                        } else {
-                            document.getElementById('localizacao-feedback').textContent =
-                                `📍 Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
-                        }
-                    });
+                if (pontosLocalizacao.length === 1) {
+                    preencherCidadeEstado(latitude, longitude);
+                } else {
+                    feedback.textContent = `Ponto ${pontosLocalizacao.length} adicionado. Você pode selecionar mais ${LIMITE_PONTOS - pontosLocalizacao.length} ponto(s).`;
+                }
+
+                if (pontosLocalizacao.length === LIMITE_PONTOS) {
+                    feedback.textContent = `Limite de ${LIMITE_PONTOS} pontos atingido. Para trocar um local, clique em “Limpar pontos” e selecione novamente.`;
                 }
             });
-        }
 
-        function erroMapa() {
-            document.getElementById('localizacao-feedback').textContent =
-                'Não foi possível carregar o mapa. Verifique a chave da API do Google Maps.';
-        }
+            feedback.textContent = `Google Maps carregado. Selecione até ${LIMITE_PONTOS} pontos.`;
+            atualizarListaPontos();
+        };
+
+        window.gm_authFailure = function () {
+            document.getElementById('localizacao-feedback').textContent = 'O Google Maps recusou a chave de API. Confira faturamento, restrições da chave e APIs habilitadas no Google Cloud.';
+        };
+
+        document.getElementById('limpar-pontos').addEventListener('click', () => {
+            marcadoresLocalizacao.forEach(marcador => marcador.setMap(null));
+            marcadoresLocalizacao.length = 0;
+            pontosLocalizacao.length = 0;
+            atualizarListaPontos();
+            document.getElementById('localizacao-feedback').textContent = `Pontos removidos. Clique no mapa para selecionar até ${LIMITE_PONTOS} novos locais.`;
+        });
     </script>
     <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCU9SNFCNLFlmJvEyzn55D4-PWH5n8hGS4&callback=initMap"
-        onerror="erroMapa()"></script>
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCU9SNFCNLFlmJvEyzn55D4-PWH5n8hGS4&callback=initMap&v=weekly">
+    </script>
 
     <!-- Script do formulário -->
     <script>
@@ -619,6 +691,12 @@
             const lat = document.getElementById('latitude').value;
             const lng = document.getElementById('longitude').value;
 
+            if (pontosLocalizacao.length === 0) {
+                mostrarStatus('Selecione pelo menos um ponto no mapa antes de cadastrar.', 'erro');
+                document.getElementById('mapa').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
             botao.disabled = true;
             botao.textContent = 'Enviando...';
 
@@ -640,7 +718,13 @@
                     locais_favoritos: texto('ultimas_localizacoes'),
                     cidade: texto('cidade'),
                     estado_desaparecimento: texto('EPD'),
-                    data_desaparecimento: texto('data_desaparecimento')
+                    data_desaparecimento: texto('data_desaparecimento'),
+                    // Lista completa dos últimos locais selecionados no mapa.
+                    localizacoes: pontosLocalizacao.map((ponto, indice) => ({
+                        ordem: indice + 1,
+                        latitude: ponto.latitude,
+                        longitude: ponto.longitude
+                    }))
                 };
 
                 // Adiciona lat/lng se existirem
