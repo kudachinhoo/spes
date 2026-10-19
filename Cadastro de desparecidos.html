@@ -508,13 +508,12 @@
                 return;
             }
             mapa = L.map('mapa', { scrollWheelZoom: false }).setView([-15.7801, -47.9292], 4);
-            const tiles = L.tileLayer('https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-                subdomains: 'abcd',
+            const tiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Sources: Esri, HERE, Garmin, USGS and other contributors',
                 maxZoom: 19
             }).addTo(mapa);
             tiles.on('tileerror', () => {
-                feedback.textContent = 'Falha ao carregar imagens do mapa. Confira a rede e as condições de acesso ao provedor CARTO.';
+                feedback.textContent = 'Falha ao carregar imagens do mapa. Confira a rede e as condições de acesso ao provedor Esri.';
             });
             mapa.on('click', (evento) => {
                 if (pontosLocalizacao.length >= LIMITE_PONTOS) {
