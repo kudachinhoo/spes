@@ -224,6 +224,11 @@
         .upload-area .file-name { font-size: 0.8rem; color: var(--azul); font-weight: 600; }
 
         /* MAPA */
+        .seletor-camadas { display:flex; gap:8px; flex-wrap:wrap; margin: 0 0 10px; }
+        .seletor-camadas button { padding: 9px 14px; border:1px solid #cbd5e1; border-radius:9px; background:#fff; color:#1e40af; cursor:pointer; font:inherit; font-size:.9rem; }
+        .seletor-camadas button.ativo { background:#1e40af; color:white; border-color:#1e40af; }
+        #mapa-chave-aviso { display:block; margin: 0 0 10px; color:#64748b; }
+
         #mapa {
             width: 100%;
             height: 350px;
@@ -392,7 +397,12 @@
                     <div class="form-group">
                         <label>Clique no mapa onde a pessoa desapareceu <span class="obrigatorio">*</span></label>
                         <p class="mapa-ajuda">Clique no mapa para adicionar até 3 locais conhecidos da pessoa desaparecida.</p>
+                        <div class="seletor-camadas" role="group" aria-label="Estilo do mapa">
+                            <button type="button" id="mapa-ruas" aria-pressed="false">Mapa de ruas</button>
+                            <button type="button" id="mapa-satelite" class="ativo" aria-pressed="true">Satélite</button>
+                        </div>
                         <div id="mapa"></div>
+                        <small id="mapa-chave-aviso">Para usar o MapTiler Streets, configure sua chave de API no JavaScript. O satélite funciona sem essa chave.</small>
                         <div class="mapa-acoes">
                             <span id="contador-pontos">0 pontos selecionados</span>
                             <button type="button" id="limpar-pontos">Limpar pontos</button>
@@ -479,7 +489,7 @@
         </div>
     </div>
 
-    <!-- Leaflet + CARTO: não utiliza os servidores de tiles bloqueados do OSM -->
+    <!-- Leaflet com seleção entre MapTiler Streets e Esri Satélite -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         let mapa;
@@ -508,12 +518,45 @@
                 return;
             }
             mapa = L.map('mapa', { scrollWheelZoom: false }).setView([-15.7801, -47.9292], 4);
-            const tiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-                attribution: 'Tiles &copy; Esri &mdash; Sources: Esri, HERE, Garmin, USGS and other contributors',
-                maxZoom: 19
-            }).addTo(mapa);
-            tiles.on('tileerror', () => {
-                feedback.textContent = 'Falha ao carregar imagens do mapa. Confira a rede e as condições de acesso ao provedor Esri.';
+            // Coloque aqui a chave pública de API do MapTiler, restrita ao domínio do SPES.
+            const MAPTILER_KEY = 'gkXgq6TLnkBlYlb86MYw';
+            const chaveConfigurada = MAPTILER_KEY !== 'gkXgq6TLnkBlYlb86MYw' && MAPTILER_KEY.trim() !== '';
+            const ruas = chaveConfigurada ? L.tileLayer(
+                `https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${encodeURIComponent(MAPTILER_KEY)}`,
+                { attribution: '&copy; MapTiler &copy; OpenStreetMap contributors', maxZoom: 19, tileSize: 256 }
+            ) : null;
+            const satelite = L.tileLayer(
+                'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                { attribution: 'Imagery &copy; Esri and contributors', maxZoom: 19 }
+            );
+            let camadaAtiva = satelite.addTo(mapa);
+            const botaoRuas = document.getElementById('mapa-ruas');
+            const botaoSatelite = document.getElementById('mapa-satelite');
+            const avisoChave = document.getElementById('mapa-chave-aviso');
+            if (chaveConfigurada) avisoChave.hidden = true;
+
+            function trocarCamada(tipo) {
+                if (tipo === 'ruas' && !ruas) {
+                    feedback.textContent = 'Para habilitar o mapa de ruas, adicione uma chave MapTiler no código.';
+                    return;
+                }
+                const proxima = tipo === 'ruas' ? ruas : satelite;
+                if (camadaAtiva !== proxima) {
+                    mapa.removeLayer(camadaAtiva);
+                    camadaAtiva = proxima.addTo(mapa);
+                }
+                botaoRuas.classList.toggle('ativo', tipo === 'ruas');
+                botaoSatelite.classList.toggle('ativo', tipo === 'satelite');
+                botaoRuas.setAttribute('aria-pressed', String(tipo === 'ruas'));
+                botaoSatelite.setAttribute('aria-pressed', String(tipo === 'satelite'));
+                mapa.invalidateSize();
+            }
+            botaoRuas.addEventListener('click', () => trocarCamada('ruas'));
+            botaoSatelite.addEventListener('click', () => trocarCamada('satelite'));
+            [satelite, ...(ruas ? [ruas] : [])].forEach(camada => {
+                camada.on('tileerror', () => {
+                    if (mapa.hasLayer(camada)) feedback.textContent = 'Não foi possível carregar imagens desta camada. Verifique a conexão e as permissões do provedor.';
+                });
             });
             mapa.on('click', (evento) => {
                 if (pontosLocalizacao.length >= LIMITE_PONTOS) {
