@@ -1,763 +1,845 @@
-	<!DOCTYPE html>
-	<html lang="pt-BR">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>SPES · Cadastrar desaparecido</title>
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-		<style>
-			* { margin: 0; padding: 0; box-sizing: border-box; }
-
-			:root {
-				--azul: #1e40af;
-				--azul-escuro: #0f172a;
-				--azul-claro: #eff6ff;
-				--vermelho: #dc2626;
-				--verde: #16a34a;
-				--cinza: #64748b;
-				--cinza-claro: #f1f5f9;
-				--borda: #e2e8f0;
-			}
-
-			body {
-				font-family: 'Inter', -apple-system, sans-serif;
-				background: #f8fafc;
-				color: var(--azul-escuro);
-				line-height: 1.5;
-				min-height: 100vh;
-			}
-
-			a { text-decoration: none; color: inherit; }
-
-			/* ----- TOP BAR ----- */
-			.top-bar {
-				background: #fff;
-				padding: 0 2rem;
-				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-				display: flex;
-				flex-wrap: wrap;
-				align-items: center;
-				justify-content: space-between;
-				border-bottom: 1px solid var(--borda);
-				position: sticky;
-				top: 0;
-				z-index: 100;
-			}
-
-			.logo-area { display: flex; align-items: center; gap: 10px; padding: 1rem 0; }
-
-			.logo-area h1 {
-				font-size: 1.5rem;
-				font-weight: 800;
-				color: var(--azul);
-				display: flex;
-				align-items: center;
-				gap: 10px;
-				letter-spacing: -0.5px;
-			}
-
-			#Logo { width: 48px; height: 48px; }
-
-			.nav-menu {
-				display: flex;
-				flex-wrap: wrap;
-				align-items: center;
-				gap: 0.2rem 1rem;
-				padding: 0.8rem 0;
-			}
-
-			.nav-menu a {
-				font-size: 0.9rem;
-				font-weight: 500;
-				color: var(--cinza);
-				padding: 0.4rem 0.3rem;
-				border-radius: 6px;
-				transition: 0.2s;
-			}
-
-			.nav-menu a:hover { color: var(--azul); background: var(--azul-claro); }
-
-			.nav-menu .btn-outline {
-				border: 1.5px solid var(--azul);
-				border-radius: 30px;
-				padding: 0.4rem 1.2rem;
-				font-weight: 600;
-				color: var(--azul);
-			}
-
-			.nav-menu .btn-outline:hover { background: var(--azul); color: #fff; }
-
-			.nav-menu .btn-solid {
-				background: var(--azul);
-				border-radius: 30px;
-				padding: 0.4rem 1.4rem;
-				font-weight: 600;
-				color: #fff;
-			}
-
-			.nav-menu .btn-solid:hover { background: #1e3a8a; }
-
-			#areaUsuario { display: none; align-items: center; gap: 0.8rem; }
-
-			#nomeUsuario { color: var(--azul-escuro); font-weight: 600; font-size: 0.9rem; }
-
-			/* ----- CONTEÚDO ----- */
-			.conteudo-pagina {
-				max-width: 900px;
-				margin: 0 auto;
-				padding: 2.5rem 1.5rem;
-			}
-
-			.page-header {
-				text-align: center;
-				margin-bottom: 2rem;
-			}
-
-			.page-header h1 {
-				font-size: 2rem;
-				font-weight: 800;
-				color: var(--azul-escuro);
-				letter-spacing: -0.5px;
-				margin-bottom: 0.5rem;
-			}
-
-			.page-header p {
-				color: var(--cinza);
-				font-size: 1rem;
-			}
-
-			.card {
-				background: #fff;
-				padding: 2.5rem;
-				border-radius: 20px;
-				box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-				border: 1px solid var(--borda);
-			}
-
-			.form-section { margin-bottom: 2rem; }
-
-			.form-section .section-title {
-				display: flex;
-				align-items: center;
-				gap: 0.6rem;
-				font-size: 1.1rem;
-				font-weight: 700;
-				color: var(--azul-escuro);
-				margin-bottom: 1.2rem;
-				padding-bottom: 0.6rem;
-				border-bottom: 2px solid var(--azul-claro);
-			}
-
-			.form-section .section-title i { color: var(--azul); font-size: 1rem; }
-
-			.form-group { margin-bottom: 1.2rem; }
-
-			.form-group label {
-				display: block;
-				font-size: 0.85rem;
-				font-weight: 600;
-				color: var(--azul-escuro);
-				margin-bottom: 0.4rem;
-			}
-
-			.form-group label .hint {
-				font-weight: 400;
-				color: var(--cinza);
-				font-size: 0.75rem;
-			}
-
-			.form-group label .obrigatorio { color: var(--vermelho); margin-left: 2px; }
-
-			.form-group input,
-			.form-group select {
-				width: 100%;
-				padding: 0.75rem 1rem;
-				border: 1.5px solid var(--borda);
-				border-radius: 10px;
-				font-size: 0.95rem;
-				background: #fff;
-				transition: 0.2s;
-				outline: none;
-				color: var(--azul-escuro);
-				font-family: inherit;
-			}
-
-			.form-group input:focus,
-			.form-group select:focus {
-				border-color: var(--azul);
-				box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1);
-			}
-
-			.form-row {
-				display: grid;
-				grid-template-columns: 1fr 1fr;
-				gap: 1.2rem;
-			}
-
-			.form-row-3 {
-				display: grid;
-				grid-template-columns: 1fr 1fr 1fr;
-				gap: 1.2rem;
-			}
-
-			.upload-area {
-				border: 2px dashed var(--borda);
-				border-radius: 12px;
-				padding: 1.5rem;
-				background: var(--cinza-claro);
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				gap: 0.6rem;
-				cursor: pointer;
-				transition: 0.2s;
-				text-align: center;
-			}
-
-			.upload-area:hover { border-color: var(--azul); background: var(--azul-claro); }
-			.upload-area i { font-size: 2rem; color: var(--azul); }
-			.upload-area span { font-weight: 500; font-size: 0.9rem; color: var(--cinza); }
-			.upload-area input[type="file"] { display: none; }
-			.upload-area .file-name { font-size: 0.8rem; color: var(--azul); font-weight: 600; }
-
-			/* MAPA */
-			.seletor-camadas { display:flex; gap:8px; flex-wrap:wrap; margin: 0 0 10px; }
-			.seletor-camadas button { padding: 9px 14px; border:1px solid #cbd5e1; border-radius:9px; background:#fff; color:#1e40af; cursor:pointer; font:inherit; font-size:.9rem; }
-			.seletor-camadas button.ativo { background:#1e40af; color:white; border-color:#1e40af; }
-			.mapa-referencia { margin: 12px 0 20px; padding: 16px; background: #f8fafc; border: 1px solid var(--borda); border-radius: 12px; }
-			.mapa-referencia h3 { font-size: 1rem; margin-bottom: 6px; }
-			.mapa-referencia p, .mapa-nota { font-size: .85rem; color: var(--cinza); margin-bottom: 10px; }
-			.mapa-referencia iframe { width: 100%; height: 320px; border: 0; border-radius: 10px; display: block; }
-			.mapa-referencia a { color: var(--azul); text-decoration: underline; font-weight: 600; }
-			.mapa-ajuda { color: var(--cinza); font-size: .9rem; margin-bottom: 10px; }
-
-			#mapa {
-				width: 100%;
-				height: 350px;
-				border-radius: 12px;
-				border: 2px solid var(--borda);
-				margin-bottom: 0.5rem;
-				position: relative;
-				overflow: hidden;
-				isolation: isolate;
-				z-index: 0;
-			}
-			#mapa .leaflet-container { width: 100%; height: 100%; }
-			#mapa .leaflet-tile, #mapa .leaflet-marker-icon, #mapa .leaflet-marker-shadow { max-width: none !important; max-height: none !important; }
-
-			#localizacao-feedback {
-				display: block;
-				font-size: 0.85rem;
-				color: var(--cinza);
-				margin-bottom: 1rem;
-				padding: 0.5rem 1rem;
-				background: var(--azul-claro);
-				border-radius: 8px;
-				border-left: 3px solid var(--azul);
-			}
-
-			.btn-continue {
-				width: 100%;
-				padding: 0.9rem;
-				margin-top: 1.5rem;
-				background: var(--azul);
-				border: none;
-				border-radius: 12px;
-				font-size: 1rem;
-				font-weight: 700;
-				color: #fff;
-				cursor: pointer;
-				transition: 0.2s;
-				box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
-				font-family: inherit;
-			}
-
-			.btn-continue:hover { background: #1e3a8a; transform: translateY(-1px); }
-			.btn-continue:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-			.status {
-				display: none;
-				margin-top: 1.5rem;
-				padding: 1rem 1.2rem;
-				border-radius: 12px;
-				font-size: 0.9rem;
-				font-weight: 500;
-			}
-
-			.status.erro { display: block; background: #fef2f2; color: #991b1b; border-left: 4px solid var(--vermelho); }
-			.status.ok { display: block; background: #f0fdf4; color: #166534; border-left: 4px solid var(--verde); }
-			.status.info { display: block; background: var(--azul-claro); color: var(--azul); border-left: 4px solid var(--azul); }
-			.status a { color: inherit; font-weight: 700; text-decoration: underline; }
-
-			@media (max-width: 620px) {
-				.top-bar { flex-direction: column; align-items: stretch; padding: 0 1rem; }
-				.logo-area { justify-content: center; }
-				.nav-menu { justify-content: center; padding: 0.6rem 0 1rem; }
-				#Logo { width: 40px; height: 40px; }
-				.form-row, .form-row-3 { grid-template-columns: 1fr; gap: 0; }
-				.card { padding: 1.5rem; }
-				.conteudo-pagina { padding: 2rem 1rem; }
-				.page-header h1 { font-size: 1.5rem; }
-			}
-		</style>
-	</head>
-	<body>
-
-		<header class="top-bar">
-			<div class="logo-area">
-				<h1>
-					<img id="Logo" src="Imagens do site/Logo da SPES.png" alt="Logo da SPES">
-					SPES
-				</h1>
-			</div>
-			<nav class="nav-menu">
-				<a href="index.html">Início</a>
-				<a href="Separação de casos.html">Desaparecidos</a>
-				<a href="Como ajudar.html">Como ajudar</a>
-				<a href="Seja nosso parceiro.html">Parceiros</a>
-				<a href="Sobre.html">Sobre Nós</a>
-				<a href="Tela de login.htm" class="btn-outline" id="btnEntrar">Entrar</a>
-				<a href="Cadastro.htm" class="btn-solid" id="btnCadastrar">Cadastrar</a>
-				<div id="areaUsuario">
-					<span id="nomeUsuario"></span>
-					<a href="#" id="btnSair" class="btn-outline">Sair</a>
-				</div>
-			</nav>
-		</header>
-
-		<div class="conteudo-pagina">
-			<div class="page-header">
-				<h1>Cadastrar pessoa desaparecida</h1>
-				<p>Preencha as informações abaixo. Todos os campos com <span style="color:var(--vermelho)">*</span> são obrigatórios.</p>
-			</div>
-
-			<div class="card">
-				<form id="form-desaparecido" action="#" method="post">
-
-					<div class="form-section">
-						<div class="section-title"><i class="fas fa-user"></i> Dados pessoais</div>
-
-						<div class="form-group">
-							<label for="nome">Nome completo <span class="obrigatorio">*</span></label>
-							<input type="text" id="nome" name="nome" placeholder="Nome da pessoa desaparecida" required />
-						</div>
-
-						<div class="form-row">
-							<div class="form-group">
-								<label for="rg">RG <span class="hint">(opcional)</span></label>
-								<input type="text" id="rg" name="rg" placeholder="Ex: 12.345.678-9" />
-							</div>
-							<div class="form-group">
-								<label for="data_nasc">Data de nascimento <span class="obrigatorio">*</span></label>
-								<input type="date" id="data_nasc" name="data_nasc" required />
-							</div>
-						</div>
-
-						<div class="form-row-3">
-							<div class="form-group">
-								<label for="sexo">Sexo <span class="obrigatorio">*</span></label>
-								<select id="sexo" name="sexo" required>
-									<option value="" disabled selected>Selecione</option>
-									<option value="Masculino">Masculino</option>
-									<option value="Feminino">Feminino</option>
-									<option value="Outro">Outro</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="cor_raca">Cor / Raça <span class="obrigatorio">*</span></label>
-								<select id="cor_raca" name="cor_raca" required>
-									<option value="" disabled selected>Selecione</option>
-									<option>Branca</option>
-									<option>Preta</option>
-									<option>Parda</option>
-									<option>Amarela</option>
-									<option>Indígena</option>
-									<option>Outra</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="altura">Altura <span class="hint">(cm)</span></label>
-								<input type="number" id="altura" name="altura" placeholder="cm" step="0.1" min="30" max="250" />
-							</div>
-						</div>
-
-						<div class="form-row">
-							<div class="form-group">
-								<label for="peso">Peso <span class="hint">(kg)</span></label>
-								<input type="number" id="peso" name="peso" placeholder="kg" step="0.1" min="1" max="400" />
-							</div>
-							<div class="form-group">
-								<label for="contato">Contato do responsável</label>
-								<input type="tel" id="contato" name="contato" placeholder="(00) 00000-0000" />
-							</div>
-						</div>
-					</div>
-
-					<div class="form-section">
-						<div class="section-title"><i class="fas fa-map-marker-alt"></i> Local e data do desaparecimento</div>
-
-						<div class="form-group">
-							 <div class="mapa-referencia">
-								 <h3><i class="fas fa-search-location"></i> 1. Pesquise e visualize no Google Maps</h3>
-								 <p>Use o mapa abaixo como referência para encontrar ruas, bairros e pontos de interesse. A seleção oficial do local deve ser feita no segundo mapa.</p>
-								 <iframe title="Google Maps para consulta de localização" src="https://www.google.com/maps?q=Brasil&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
-								 <p style="margin-top:10px"><a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Abrir Google Maps em outra aba <i class="fas fa-external-link-alt"></i></a></p>
-							 </div>
-							 <label>2. Marque os locais no mapa de cadastro <span class="obrigatorio">*</span></label>
-							 <p class="mapa-ajuda">Encontre o mesmo local no mapa abaixo e clique para adicionar até 3 pontos. Somente estes pontos serão enviados ao SPES.</p>
-							 <div class="seletor-camadas" role="group" aria-label="Estilo do mapa de cadastro">
-								 <button type="button" id="mapa-ruas" class="ativo" aria-pressed="true">Mapa de ruas</button>
-								 <button type="button" id="mapa-satelite" aria-pressed="false">Satélite</button>
-							 </div>
-							 <div id="mapa"></div>
-							 <p class="mapa-nota">O Google Maps acima é apenas para consulta. Clique neste mapa para registrar as coordenadas.</p>
-							<div class="mapa-acoes">
-								<span id="contador-pontos">0 pontos selecionados</span>
-								<button type="button" id="limpar-pontos">Limpar pontos</button>
-							</div>
-							<ol id="lista-pontos"></ol>
-							<span id="localizacao-feedback" aria-live="polite">Carregando mapa...</span>
-							<input type="hidden" id="latitude" name="latitude" />
-							<input type="hidden" id="longitude" name="longitude" />
-						</div>
-
-						<div class="form-row">
-							<div class="form-group">
-								<label for="EPD">Estado <span class="obrigatorio">*</span></label>
-								<select name="EPD" id="EPD" required>
-									<option value="" selected disabled>Selecione</option>
-									<option value="Acre">Acre (AC)</option>
-									<option value="Alagoas">Alagoas (AL)</option>
-									<option value="Amapá">Amapá (AP)</option>
-									<option value="Amazonas">Amazonas (AM)</option>
-									<option value="Bahia">Bahia (BA)</option>
-									<option value="Ceará">Ceará (CE)</option>
-									<option value="Distrito Federal">Distrito Federal (DF)</option>
-									<option value="Espírito Santo">Espírito Santo (ES)</option>
-									<option value="Goiás">Goiás (GO)</option>
-									<option value="Maranhão">Maranhão (MA)</option>
-									<option value="Mato Grosso">Mato Grosso (MT)</option>
-									<option value="Mato Grosso do Sul">Mato Grosso do Sul (MS)</option>
-									<option value="Minas Gerais">Minas Gerais (MG)</option>
-									<option value="Pará">Pará (PA)</option>
-									<option value="Paraíba">Paraíba (PB)</option>
-									<option value="Paraná">Paraná (PR)</option>
-									<option value="Pernambuco">Pernambuco (PE)</option>
-									<option value="Piauí">Piauí (PI)</option>
-									<option value="Rio de Janeiro">Rio de Janeiro (RJ)</option>
-									<option value="Rio Grande do Norte">Rio Grande do Norte (RN)</option>
-									<option value="Rio Grande do Sul">Rio Grande do Sul (RS)</option>
-									<option value="Rondônia">Rondônia (RO)</option>
-									<option value="Roraima">Roraima (RR)</option>
-									<option value="Santa Catarina">Santa Catarina (SC)</option>
-									<option value="São Paulo">São Paulo (SP)</option>
-									<option value="Sergipe">Sergipe (SE)</option>
-									<option value="Tocantins">Tocantins (TO)</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="cidade">Cidade <span class="obrigatorio">*</span></label>
-								<input type="text" id="cidade" name="cidade" placeholder="Cidade onde desapareceu" required />
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label for="data_desaparecimento">Data do desaparecimento <span class="obrigatorio">*</span></label>
-							<input type="date" id="data_desaparecimento" name="data_desaparecimento" required />
-						</div>
-					</div>
-
-					<div class="form-section">
-						<div class="section-title"><i class="fas fa-info-circle"></i> Informações complementares</div>
-
-						<div class="form-group">
-							<label for="informacoes">Apelido, roupas, características</label>
-							<input type="text" id="informacoes" name="informacoes" placeholder="Ex: apelido, roupas que usava, sinais particulares..." />
-						</div>
-
-						<div class="form-group">
-							<label for="ultimas_localizacoes">Lugares que costumava frequentar</label>
-							<input type="text" id="ultimas_localizacoes" name="ultimas_localizacoes" placeholder="Ex: parque, escola, trabalho..." />
-						</div>
-					</div>
-
-					<div class="form-section">
-						<div class="section-title"><i class="fas fa-camera"></i> Foto do desaparecido</div>
-						<div class="upload-area" onclick="document.getElementById('foto').click();">
-							<i class="fas fa-cloud-upload-alt"></i>
-							<span>Clique para selecionar uma foto</span>
-							<span class="file-name" id="foto-nome"></span>
-							<input type="file" id="foto" name="foto" accept="image/*" />
-						</div>
-					</div>
-
-					<div id="status" class="status" role="alert"></div>
-					<button type="submit" class="btn-continue">Cadastrar desaparecido</button>
-				</form>
-			</div>
-		</div>
-
-		<!-- Google Maps para consulta; Leaflet/Esri para registrar coordenadas -->
-		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-		<script>
-			let mapa;
-			const pontosLocalizacao = [];
-			const marcadoresLocalizacao = [];
-			const LIMITE_PONTOS = 3;
-
-			function atualizarListaPontos() {
-				const lista = document.getElementById('lista-pontos');
-				const contador = document.getElementById('contador-pontos');
-				lista.replaceChildren();
-				pontosLocalizacao.forEach((ponto, indice) => {
-					const item = document.createElement('li');
-					item.textContent = `Ponto ${indice + 1}: ${ponto.latitude.toFixed(6)}, ${ponto.longitude.toFixed(6)}`;
-					lista.appendChild(item);
-				});
-				contador.textContent = `${pontosLocalizacao.length} de ${LIMITE_PONTOS} pontos selecionados`;
-				document.getElementById('latitude').value = pontosLocalizacao[0]?.latitude ?? '';
-				document.getElementById('longitude').value = pontosLocalizacao[0]?.longitude ?? '';
-			}
-
-			function initMap() {
-				const feedback = document.getElementById('localizacao-feedback');
-				if (!window.L) {
-					feedback.textContent = 'Não foi possível carregar o Leaflet. Verifique a conexão e o console.';
-					return;
-				}
-				mapa = L.map('mapa', { scrollWheelZoom: false }).setView([-15.7801, -47.9292], 4);
-							 // Camada de ruas Esri: sem chave de API ou faturamento do Google.
-				 const ruas = L.tileLayer(
-					 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-					 { attribution: 'Tiles &copy; Esri and contributors', maxZoom: 19 }
-				 );
-				const satelite = L.tileLayer(
-					'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-					{ attribution: 'Imagery &copy; Esri and contributors', maxZoom: 19 }
-				);
-				let camadaAtiva = satelite.addTo(mapa);
-				const botaoRuas = document.getElementById('mapa-ruas');
-				const botaoSatelite = document.getElementById('mapa-satelite');
-				function trocarCamada(tipo) {
-					if (tipo === 'ruas' && !ruas) {
-						feedback.textContent = 'Para habilitar o mapa de ruas, adicione uma chave MapTiler no código.';
-						return;
-					}
-					const proxima = tipo === 'ruas' ? ruas : satelite;
-					if (camadaAtiva !== proxima) {
-						mapa.removeLayer(camadaAtiva);
-						camadaAtiva = proxima.addTo(mapa);
-					}
-					botaoRuas.classList.toggle('ativo', tipo === 'ruas');
-					botaoSatelite.classList.toggle('ativo', tipo === 'satelite');
-					botaoRuas.setAttribute('aria-pressed', String(tipo === 'ruas'));
-					botaoSatelite.setAttribute('aria-pressed', String(tipo === 'satelite'));
-					mapa.invalidateSize();
-				}
-				botaoRuas.addEventListener('click', () => trocarCamada('ruas'));
-				botaoSatelite.addEventListener('click', () => trocarCamada('satelite'));
-				[satelite, ...(ruas ? [ruas] : [])].forEach(camada => {
-					camada.on('tileerror', () => {
-						if (mapa.hasLayer(camada)) feedback.textContent = 'Não foi possível carregar imagens desta camada. Verifique a conexão e as permissões do provedor.';
-					});
-				});
-				mapa.on('click', (evento) => {
-					if (pontosLocalizacao.length >= LIMITE_PONTOS) {
-						feedback.textContent = `Limite de ${LIMITE_PONTOS} pontos atingido. Use Limpar pontos para escolher novamente.`;
-						return;
-					}
-					const latitude = Number(evento.latlng.lat.toFixed(6));
-					const longitude = Number(evento.latlng.lng.toFixed(6));
-					if (pontosLocalizacao.some(p => Math.abs(p.latitude - latitude) < 0.0001 && Math.abs(p.longitude - longitude) < 0.0001)) {
-						feedback.textContent = 'Esse local já foi selecionado. Clique em outro ponto.';
-						return;
-					}
-					pontosLocalizacao.push({ latitude, longitude });
-					const marcador = L.marker([latitude, longitude]).addTo(mapa);
-					marcador.bindPopup(`<strong>Ponto ${pontosLocalizacao.length}</strong><br>${latitude.toFixed(5)}, ${longitude.toFixed(5)}`).openPopup();
-					marcadoresLocalizacao.push(marcador);
-					atualizarListaPontos();
-					feedback.textContent = `Ponto ${pontosLocalizacao.length} selecionado no mapa.`;
-				});
-				document.getElementById('limpar-pontos').addEventListener('click', () => {
-					marcadoresLocalizacao.forEach(m => mapa.removeLayer(m));
-					marcadoresLocalizacao.length = 0;
-					pontosLocalizacao.length = 0;
-					atualizarListaPontos();
-					feedback.textContent = 'Pontos removidos. Clique no mapa para selecionar novos locais.';
-				});
-				atualizarListaPontos();
-				feedback.textContent = `Mapa carregado. Selecione até ${LIMITE_PONTOS} pontos.`;
-				setTimeout(() => mapa.invalidateSize(), 250);
-			}
-			window.addEventListener('load', initMap);
-		</script>
-
-		<!-- Script do formulário -->
-		<script>
-			// ========== LOGIN / LOGOUT ==========
-			const token = localStorage.getItem('token');
-			const userName = localStorage.getItem('userName');
-			const btnEntrar = document.getElementById('btnEntrar');
-			const btnCadastrar = document.getElementById('btnCadastrar');
-			const areaUsuario = document.getElementById('areaUsuario');
-			const nomeUsuario = document.getElementById('nomeUsuario');
-			const btnSair = document.getElementById('btnSair');
-
-			if (token && userName) {
-				if (btnEntrar) btnEntrar.style.display = 'none';
-				if (btnCadastrar) btnCadastrar.style.display = 'none';
-				if (areaUsuario) areaUsuario.style.display = 'flex';
-				if (nomeUsuario) nomeUsuario.textContent = `Olá, ${userName.split(' ')[0]}`;
-			}
-
-			if (btnSair) {
-				btnSair.addEventListener('click', (e) => {
-					e.preventDefault();
-					if (confirm('Deseja sair da sua conta?')) {
-						localStorage.removeItem('token');
-						localStorage.removeItem('userName');
-						window.location.href = 'index.html';
-					}
-				});
-			}
-
-			// ========== FORMULÁRIO ==========
-			const API_URL = 'https://spes-backend.onrender.com/api';
-			const form = document.getElementById('form-desaparecido');
-			const statusEl = document.getElementById('status');
-			const botao = form.querySelector('button[type="submit"]');
-			const fotoInput = document.getElementById('foto');
-			const fotoNome = document.getElementById('foto-nome');
-
-			function mostrarStatus(texto, tipo) {
-				statusEl.className = 'status ' + tipo;
-				statusEl.textContent = texto;
-			}
-
-			if (!token) {
-				mostrarStatus('Você precisa estar logado para cadastrar. Faça login para continuar.', 'info');
-				botao.disabled = true;
-			}
-
-			// Bloqueia datas futuras
-			const agora = new Date();
-			const hojeISO = new Date(agora.getTime() - agora.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-			document.getElementById('data_nasc').max = hojeISO;
-			document.getElementById('data_desaparecimento').max = hojeISO;
-
-			fotoInput.addEventListener('change', () => {
-				fotoNome.textContent = fotoInput.files[0] ? fotoInput.files[0].name : '';
-			});
-
-			function lerFoto(arquivo, maxLado = 520, qualidade = 0.7) {
-				return new Promise((resolve, reject) => {
-					const url = URL.createObjectURL(arquivo);
-					const img = new Image();
-					img.onload = () => {
-						const escala = Math.min(1, maxLado / Math.max(img.width, img.height));
-						const canvas = document.createElement('canvas');
-						canvas.width = Math.round(img.width * escala);
-						canvas.height = Math.round(img.height * escala);
-						canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-						URL.revokeObjectURL(url);
-						resolve(canvas.toDataURL('image/jpeg', qualidade));
-					};
-					img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Erro ao ler imagem.')); };
-					img.src = url;
-				});
-			}
-
-			form.addEventListener('submit', async (e) => {
-				e.preventDefault();
-				if (!token) { mostrarStatus('Faça login para cadastrar.', 'erro'); return; }
-
-				// Valida se o mapa foi clicado (se o mapa estiver ativo)
-				const lat = document.getElementById('latitude').value;
-				const lng = document.getElementById('longitude').value;
-
-				if (pontosLocalizacao.length === 0) {
-					mostrarStatus('Selecione pelo menos um ponto no mapa antes de cadastrar.', 'erro');
-					document.getElementById('mapa').scrollIntoView({ behavior: 'smooth', block: 'center' });
-					return;
-				}
-
-				botao.disabled = true;
-				botao.textContent = 'Enviando...';
-
-				try {
-					const fd = new FormData(form);
-					const texto = (c) => (fd.get(c) || '').toString().trim();
-					const numero = (c) => { const v = texto(c); return v === '' ? '' : Number(v); };
-
-					const dados = {
-						nome: texto('nome'),
-						rg: texto('rg'),
-						data_nascimento: texto('data_nasc'),
-						sexo: texto('sexo'),
-						etnia: texto('cor_raca'),
-						altura: numero('altura'),
-						peso: numero('peso'),
-						contato: texto('contato'),
-						informacoes: texto('informacoes'),
-						locais_favoritos: texto('ultimas_localizacoes'),
-						cidade: texto('cidade'),
-						estado_desaparecimento: texto('EPD'),
-						data_desaparecimento: texto('data_desaparecimento'),
-						// Lista completa dos últimos locais selecionados no mapa.
-						localizacoes: pontosLocalizacao.map((ponto, indice) => ({
-							ordem: indice + 1,
-							latitude: ponto.latitude,
-							longitude: ponto.longitude
-						}))
-					};
-
-					// Adiciona lat/lng se existirem
-					if (lat) dados.latitude = numero('latitude');
-					if (lng) dados.longitude = numero('longitude');
-
-					Object.keys(dados).forEach(k => { if (dados[k] === '') delete dados[k]; });
-
-					const arquivo = fotoInput.files[0];
-					if (arquivo) {
-						if (arquivo.size > 15 * 1024 * 1024) throw new Error('Foto muito grande (máx 15MB).');
-						dados.foto = await lerFoto(arquivo);
-					}
-
-					const response = await fetch(`${API_URL}/people`, {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-							'Authorization': `Bearer ${token}`
-						},
-						body: JSON.stringify(dados)
-					});
-
-					const data = await response.json().catch(() => ({}));
-
-					if (data.success) {
-						mostrarStatus('Cadastrado com sucesso! Redirecionando...', 'ok');
-						setTimeout(() => { window.location.href = 'index.html'; }, 1200);
-						return;
-					}
-
-					if (response.status === 401) {
-						localStorage.removeItem('token');
-						mostrarStatus('Sessão expirada. Faça login novamente.', 'erro');
-					} else {
-						const msg = data.errors?.[0]?.msg || data.error || 'Erro ao cadastrar.';
-						mostrarStatus(msg, 'erro');
-					}
-				} catch (error) {
-					mostrarStatus(error.message || 'Erro ao conectar com a API.', 'erro');
-				}
-
-				botao.disabled = false;
-				botao.textContent = 'Cadastrar desaparecido';
-			});
-		</script>
-	</body>
-	</html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SPES · Cadastrar desaparecido</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --azul: #1e40af;
+            --azul-escuro: #0f172a;
+            --azul-claro: #eff6ff;
+            --vermelho: #dc2626;
+            --verde: #16a34a;
+            --cinza: #64748b;
+            --cinza-claro: #f1f5f9;
+            --borda: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #f8fafc;
+            color: var(--azul-escuro);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ----- TOP BAR ----- */
+        .top-bar {
+            background: #fff;
+            padding: 0 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--borda);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 10px; padding: 1rem 0; }
+
+        .logo-area h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--azul);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        #Logo { width: 48px; height: 48px; }
+
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.2rem 1rem;
+            padding: 0.8rem 0;
+        }
+
+        .nav-menu a {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--cinza);
+            padding: 0.4rem 0.3rem;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+
+        .nav-menu a:hover { color: var(--azul); background: var(--azul-claro); }
+
+        .nav-menu .btn-outline {
+            border: 1.5px solid var(--azul);
+            border-radius: 30px;
+            padding: 0.4rem 1.2rem;
+            font-weight: 600;
+            color: var(--azul);
+        }
+
+        .nav-menu .btn-outline:hover { background: var(--azul); color: #fff; }
+
+        .nav-menu .btn-solid {
+            background: var(--azul);
+            border-radius: 30px;
+            padding: 0.4rem 1.4rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .nav-menu .btn-solid:hover { background: #1e3a8a; }
+
+        #areaUsuario { display: none; align-items: center; gap: 0.8rem; }
+
+        #nomeUsuario { color: var(--azul-escuro); font-weight: 600; font-size: 0.9rem; }
+
+        /* ----- CONTEÚDO ----- */
+        .conteudo-pagina {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--azul-escuro);
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--cinza);
+            font-size: 1rem;
+        }
+
+        .card {
+            background: #fff;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--borda);
+        }
+
+        .form-section { margin-bottom: 2rem; }
+
+        .form-section .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--azul-escuro);
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 2px solid var(--azul-claro);
+        }
+
+        .form-section .section-title i { color: var(--azul); font-size: 1rem; }
+
+        .form-group { margin-bottom: 1.2rem; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--azul-escuro);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-group label .hint {
+            font-weight: 400;
+            color: var(--cinza);
+            font-size: 0.75rem;
+        }
+
+        .form-group label .obrigatorio { color: var(--vermelho); margin-left: 2px; }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid var(--borda);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: #fff;
+            transition: 0.2s;
+            outline: none;
+            color: var(--azul-escuro);
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--azul);
+            box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--borda);
+            border-radius: 12px;
+            padding: 1.5rem;
+            background: var(--cinza-claro);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+        }
+
+        .upload-area:hover { border-color: var(--azul); background: var(--azul-claro); }
+        .upload-area i { font-size: 2rem; color: var(--azul); }
+        .upload-area span { font-weight: 500; font-size: 0.9rem; color: var(--cinza); }
+        .upload-area input[type="file"] { display: none; }
+        .upload-area .file-name { font-size: 0.8rem; color: var(--azul); font-weight: 600; }
+
+        /* MAPA */
+        .seletor-camadas { display:flex; gap:8px; flex-wrap:wrap; margin: 0 0 10px; }
+        .seletor-camadas button { padding: 9px 14px; border:1px solid #cbd5e1; border-radius:9px; background:#fff; color:#1e40af; cursor:pointer; font:inherit; font-size:.9rem; }
+        .seletor-camadas button.ativo { background:#1e40af; color:white; border-color:#1e40af; }
+        #mapa-chave-aviso { display:block; margin: 0 0 10px; color:#64748b; }
+        #mapa-chave-aviso[hidden] { display:none; }
+        .mapa-busca { display:flex; gap:8px; margin: 10px 0; }
+        .mapa-busca input { flex:1; min-width:0; padding:12px; border:1px solid #cbd5e1; border-radius:9px; font:inherit; }
+        .mapa-busca button, .mapa-acoes button, .ponto-remover { border:1px solid #cbd5e1; background:#fff; color:#1e40af; border-radius:9px; padding:9px 13px; font:inherit; cursor:pointer; }
+        .mapa-busca button { background:#1e40af; color:white; border-color:#1e40af; }
+        #resultados-endereco { list-style:none; margin:0 0 10px; padding:0; }
+        #resultados-endereco li button { display:block; width:100%; text-align:left; padding:10px; background:#fff; border:1px solid #e2e8f0; cursor:pointer; font:inherit; }
+        #resultados-endereco li button:hover { background:#eff6ff; }
+        .mapa-acoes { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:10px 0; flex-wrap:wrap; }
+        #lista-pontos { padding-left:0; list-style:none; display:grid; gap:7px; margin-bottom:10px; }
+        #lista-pontos li { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 10px; border:1px solid #e2e8f0; border-radius:9px; font-size:.85rem; }
+        .spes-marker { width:32px; height:32px; display:grid; place-items:center; border-radius:50% 50% 50% 0; transform:rotate(-45deg); background:#1e40af; color:white; border:2px solid white; box-shadow:0 2px 7px #0005; font-weight:700; }
+        .spes-marker span { transform:rotate(45deg); }
+        @media(max-width:480px) { .mapa-busca { flex-wrap:wrap; } .mapa-busca input { flex-basis:100%; } }
+
+        #mapa {
+            width: 100%;
+            height: 350px;
+            border-radius: 12px;
+            border: 2px solid var(--borda);
+            margin-bottom: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+            z-index: 0;
+        }
+        
+
+        #localizacao-feedback {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--cinza);
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--azul-claro);
+            border-radius: 8px;
+            border-left: 3px solid var(--azul);
+        }
+
+        .btn-continue {
+            width: 100%;
+            padding: 0.9rem;
+            margin-top: 1.5rem;
+            background: var(--azul);
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
+            font-family: inherit;
+        }
+
+        .btn-continue:hover { background: #1e3a8a; transform: translateY(-1px); }
+        .btn-continue:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .status {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status.erro { display: block; background: #fef2f2; color: #991b1b; border-left: 4px solid var(--vermelho); }
+        .status.ok { display: block; background: #f0fdf4; color: #166534; border-left: 4px solid var(--verde); }
+        .status.info { display: block; background: var(--azul-claro); color: var(--azul); border-left: 4px solid var(--azul); }
+        .status a { color: inherit; font-weight: 700; text-decoration: underline; }
+
+        @media (max-width: 620px) {
+            .top-bar { flex-direction: column; align-items: stretch; padding: 0 1rem; }
+            .logo-area { justify-content: center; }
+            .nav-menu { justify-content: center; padding: 0.6rem 0 1rem; }
+            #Logo { width: 40px; height: 40px; }
+            .form-row, .form-row-3 { grid-template-columns: 1fr; gap: 0; }
+            .card { padding: 1.5rem; }
+            .conteudo-pagina { padding: 2rem 1rem; }
+            .page-header h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <div class="logo-area">
+            <h1>
+                <img id="Logo" src="Imagens do site/Logo da SPES.png" alt="Logo da SPES">
+                SPES
+            </h1>
+        </div>
+        <nav class="nav-menu">
+            <a href="index.html">Início</a>
+            <a href="Separação de casos.html">Desaparecidos</a>
+            <a href="Como ajudar.html">Como ajudar</a>
+            <a href="Seja nosso parceiro.html">Parceiros</a>
+            <a href="Sobre.html">Sobre Nós</a>
+            <a href="Tela de login.htm" class="btn-outline" id="btnEntrar">Entrar</a>
+            <a href="Cadastro.htm" class="btn-solid" id="btnCadastrar">Cadastrar</a>
+            <div id="areaUsuario">
+                <span id="nomeUsuario"></span>
+                <a href="#" id="btnSair" class="btn-outline">Sair</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="conteudo-pagina">
+        <div class="page-header">
+            <h1>Cadastrar pessoa desaparecida</h1>
+            <p>Preencha as informações abaixo. Todos os campos com <span style="color:var(--vermelho)">*</span> são obrigatórios.</p>
+        </div>
+
+        <div class="card">
+            <form id="form-desaparecido" action="#" method="post">
+
+                <div class="form-section">
+                    <div class="section-title"><i class="fas fa-user"></i> Dados pessoais</div>
+
+                    <div class="form-group">
+                        <label for="nome">Nome completo <span class="obrigatorio">*</span></label>
+                        <input type="text" id="nome" name="nome" placeholder="Nome da pessoa desaparecida" required />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rg">RG <span class="hint">(opcional)</span></label>
+                            <input type="text" id="rg" name="rg" placeholder="Ex: 12.345.678-9" />
+                        </div>
+                        <div class="form-group">
+                            <label for="data_nasc">Data de nascimento <span class="obrigatorio">*</span></label>
+                            <input type="date" id="data_nasc" name="data_nasc" required />
+                        </div>
+                    </div>
+
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label for="sexo">Sexo <span class="obrigatorio">*</span></label>
+                            <select id="sexo" name="sexo" required>
+                                <option value="" disabled selected>Selecione</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Feminino">Feminino</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cor_raca">Cor / Raça <span class="obrigatorio">*</span></label>
+                            <select id="cor_raca" name="cor_raca" required>
+                                <option value="" disabled selected>Selecione</option>
+                                <option>Branca</option>
+                                <option>Preta</option>
+                                <option>Parda</option>
+                                <option>Amarela</option>
+                                <option>Indígena</option>
+                                <option>Outra</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="altura">Altura <span class="hint">(cm)</span></label>
+                            <input type="number" id="altura" name="altura" placeholder="cm" step="0.1" min="30" max="250" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="peso">Peso <span class="hint">(kg)</span></label>
+                            <input type="number" id="peso" name="peso" placeholder="kg" step="0.1" min="1" max="400" />
+                        </div>
+                        <div class="form-group">
+                            <label for="contato">Contato do responsável</label>
+                            <input type="tel" id="contato" name="contato" placeholder="(00) 00000-0000" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title"><i class="fas fa-map-marker-alt"></i> Local e data do desaparecimento</div>
+
+                    <div class="form-group">
+                        <label>Clique no mapa onde a pessoa desapareceu <span class="obrigatorio">*</span></label>
+                        <p class="mapa-ajuda">Clique no mapa para adicionar até 3 locais conhecidos da pessoa desaparecida.</p>
+                        <div class="mapa-busca" id="form-busca-mapa" role="search">
+                            <input id="busca-endereco" type="search" placeholder="Pesquisar rua, bairro, cidade ou CEP" aria-label="Pesquisar endereço no mapa" autocomplete="off" />
+                            <button type="button" id="botao-busca-mapa"><i class="fas fa-search"></i> Pesquisar</button>
+                        </div>
+                        <ul id="resultados-endereco" aria-label="Resultados da pesquisa"></ul>
+                        <div class="seletor-camadas" role="group" aria-label="Estilo do mapa">
+                            <button type="button" id="mapa-ruas" class="ativo" aria-pressed="true">Mapa de ruas</button>
+                            <button type="button" id="mapa-satelite" aria-pressed="false">Satélite</button>
+                        </div>
+                        <div id="mapa"></div>
+                        <small id="mapa-chave-aviso">Para ativar o mapa vetorial e a pesquisa, configure sua chave pública gratuita do MapTiler no JavaScript. Sem chave, o mapa alternativo continua disponível.</small>
+                        <div class="mapa-acoes">
+                            <span id="contador-pontos">0 pontos selecionados</span>
+                            <button type="button" id="limpar-pontos">Limpar pontos</button>
+                        </div>
+                        <ol id="lista-pontos"></ol>
+                        <span id="localizacao-feedback" aria-live="polite">Carregando mapa...</span>
+                        <input type="hidden" id="latitude" name="latitude" />
+                        <input type="hidden" id="longitude" name="longitude" />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="EPD">Estado <span class="obrigatorio">*</span></label>
+                            <select name="EPD" id="EPD" required>
+                                <option value="" selected disabled>Selecione</option>
+                                <option value="Acre">Acre (AC)</option>
+                                <option value="Alagoas">Alagoas (AL)</option>
+                                <option value="Amapá">Amapá (AP)</option>
+                                <option value="Amazonas">Amazonas (AM)</option>
+                                <option value="Bahia">Bahia (BA)</option>
+                                <option value="Ceará">Ceará (CE)</option>
+                                <option value="Distrito Federal">Distrito Federal (DF)</option>
+                                <option value="Espírito Santo">Espírito Santo (ES)</option>
+                                <option value="Goiás">Goiás (GO)</option>
+                                <option value="Maranhão">Maranhão (MA)</option>
+                                <option value="Mato Grosso">Mato Grosso (MT)</option>
+                                <option value="Mato Grosso do Sul">Mato Grosso do Sul (MS)</option>
+                                <option value="Minas Gerais">Minas Gerais (MG)</option>
+                                <option value="Pará">Pará (PA)</option>
+                                <option value="Paraíba">Paraíba (PB)</option>
+                                <option value="Paraná">Paraná (PR)</option>
+                                <option value="Pernambuco">Pernambuco (PE)</option>
+                                <option value="Piauí">Piauí (PI)</option>
+                                <option value="Rio de Janeiro">Rio de Janeiro (RJ)</option>
+                                <option value="Rio Grande do Norte">Rio Grande do Norte (RN)</option>
+                                <option value="Rio Grande do Sul">Rio Grande do Sul (RS)</option>
+                                <option value="Rondônia">Rondônia (RO)</option>
+                                <option value="Roraima">Roraima (RR)</option>
+                                <option value="Santa Catarina">Santa Catarina (SC)</option>
+                                <option value="São Paulo">São Paulo (SP)</option>
+                                <option value="Sergipe">Sergipe (SE)</option>
+                                <option value="Tocantins">Tocantins (TO)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cidade">Cidade <span class="obrigatorio">*</span></label>
+                            <input type="text" id="cidade" name="cidade" placeholder="Cidade onde desapareceu" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="data_desaparecimento">Data do desaparecimento <span class="obrigatorio">*</span></label>
+                        <input type="date" id="data_desaparecimento" name="data_desaparecimento" required />
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title"><i class="fas fa-info-circle"></i> Informações complementares</div>
+
+                    <div class="form-group">
+                        <label for="informacoes">Apelido, roupas, características</label>
+                        <input type="text" id="informacoes" name="informacoes" placeholder="Ex: apelido, roupas que usava, sinais particulares..." />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ultimas_localizacoes">Lugares que costumava frequentar</label>
+                        <input type="text" id="ultimas_localizacoes" name="ultimas_localizacoes" placeholder="Ex: parque, escola, trabalho..." />
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title"><i class="fas fa-camera"></i> Foto do desaparecido</div>
+                    <div class="upload-area" onclick="document.getElementById('foto').click();">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Clique para selecionar uma foto</span>
+                        <span class="file-name" id="foto-nome"></span>
+                        <input type="file" id="foto" name="foto" accept="image/*" />
+                    </div>
+                </div>
+
+                <div id="status" class="status" role="alert"></div>
+                <button type="submit" class="btn-continue">Cadastrar desaparecido</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MapLibre GL JS: mapa vetorial, busca e marcadores -->
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <script>
+        // Substitua APENAS o valor abaixo pela sua chave pública do MapTiler.
+        // Configure Allowed HTTP Origins no painel MapTiler para os domínios do SPES.
+        const MAPTILER_KEY = 'SUA_CHAVE_MAPTILER_AQUI';
+        const chaveConfigurada = Boolean(MAPTILER_KEY.trim()) &&
+            MAPTILER_KEY !== 'SUA_CHAVE_MAPTILER_AQUI';
+
+        let mapa;
+        const pontosLocalizacao = [];
+        const marcadoresLocalizacao = [];
+        const LIMITE_PONTOS = 3;
+        const estiloRuas = chaveConfigurada
+            ? `https://api.maptiler.com/maps/streets-v2/style.json?key=${encodeURIComponent(MAPTILER_KEY)}`
+            : {
+                version: 8,
+                sources: { esri: { type: 'raster', tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'], tileSize: 256, attribution: 'Esri and contributors' } },
+                layers: [{ id: 'ruas', type: 'raster', source: 'esri' }]
+            };
+        const estiloSatelite = {
+            version: 8,
+            sources: { esri: { type: 'raster', tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'], tileSize: 256, attribution: 'Esri and contributors' } },
+            layers: [{ id: 'satelite', type: 'raster', source: 'esri' }]
+        };
+
+        function atualizarListaPontos() {
+            const lista = document.getElementById('lista-pontos');
+            lista.replaceChildren();
+            pontosLocalizacao.forEach((ponto, indice) => {
+                const item = document.createElement('li');
+                const descricao = document.createElement('span');
+                descricao.textContent = `Ponto ${indice + 1}: ${ponto.latitude.toFixed(6)}, ${ponto.longitude.toFixed(6)}`;
+                const remover = document.createElement('button');
+                remover.type = 'button';
+                remover.className = 'ponto-remover';
+                remover.textContent = 'Remover';
+                remover.setAttribute('aria-label', `Remover ponto ${indice + 1}`);
+                remover.addEventListener('click', () => removerPonto(indice));
+                item.append(descricao, remover);
+                lista.appendChild(item);
+            });
+            document.getElementById('contador-pontos').textContent = `${pontosLocalizacao.length} de ${LIMITE_PONTOS} pontos selecionados`;
+            document.getElementById('latitude').value = pontosLocalizacao[0]?.latitude ?? '';
+            document.getElementById('longitude').value = pontosLocalizacao[0]?.longitude ?? '';
+        }
+
+        function novoMarcador(ponto, indice) {
+            const el = document.createElement('div');
+            el.className = 'spes-marker';
+            const numero = document.createElement('span');
+            numero.textContent = String(indice + 1);
+            el.appendChild(numero);
+            const marcador = new maplibregl.Marker({ element: el, draggable: true })
+                .setLngLat([ponto.longitude, ponto.latitude]).addTo(mapa);
+            marcador.on('dragend', () => {
+                const pos = marcador.getLngLat();
+                ponto.latitude = Number(pos.lat.toFixed(6));
+                ponto.longitude = Number(pos.lng.toFixed(6));
+                atualizarListaPontos();
+                document.getElementById('localizacao-feedback').textContent = 'Posição do ponto atualizada.';
+            });
+            return marcador;
+        }
+
+        function redesenharMarcadores() {
+            marcadoresLocalizacao.forEach(m => m.remove());
+            marcadoresLocalizacao.length = 0;
+            pontosLocalizacao.forEach((ponto, indice) => marcadoresLocalizacao.push(novoMarcador(ponto, indice)));
+            atualizarListaPontos();
+        }
+
+        function removerPonto(indice) {
+            pontosLocalizacao.splice(indice, 1);
+            redesenharMarcadores();
+            document.getElementById('localizacao-feedback').textContent = 'Ponto removido.';
+        }
+
+        function initMap() {
+            const feedback = document.getElementById('localizacao-feedback');
+            if (!window.maplibregl) {
+                feedback.textContent = 'Não foi possível carregar o MapLibre. Verifique a conexão.';
+                return;
+            }
+            const aviso = document.getElementById('mapa-chave-aviso');
+            aviso.hidden = chaveConfigurada;
+            mapa = new maplibregl.Map({
+                container: 'mapa',
+                style: estiloRuas,
+                center: [-47.9292, -15.7801],
+                zoom: 3.5,
+                attributionControl: true
+            });
+            mapa.addControl(new maplibregl.NavigationControl(), 'top-right');
+            mapa.on('error', e => {
+                console.error('Erro no mapa:', e.error);
+                feedback.textContent = 'Falha ao carregar o mapa. Confira a chave MapTiler e as origens permitidas.';
+            });
+            mapa.on('click', evento => {
+                if (pontosLocalizacao.length >= LIMITE_PONTOS) {
+                    feedback.textContent = 'Limite de três pontos atingido. Remova um ponto para adicionar outro.';
+                    return;
+                }
+                const latitude = Number(evento.lngLat.lat.toFixed(6));
+                const longitude = Number(evento.lngLat.lng.toFixed(6));
+                if (pontosLocalizacao.some(p => Math.abs(p.latitude - latitude) < .0001 && Math.abs(p.longitude - longitude) < .0001)) {
+                    feedback.textContent = 'Esse local já foi selecionado.';
+                    return;
+                }
+                pontosLocalizacao.push({ latitude, longitude });
+                redesenharMarcadores();
+                feedback.textContent = `Ponto ${pontosLocalizacao.length} selecionado. Arraste o marcador para ajustar.`;
+            });
+            const botaoRuas = document.getElementById('mapa-ruas');
+            const botaoSatelite = document.getElementById('mapa-satelite');
+            function trocarCamada(tipo) {
+                mapa.setStyle(tipo === 'ruas' ? estiloRuas : estiloSatelite);
+                botaoRuas.classList.toggle('ativo', tipo === 'ruas');
+                botaoSatelite.classList.toggle('ativo', tipo === 'satelite');
+                botaoRuas.setAttribute('aria-pressed', String(tipo === 'ruas'));
+                botaoSatelite.setAttribute('aria-pressed', String(tipo === 'satelite'));
+            }
+            botaoRuas.addEventListener('click', () => trocarCamada('ruas'));
+            botaoSatelite.addEventListener('click', () => trocarCamada('satelite'));
+            document.getElementById('limpar-pontos').addEventListener('click', () => {
+                pontosLocalizacao.length = 0;
+                redesenharMarcadores();
+                feedback.textContent = 'Pontos removidos. Clique no mapa para selecionar novos locais.';
+            });
+            async function pesquisarEndereco() {
+                const termo = document.getElementById('busca-endereco').value.trim();
+                const resultados = document.getElementById('resultados-endereco');
+                resultados.replaceChildren();
+                if (!termo) { feedback.textContent = 'Digite um endereço para pesquisar.'; return; }
+                if (!chaveConfigurada) {
+                    feedback.textContent = 'Para pesquisar endereços, configure sua chave pública MapTiler no JavaScript.';
+                    return;
+                }
+                feedback.textContent = 'Pesquisando endereço...';
+                try {
+                    const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(termo)}.json?key=${encodeURIComponent(MAPTILER_KEY)}&language=pt&limit=5&country=br`;
+                    const resposta = await fetch(url);
+                    if (!resposta.ok) throw new Error(`Pesquisa indisponível (HTTP ${resposta.status}). Verifique sua chave e permissões.`);
+                    const dados = await resposta.json();
+                    if (!dados.features?.length) { feedback.textContent = 'Nenhum endereço encontrado. Tente uma pesquisa mais específica.'; return; }
+                    dados.features.forEach(local => {
+                        const item = document.createElement('li');
+                        const botao = document.createElement('button');
+                        botao.type = 'button';
+                        botao.textContent = local.place_name || local.text || 'Local encontrado';
+                        botao.addEventListener('click', () => {
+                            mapa.flyTo({ center: local.center, zoom: 16, essential: true });
+                            resultados.replaceChildren();
+                            feedback.textContent = 'Local encontrado! Clique no mapa para marcar a posição exata.';
+                        });
+                        item.appendChild(botao);
+                        resultados.appendChild(item);
+                    });
+                    feedback.textContent = 'Selecione um dos resultados para aproximar o mapa.';
+                } catch (erro) {
+                    feedback.textContent = erro.message || 'Erro ao pesquisar endereço.';
+                }
+            }
+            document.getElementById('botao-busca-mapa').addEventListener('click', pesquisarEndereco);
+            document.getElementById('busca-endereco').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); pesquisarEndereco(); } });
+            atualizarListaPontos();
+            feedback.textContent = 'Mapa carregado. Pesquise um endereço ou clique para marcar até três locais.';
+        }
+        window.addEventListener('load', initMap);
+    </script>
+
+    <!-- Script do formulário -->
+    <script>
+        // ========== LOGIN / LOGOUT ==========
+        const token = localStorage.getItem('token');
+        const userName = localStorage.getItem('userName');
+        const btnEntrar = document.getElementById('btnEntrar');
+        const btnCadastrar = document.getElementById('btnCadastrar');
+        const areaUsuario = document.getElementById('areaUsuario');
+        const nomeUsuario = document.getElementById('nomeUsuario');
+        const btnSair = document.getElementById('btnSair');
+
+        if (token && userName) {
+            if (btnEntrar) btnEntrar.style.display = 'none';
+            if (btnCadastrar) btnCadastrar.style.display = 'none';
+            if (areaUsuario) areaUsuario.style.display = 'flex';
+            if (nomeUsuario) nomeUsuario.textContent = `Olá, ${userName.split(' ')[0]}`;
+        }
+
+        if (btnSair) {
+            btnSair.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (confirm('Deseja sair da sua conta?')) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userName');
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+
+        // ========== FORMULÁRIO ==========
+        const API_URL = 'https://spes-backend.onrender.com/api';
+        const form = document.getElementById('form-desaparecido');
+        const statusEl = document.getElementById('status');
+        const botao = form.querySelector('button[type="submit"]');
+        const fotoInput = document.getElementById('foto');
+        const fotoNome = document.getElementById('foto-nome');
+
+        function mostrarStatus(texto, tipo) {
+            statusEl.className = 'status ' + tipo;
+            statusEl.textContent = texto;
+        }
+
+        if (!token) {
+            mostrarStatus('Você precisa estar logado para cadastrar. Faça login para continuar.', 'info');
+            botao.disabled = true;
+        }
+
+        // Bloqueia datas futuras
+        const agora = new Date();
+        const hojeISO = new Date(agora.getTime() - agora.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+        document.getElementById('data_nasc').max = hojeISO;
+        document.getElementById('data_desaparecimento').max = hojeISO;
+
+        fotoInput.addEventListener('change', () => {
+            fotoNome.textContent = fotoInput.files[0] ? fotoInput.files[0].name : '';
+        });
+
+        function lerFoto(arquivo, maxLado = 520, qualidade = 0.7) {
+            return new Promise((resolve, reject) => {
+                const url = URL.createObjectURL(arquivo);
+                const img = new Image();
+                img.onload = () => {
+                    const escala = Math.min(1, maxLado / Math.max(img.width, img.height));
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.round(img.width * escala);
+                    canvas.height = Math.round(img.height * escala);
+                    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                    URL.revokeObjectURL(url);
+                    resolve(canvas.toDataURL('image/jpeg', qualidade));
+                };
+                img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Erro ao ler imagem.')); };
+                img.src = url;
+            });
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!token) { mostrarStatus('Faça login para cadastrar.', 'erro'); return; }
+
+            // Valida se o mapa foi clicado (se o mapa estiver ativo)
+            const lat = document.getElementById('latitude').value;
+            const lng = document.getElementById('longitude').value;
+
+            if (pontosLocalizacao.length === 0) {
+                mostrarStatus('Selecione pelo menos um ponto no mapa antes de cadastrar.', 'erro');
+                document.getElementById('mapa').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            botao.disabled = true;
+            botao.textContent = 'Enviando...';
+
+            try {
+                const fd = new FormData(form);
+                const texto = (c) => (fd.get(c) || '').toString().trim();
+                const numero = (c) => { const v = texto(c); return v === '' ? '' : Number(v); };
+
+                const dados = {
+                    nome: texto('nome'),
+                    rg: texto('rg'),
+                    data_nascimento: texto('data_nasc'),
+                    sexo: texto('sexo'),
+                    etnia: texto('cor_raca'),
+                    altura: numero('altura'),
+                    peso: numero('peso'),
+                    contato: texto('contato'),
+                    informacoes: texto('informacoes'),
+                    locais_favoritos: texto('ultimas_localizacoes'),
+                    cidade: texto('cidade'),
+                    estado_desaparecimento: texto('EPD'),
+                    data_desaparecimento: texto('data_desaparecimento'),
+                    // Lista completa dos últimos locais selecionados no mapa.
+                    localizacoes: pontosLocalizacao.map((ponto, indice) => ({
+                        ordem: indice + 1,
+                        latitude: ponto.latitude,
+                        longitude: ponto.longitude
+                    }))
+                };
+
+                // Adiciona lat/lng se existirem
+                if (lat) dados.latitude = numero('latitude');
+                if (lng) dados.longitude = numero('longitude');
+
+                Object.keys(dados).forEach(k => { if (dados[k] === '') delete dados[k]; });
+
+                const arquivo = fotoInput.files[0];
+                if (arquivo) {
+                    if (arquivo.size > 15 * 1024 * 1024) throw new Error('Foto muito grande (máx 15MB).');
+                    dados.foto = await lerFoto(arquivo);
+                }
+
+                const response = await fetch(`${API_URL}/people`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(dados)
+                });
+
+                const data = await response.json().catch(() => ({}));
+
+                if (data.success) {
+                    mostrarStatus('Cadastrado com sucesso! Redirecionando...', 'ok');
+                    setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+                    return;
+                }
+
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    mostrarStatus('Sessão expirada. Faça login novamente.', 'erro');
+                } else {
+                    const msg = data.errors?.[0]?.msg || data.error || 'Erro ao cadastrar.';
+                    mostrarStatus(msg, 'erro');
+                }
+            } catch (error) {
+                mostrarStatus(error.message || 'Erro ao conectar com a API.', 'erro');
+            }
+
+            botao.disabled = false;
+            botao.textContent = 'Cadastrar desaparecido';
+        });
+    </script>
+</body>
+</html>
