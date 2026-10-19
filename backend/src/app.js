@@ -8,6 +8,7 @@ const sequelize = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const personRoutes = require('./routes/personRoutes');
 const caseRoutes = require('./routes/caseRoutes');
+require('./models/OccurrenceLog'); // registra a tabela de auditoria no Sequelize
 
 const app = express();
 

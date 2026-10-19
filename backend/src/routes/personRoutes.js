@@ -64,8 +64,10 @@ const idValido = param('id').isInt({ min: 1 }).withMessage('ID inválido');
 
 router.post('/', auth, regrasPessoa(true), validar, personController.create);
 router.get('/', personController.findAll);
+router.get('/mine', auth, personController.findMine);
 router.get('/stats', personController.getStats); // antes de '/:id'
 router.get('/:id', idValido, validar, personController.findOne);
+router.get('/:id/logs', auth, idValido, validar, personController.getLogs);
 router.put('/:id', auth, idValido, regrasPessoa(false), validar, personController.update);
 router.delete('/:id', auth, idValido, validar, personController.delete);
 

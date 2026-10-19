@@ -3,6 +3,7 @@ const sequelize = require('../config/database');
 const MissingPerson = require('../models/MissingPerson');
 const Contact = require('../models/Contact');
 const Location = require('../models/Location');
+const OccurrenceLog = require('../models/OccurrenceLog');
 
 // Campos que o usuário pode enviar
 const CAMPOS_CRIACAO = [
@@ -83,6 +84,63 @@ const montarLocalizacoes = (body) => {
 
 const naoEhDono = (person, req) => person.cpf_usuario !== req.userCpf;
 
+// Não registrar valores de documentos, contato, fotos ou endereços pessoais em logs.
+const CAMPOS_LOG = new Set([
+  'nome', 'data_nascimento', 'sexo', 'etnia', 'altura', 'peso',
+  'informacoes', 'cidade', 'estado_desaparecimento', 'data_desaparecimento', 'status'
+]);
+const CAMPOS_RESTRITOS = new Set(['rg', 'contato', 'foto', 'locais_favoritos']);
+const normalizar = (valor) => valor == null ? null : String(valor);
+const gerarAlteracoes = (antigo, novo) => {
+  const alteracoes = {};
+  for (const [campo, valor] of Object.entries(novo)) {
+    if (normalizar(antigo[campo]) === normalizar(valor)) continue;
+    if (CAMPOS_LOG.has(campo)) {
+      alteracoes[campo] = { anterior: antigo[campo] ?? null, novo: valor };
+    } else if (CAMPOS_RESTRITOS.has(campo)) {
+      alteracoes[campo] = { alterado: true }; // sem dados sensíveis
+    }
+  }
+  return alteracoes;
+};
+
+// ---------- minhas ocorrências (acesso autenticado) ----------
+exports.findMine = async (req, res) => {
+  try {
+    const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 30, 1), 100);
+    const offset = Math.max(Number.parseInt(req.query.offset, 10) || 0, 0);
+    const people = await MissingPerson.findAll({
+      where: { cpf_usuario: req.userCpf },
+      attributes: { exclude: ['cpf_usuario', 'foto'] },
+      order: [['id_desaparecido', 'DESC']], limit, offset
+    });
+    res.json(people);
+  } catch (error) {
+    console.error('Erro ao buscar minhas ocorrências:', error);
+    res.status(500).json({ error: 'Erro ao buscar suas ocorrências' });
+  }
+};
+
+// ---------- histórico (somente proprietário) ----------
+exports.getLogs = async (req, res) => {
+  try {
+    const person = await MissingPerson.findByPk(req.params.id);
+    if (!person) return res.status(404).json({ error: 'Ocorrência não encontrada' });
+    if (naoEhDono(person, req)) return res.status(403).json({ error: 'Acesso negado ao histórico' });
+    const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 50, 1), 100);
+    const offset = Math.max(Number.parseInt(req.query.offset, 10) || 0, 0);
+    const logs = await OccurrenceLog.findAll({
+      where: { id_desaparecido: person.id_desaparecido, cpf_usuario: req.userCpf },
+      attributes: ['id', 'id_desaparecido', 'acao', 'alteracoes', 'criado_em'],
+      order: [['criado_em', 'DESC'], ['id', 'DESC']], limit, offset
+    });
+    res.json(logs);
+  } catch (error) {
+    console.error('Erro ao buscar histórico:', error);
+    res.status(500).json({ error: 'Erro ao buscar histórico' });
+  }
+};
+
 // ---------- cadastrar ----------
 exports.create = async (req, res) => {
   try {
@@ -98,6 +156,12 @@ exports.create = async (req, res) => {
       const localizacoes = montarLocalizacoes(req.body).map((l) => ({ ...l, id_desaparecido: nova.id_desaparecido }));
       if (localizacoes.length) await Location.bulkCreate(localizacoes, { transaction: t });
 
+      await OccurrenceLog.create({
+        id_desaparecido: nova.id_desaparecido,
+        cpf_usuario: req.userCpf,
+        acao: 'criacao',
+        alteracoes: {}
+      }, { transaction: t });
       return nova;
     });
 
@@ -198,16 +262,31 @@ exports.findOne = async (req, res) => {
 // ---------- editar ----------
 exports.update = async (req, res) => {
   try {
-    const person = await MissingPerson.findByPk(req.params.id);
-    if (!person) {
-      return res.status(404).json({ error: 'Pessoa não encontrada' });
-    }
-    if (naoEhDono(person, req)) {
-      return res.status(403).json({ error: 'Você só pode editar casos que você cadastrou' });
-    }
+    const resultado = await sequelize.transaction(async (t) => {
+      const person = await MissingPerson.findByPk(req.params.id, {
+        transaction: t, lock: t.LOCK.UPDATE
+      });
+      if (!person) return { status: 404, error: 'Pessoa não encontrada' };
+      if (naoEhDono(person, req)) return { status: 403, error: 'Você só pode editar casos que você cadastrou' };
 
-    await person.update(pegarCampos(req.body, CAMPOS_EDICAO));
-    res.json({ success: true, person: { id_desaparecido: person.id_desaparecido, nome: person.nome, status: person.status } });
+      const dados = pegarCampos(req.body, CAMPOS_EDICAO);
+      const anterior = person.get({ plain: true });
+      const alteracoes = gerarAlteracoes(anterior, dados);
+      if (Object.keys(alteracoes).length === 0) {
+        return { status: 200, body: { success: true, message: 'Nenhuma alteração identificada' } };
+      }
+      await person.update(dados, { transaction: t });
+      await OccurrenceLog.create({
+        id_desaparecido: person.id_desaparecido,
+        cpf_usuario: req.userCpf,
+        acao: 'edicao', alteracoes
+      }, { transaction: t });
+      return { status: 200, body: { success: true, person: {
+        id_desaparecido: person.id_desaparecido, nome: person.nome, status: person.status
+      } } };
+    });
+    if (resultado.error) return res.status(resultado.status).json({ error: resultado.error });
+    res.status(resultado.status).json(resultado.body);
   } catch (error) {
     console.error('Erro ao atualizar:', error);
     res.status(500).json({ error: 'Erro ao atualizar' });
@@ -229,6 +308,9 @@ exports.delete = async (req, res) => {
       const id_desaparecido = person.id_desaparecido;
       await Contact.destroy({ where: { id_desaparecido }, transaction: t });
       await Location.destroy({ where: { id_desaparecido }, transaction: t });
+      await OccurrenceLog.create({
+        id_desaparecido, cpf_usuario: req.userCpf, acao: 'exclusao', alteracoes: {}
+      }, { transaction: t });
       await person.destroy({ transaction: t });
     });
 
