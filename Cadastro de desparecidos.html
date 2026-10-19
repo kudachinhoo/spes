@@ -519,8 +519,11 @@
             }
             mapa = L.map('mapa', { scrollWheelZoom: false }).setView([-15.7801, -47.9292], 4);
             // Coloque aqui a chave pública de API do MapTiler, restrita ao domínio do SPES.
-            const MAPTILER_KEY = 'gkXgq6TLnkBlYlb86MYw';
-            const chaveConfigurada = MAPTILER_KEY !== 'gkXgq6TLnkBlYlb86MYw' && MAPTILER_KEY.trim() !== '';
+           const MAPTILER_KEY = 'gkXgq6TLnkBlYlb86MYw';
+
+const chaveConfigurada =
+    MAPTILER_KEY.trim() !== '' &&
+    MAPTILER_KEY !== 'gkXgq6TLnkBlYlb86MYw';
             const ruas = chaveConfigurada ? L.tileLayer(
                 `https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${encodeURIComponent(MAPTILER_KEY)}`,
                 { attribution: '&copy; MapTiler &copy; OpenStreetMap contributors', maxZoom: 19, tileSize: 256 }
