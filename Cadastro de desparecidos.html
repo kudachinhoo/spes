@@ -356,7 +356,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="rg">RG <span class="hint">(opcional)</span></label>
-                            <input type="text" id="rg" name="rg" placeholder="Ex: 12.345.678-9" />
+                            <input type="text" id="rg" name="rg" maxlength="20" placeholder="Ex: 12.345.678-9" />
                         </div>
                         <div class="form-group">
                             <label for="data_nasc">Data de nascimento <span class="obrigatorio">*</span></label>
@@ -399,7 +399,7 @@
                         </div>
                         <div class="form-group">
                             <label for="contato">Contato do responsável</label>
-                            <input type="tel" id="contato" name="contato" placeholder="(00) 00000-0000" />
+                            <input type="tel" id="contato" name="contato" maxlength="20" placeholder="(00) 00000-0000" />
                         </div>
                     </div>
                 </div>
@@ -774,6 +774,10 @@
                 const fd = new FormData(form);
                 const texto = (c) => (fd.get(c) || '').toString().trim();
                 const numero = (c) => { const v = texto(c); return v === '' ? '' : Number(v); };
+
+                if (texto('rg').length > 20 || texto('contato').length > 20) {
+                    throw new Error('RG e contato devem ter no máximo 20 caracteres.');
+                }
 
                 const dados = {
                     nome: texto('nome'),
