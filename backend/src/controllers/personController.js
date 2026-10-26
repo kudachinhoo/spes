@@ -22,14 +22,7 @@ const ATRIBUTOS_PUBLICOS = {
 const LIMITE_PADRAO = 60;
 const LIMITE_MAXIMO = 100;
 
-const INCLUDES_DETALHE = [
-  { model: Contact, as: 'contatos', attributes: ['tipo', 'contato'] },
-  {
-    model: Location,
-    as: 'localizacoes',
-    attributes: ['endereco', 'cidade', 'estado', 'data_localizacao', 'observacao']
-  }
-];
+const INCLUDES_DETALHE = []; // Dados de contato/localização privados não são públicos.
 
 // ---------- utilitários ----------
 const texto = (valor, max) => (typeof valor === 'string' ? valor.trim().slice(0, max) : '');
@@ -54,11 +47,11 @@ const montarContatos = (body) => {
   if (Array.isArray(body.contatos)) {
     for (const c of body.contatos.slice(0, 5)) {
       const tipo = texto(c && c.tipo, 20);
-      const valor = texto(c && c.contato, 100);
+      const valor = texto(c && c.contato, 20);
       if (tipo && valor) lista.push({ tipo, contato: valor });
     }
   }
-  const simples = texto(body.contato, 100);
+  const simples = texto(body.contato, 20);
   if (simples) lista.push({ tipo: 'telefone', contato: simples });
   return lista;
 };
@@ -96,7 +89,7 @@ const gerarAlteracoes = (antigo, novo) => {
   for (const [campo, valor] of Object.entries(novo)) {
     if (normalizar(antigo[campo]) === normalizar(valor)) continue;
     if (CAMPOS_LOG.has(campo)) {
-      alteracoes[campo] = { anterior: antigo[campo] ?? null, novo: valor };
+      alteracoes[campo] = { alterado: true };
     } else if (CAMPOS_RESTRITOS.has(campo)) {
       alteracoes[campo] = { alterado: true }; // sem dados sensíveis
     }
@@ -118,6 +111,21 @@ exports.findMine = async (req, res) => {
   } catch (error) {
     console.error('Erro ao buscar minhas ocorrências:', error);
     res.status(500).json({ error: 'Erro ao buscar suas ocorrências' });
+  }
+};
+
+// ---------- detalhes privados (somente proprietário) ----------
+exports.findMineOne = async (req, res) => {
+  try {
+    const person = await MissingPerson.findOne({
+      where: { id_desaparecido: req.params.id, cpf_usuario: req.userCpf },
+      attributes: { exclude: ['cpf_usuario', 'foto'] }
+    });
+    if (!person) return res.status(404).json({ error: 'Ocorrência não encontrada na sua conta' });
+    return res.json(person);
+  } catch (error) {
+    console.error('Erro ao consultar ocorrência própria:', error);
+    return res.status(500).json({ error: 'Erro ao consultar ocorrência' });
   }
 };
 
@@ -200,27 +208,31 @@ exports.findAll = async (req, res) => {
       where.sexo = sexo;
     }
 
-    // Filtro por idade
-    const idadeMinNum = parseInt(idadeMin, 10);
-    const idadeMaxNum = parseInt(idadeMax, 10);
-
-    if (!isNaN(idadeMinNum) || !isNaN(idadeMaxNum)) {
+    // Idade em anos completos, calculada a partir da data atual.
+    const idadeMinNum = Number(idadeMin);
+    const idadeMaxNum = Number(idadeMax);
+    const hasMin = idadeMin !== undefined && idadeMin !== '' && Number.isInteger(idadeMinNum) && idadeMinNum >= 0;
+    const hasMax = idadeMax !== undefined && idadeMax !== '' && Number.isInteger(idadeMaxNum) && idadeMaxNum >= 0;
+    if (hasMin || hasMax) {
       const hoje = new Date();
-      const anoAtual = hoje.getFullYear();
-
-      if (!isNaN(idadeMaxNum)) {
-        const dataNascMin = `${anoAtual - idadeMaxNum - 1}-12-31`;
-        where.data_nascimento = { ...where.data_nascimento, [Op.gte]: dataNascMin };
-      }
-      if (!isNaN(idadeMinNum)) {
-        const dataNascMax = `${anoAtual - idadeMinNum}-01-01`;
-        where.data_nascimento = { ...where.data_nascimento, [Op.lte]: dataNascMax };
+      const anosAtras = (anos) => {
+        const d = new Date(Date.UTC(hoje.getFullYear() - anos, hoje.getMonth(), hoje.getDate()));
+        return d.toISOString().slice(0, 10);
+      };
+      where.data_nascimento = {};
+      if (hasMin) where.data_nascimento[Op.lte] = anosAtras(idadeMinNum);
+      if (hasMax) {
+        const d = new Date(`${anosAtras(idadeMaxNum + 1)}T00:00:00Z`);
+        d.setUTCDate(d.getUTCDate() + 1);
+        where.data_nascimento[Op.gte] = d.toISOString().slice(0, 10);
       }
     }
 
     const formatoData = /^\d{4}-\d{2}-\d{2}$/;
-    if (formatoData.test(startDate) && formatoData.test(endDate)) {
-      where.data_desaparecimento = { [Op.between]: [startDate, endDate] };
+    if (formatoData.test(startDate || '') || formatoData.test(endDate || '')) {
+      where.data_desaparecimento = {};
+      if (formatoData.test(startDate || '')) where.data_desaparecimento[Op.gte] = startDate;
+      if (formatoData.test(endDate || '')) where.data_desaparecimento[Op.lte] = endDate;
     }
 
     const limit = Math.min(parseInt(req.query.limit, 10) || LIMITE_PADRAO, LIMITE_MAXIMO);
@@ -296,15 +308,12 @@ exports.update = async (req, res) => {
 // ---------- remover ----------
 exports.delete = async (req, res) => {
   try {
-    const person = await MissingPerson.findByPk(req.params.id);
-    if (!person) {
-      return res.status(404).json({ error: 'Pessoa não encontrada' });
-    }
-    if (naoEhDono(person, req)) {
-      return res.status(403).json({ error: 'Você só pode remover casos que você cadastrou' });
-    }
-
-    await sequelize.transaction(async (t) => {
+    const result = await sequelize.transaction(async (t) => {
+      const person = await MissingPerson.findOne({
+        where: { id_desaparecido: req.params.id, cpf_usuario: req.userCpf },
+        transaction: t, lock: t.LOCK.UPDATE
+      });
+      if (!person) return false;
       const id_desaparecido = person.id_desaparecido;
       await Contact.destroy({ where: { id_desaparecido }, transaction: t });
       await Location.destroy({ where: { id_desaparecido }, transaction: t });
@@ -312,12 +321,13 @@ exports.delete = async (req, res) => {
         id_desaparecido, cpf_usuario: req.userCpf, acao: 'exclusao', alteracoes: {}
       }, { transaction: t });
       await person.destroy({ transaction: t });
+      return true;
     });
-
-    res.json({ success: true, message: 'Caso removido' });
+    if (!result) return res.status(404).json({ error: 'Ocorrência não encontrada na sua conta' });
+    return res.json({ success: true, message: 'Ocorrência removida; histórico de auditoria preservado' });
   } catch (error) {
     console.error('Erro ao remover:', error);
-    res.status(500).json({ error: 'Erro ao remover' });
+    return res.status(500).json({ error: 'Erro ao remover' });
   }
 };
 

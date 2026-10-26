@@ -47,9 +47,10 @@ const regrasPessoa = (criar) => {
     body('etnia').optional().isIn(ETNIAS).withMessage('Cor/raça inválida'),
     body('altura').optional().isFloat({ min: 30, max: 250 }).withMessage('Altura deve estar entre 30 e 250 cm'),
     body('peso').optional().isFloat({ min: 1, max: 400 }).withMessage('Peso deve estar entre 1 e 400 kg'),
+    body('rg').optional().trim().isLength({ max: 20 }).withMessage('RG deve ter no máximo 20 caracteres'),
     body('cidade').optional().trim().isLength({ max: 100 }).withMessage('Cidade muito longa'),
     body('informacoes').optional().trim().isLength({ max: 2000 }).withMessage('Informações muito longas (máximo 2000 caracteres)'),
-    body('contato').optional().trim().isLength({ max: 100 }).withMessage('Contato muito longo'),
+    body('contato').optional().trim().isLength({ max: 20 }).withMessage('Contato muito longo'),
     body('ultimas_localizacoes').optional().trim().isLength({ max: 500 }).withMessage('Últimas localizações muito longas (máximo 500 caracteres)'),
     body('foto').optional().custom(validarFoto)
   ];
@@ -65,6 +66,7 @@ const idValido = param('id').isInt({ min: 1 }).withMessage('ID inválido');
 router.post('/', auth, regrasPessoa(true), validar, personController.create);
 router.get('/', personController.findAll);
 router.get('/mine', auth, personController.findMine);
+router.get('/mine/:id', auth, idValido, validar, personController.findMineOne);
 router.get('/stats', personController.getStats); // antes de '/:id'
 router.get('/:id', idValido, validar, personController.findOne);
 router.get('/:id/logs', auth, idValido, validar, personController.getLogs);
