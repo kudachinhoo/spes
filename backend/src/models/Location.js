@@ -16,6 +16,9 @@ const Location = sequelize.define('localizacao', {
       key: 'id_desaparecido'
     }
   },
+  latitude: { type: DataTypes.DECIMAL(10, 7) },
+  longitude: { type: DataTypes.DECIMAL(10, 7) },
+  ordem: { type: DataTypes.INTEGER },
   endereco: {
     type: DataTypes.STRING(200)
   },

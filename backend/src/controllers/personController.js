@@ -22,7 +22,11 @@ const ATRIBUTOS_PUBLICOS = {
 const LIMITE_PADRAO = 60;
 const LIMITE_MAXIMO = 100;
 
-const INCLUDES_DETALHE = []; // Dados de contato/localização privados não são públicos.
+const INCLUDES_DETALHE = [{
+  model: Location, as: 'localizacoes',
+  attributes: ['latitude', 'longitude', 'ordem'],
+  required: false
+}]; // Apenas coordenadas informadas para o mapa; sem endereço, contato ou observações.
 
 // ---------- utilitários ----------
 const texto = (valor, max) => (typeof valor === 'string' ? valor.trim().slice(0, max) : '');
@@ -61,6 +65,11 @@ const montarLocalizacoes = (body) => {
   if (Array.isArray(body.localizacoes)) {
     for (const l of body.localizacoes.slice(0, 10)) {
       const item = {
+        latitude: Number.isFinite(Number(l?.latitude)) && l.latitude !== undefined &&
+          Number(l.latitude) >= -90 && Number(l.latitude) <= 90 ? Number(l.latitude) : null,
+        longitude: Number.isFinite(Number(l?.longitude)) && l.longitude !== undefined &&
+          Number(l.longitude) >= -180 && Number(l.longitude) <= 180 ? Number(l.longitude) : null,
+        ordem: Number.isInteger(Number(l?.ordem)) && Number(l.ordem) > 0 ? Number(l.ordem) : null,
         endereco: texto(l && l.endereco, 200) || null,
         cidade: texto(l && l.cidade, 100) || null,
         estado: texto(l && l.estado, 50) || null,
@@ -75,7 +84,7 @@ const montarLocalizacoes = (body) => {
   return lista;
 };
 
-const naoEhDono = (person, req) => person.cpf_usuario !== req.userCpf;
+const naoEhDono = (person, req) => !req.isAdmin && person.cpf_usuario !== req.userCpf;
 
 // Não registrar valores de documentos, contato, fotos ou endereços pessoais em logs.
 const CAMPOS_LOG = new Set([
@@ -118,7 +127,7 @@ exports.findMine = async (req, res) => {
 exports.findMineOne = async (req, res) => {
   try {
     const person = await MissingPerson.findOne({
-      where: { id_desaparecido: req.params.id, cpf_usuario: req.userCpf },
+      where: req.isAdmin ? { id_desaparecido: req.params.id } : { id_desaparecido: req.params.id, cpf_usuario: req.userCpf },
       attributes: { exclude: ['cpf_usuario', 'foto'] }
     });
     if (!person) return res.status(404).json({ error: 'Ocorrência não encontrada na sua conta' });
@@ -138,7 +147,7 @@ exports.getLogs = async (req, res) => {
     const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 50, 1), 100);
     const offset = Math.max(Number.parseInt(req.query.offset, 10) || 0, 0);
     const logs = await OccurrenceLog.findAll({
-      where: { id_desaparecido: person.id_desaparecido, cpf_usuario: req.userCpf },
+      where: req.isAdmin ? { id_desaparecido: person.id_desaparecido } : { id_desaparecido: person.id_desaparecido, cpf_usuario: req.userCpf },
       attributes: ['id', 'id_desaparecido', 'acao', 'alteracoes', 'criado_em'],
       order: [['criado_em', 'DESC'], ['id', 'DESC']], limit, offset
     });
@@ -310,7 +319,7 @@ exports.delete = async (req, res) => {
   try {
     const result = await sequelize.transaction(async (t) => {
       const person = await MissingPerson.findOne({
-        where: { id_desaparecido: req.params.id, cpf_usuario: req.userCpf },
+        where: req.isAdmin ? { id_desaparecido: req.params.id } : { id_desaparecido: req.params.id, cpf_usuario: req.userCpf },
         transaction: t, lock: t.LOCK.UPDATE
       });
       if (!person) return false;

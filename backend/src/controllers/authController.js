@@ -19,7 +19,8 @@ const buscarPorEmail = (email) =>
 const dadosPublicosDoUsuario = (user) => ({
   cpf: user.cpf,
   nome: user.nome,
-  email: user.email
+  email: user.email,
+  papel: user.papel
 });
 
 exports.register = async (req, res) => {
@@ -146,7 +147,7 @@ exports.google = async (req, res) => {
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findByPk(req.userCpf, {
-      attributes: ['cpf', 'nome', 'email', 'telefone']
+      attributes: ['cpf', 'nome', 'email', 'telefone', 'papel']
     });
     if (!user) {
       return res.status(404).json({ error: 'Usuário não encontrado' });

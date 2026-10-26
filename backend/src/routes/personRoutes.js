@@ -3,6 +3,8 @@ const router = express.Router();
 const { body, param } = require('express-validator');
 const personController = require('../controllers/personController');
 const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
+const optionalAdmin = require('../middleware/optionalAdmin');
 const validar = require('../middleware/validar');
 
 const ESTADOS = [
@@ -66,11 +68,11 @@ const idValido = param('id').isInt({ min: 1 }).withMessage('ID inválido');
 router.post('/', auth, regrasPessoa(true), validar, personController.create);
 router.get('/', personController.findAll);
 router.get('/mine', auth, personController.findMine);
-router.get('/mine/:id', auth, idValido, validar, personController.findMineOne);
+router.get('/mine/:id', auth, optionalAdmin, idValido, validar, personController.findMineOne);
 router.get('/stats', personController.getStats); // antes de '/:id'
 router.get('/:id', idValido, validar, personController.findOne);
-router.get('/:id/logs', auth, idValido, validar, personController.getLogs);
-router.put('/:id', auth, idValido, regrasPessoa(false), validar, personController.update);
-router.delete('/:id', auth, idValido, validar, personController.delete);
+router.get('/:id/logs', auth, optionalAdmin, idValido, validar, personController.getLogs);
+router.put('/:id', auth, optionalAdmin, idValido, regrasPessoa(false), validar, personController.update);
+router.delete('/:id', auth, optionalAdmin, idValido, validar, personController.delete);
 
 module.exports = router;
