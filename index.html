@@ -957,5 +957,5 @@
         montarBarraFiltros();
         carregarPessoas();
     </script>
-</body>
+<script>(async()=>{const t=localStorage.getItem('token');if(!t)return;try{const r=await fetch('https://spes-backend.onrender.com/api/auth/profile',{headers:{Authorization:'Bearer '+t}});if(!r.ok)return;const u=await r.json();if(u.papel==='admin'){const a=document.createElement('a');a.href='Admin.html';a.textContent='Painel administrativo';a.style.cssText='position:fixed;bottom:18px;right:18px;padding:12px 18px;background:#0b2b4a;color:white;border-radius:12px;z-index:200';document.body.append(a)}}catch(e){}})();</script></body>
 </html>
