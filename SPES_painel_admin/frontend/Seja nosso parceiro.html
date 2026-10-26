@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Conheça as formas de parceria com o SPES e envie uma proposta para colaborar com a busca por pessoas desaparecidas." />
+    <title>SPES · Seja nosso parceiro</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        :root {
+            --azul-escuro: #0b2b4a;
+            --azul: #2a6f9c;
+            --azul-hover: #1d5a7e;
+            --azul-claro: #eaf2fa;
+            --azul-fundo: #dbe9f6;
+            --texto: #1a2639;
+            --texto-suave: #4b6f8e;
+            --borda: #dce7f1;
+            --branco: #ffffff;
+            --fundo: #f4f7fc;
+            --sombra: 0 12px 34px rgba(11, 43, 74, 0.08);
+            --raio: 22px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 105px; }
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: var(--texto);
+            background: var(--fundo);
+            line-height: 1.6;
+        }
+        a { color: inherit; text-decoration: none; }
+        button, input, select, textarea { font: inherit; }
+        button, a { -webkit-tap-highlight-color: transparent; }
+        img { max-width: 100%; }
+        .container { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+        /* CABEÇALHO — mantido no padrão das outras páginas do SPES */
+        .top-bar {
+            min-height: 88px;
+            padding: 0 2rem;
+            background: var(--branco);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-bottom: 2px solid #e6edf5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo-area { display: flex; align-items: center; flex-shrink: 0; }
+        .logo-area h1 {
+            display: flex; align-items: center; gap: 10px;
+            color: var(--azul-escuro); font-size: 1.9rem; font-weight: 800; letter-spacing: -0.6px;
+        }
+        #Logo { width: 58px; height: 58px; object-fit: contain; }
+        .nav-menu { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 0.45rem 1.2rem; }
+        .nav-menu > a:not(.btn-outline):not(.btn-solid) {
+            padding: 0.5rem 0.1rem; border-bottom: 2px solid transparent;
+            color: #1e3b5c; font-size: 0.95rem; font-weight: 500; transition: color .2s, border-color .2s;
+        }
+        .nav-menu > a:not(.btn-outline):not(.btn-solid):hover,
+        .nav-menu > a.ativo { color: var(--azul); border-bottom-color: var(--azul); }
+        .nav-menu .btn-outline, .nav-menu .btn-solid {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-height: 42px; padding: 0.45rem 1.25rem; border-radius: 30px;
+            font-size: 0.92rem; font-weight: 700; transition: .2s;
+        }
+        .nav-menu .btn-outline { border: 1.5px solid var(--azul); color: var(--azul); background: transparent; }
+        .nav-menu .btn-outline:hover { color: var(--branco); background: var(--azul); }
+        .nav-menu .btn-solid { border: 1.5px solid var(--azul); color: var(--branco); background: var(--azul); }
+        .nav-menu .btn-solid:hover { background: var(--azul-hover); border-color: var(--azul-hover); }
+        #areaUsuario { display: none; align-items: center; gap: .8rem; }
+        #nomeUsuario { color: #1e3b5c; font-weight: 600; }
+
+        /* BOTÕES */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: .65rem;
+            min-height: 48px; padding: .8rem 1.45rem; border-radius: 999px;
+            border: 2px solid transparent; font-weight: 700; cursor: pointer; transition: .2s;
+        }
+        .btn-primario { color: var(--branco); background: var(--azul); border-color: var(--azul); }
+        .btn-primario:hover { background: var(--azul-hover); border-color: var(--azul-hover); transform: translateY(-2px); }
+        .btn-secundario { color: var(--azul); background: transparent; border-color: var(--azul); }
+        .btn-secundario:hover { color: var(--branco); background: var(--azul); }
+        .btn:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
+            outline: 3px solid #80b8e0; outline-offset: 3px;
+        }
+
+        /* APRESENTAÇÃO */
+        .hero {
+            position: relative; overflow: hidden;
+            background: linear-gradient(125deg, #eaf2fa 0%, #d6e6f4 100%);
+            border-bottom: 1px solid #cbddee;
+        }
+        .hero::before, .hero::after { content: ''; position: absolute; border-radius: 50%; pointer-events: none; }
+        .hero::before { width: 420px; height: 420px; right: -100px; top: -210px; background: rgba(42,111,156,.08); }
+        .hero::after { width: 300px; height: 300px; left: -130px; bottom: -190px; background: rgba(42,111,156,.07); }
+        .hero-content {
+            position: relative; z-index: 1; display: grid; grid-template-columns: 1.05fr .95fr;
+            align-items: center; gap: clamp(2rem, 5vw, 5rem); padding-top: 4.4rem; padding-bottom: 4.4rem;
+        }
+        .eyebrow { display: inline-flex; align-items: center; gap: .55rem; color: var(--azul); font-size: .84rem; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; }
+        .hero h2 { max-width: 660px; margin: .9rem 0 1.1rem; color: var(--azul-escuro); font-size: clamp(2.35rem, 4.4vw, 4rem); line-height: 1.12; letter-spacing: -1.8px; }
+        .hero-copy { max-width: 620px; margin-bottom: 1.6rem; color: #365a7a; font-size: 1.08rem; }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: .85rem; }
+        .hero-note { display: flex; align-items: flex-start; gap: .65rem; margin-top: 1.3rem; color: #466884; font-size: .88rem; }
+        .hero-note i { margin-top: .25rem; color: var(--azul); }
+        .hero-visual {
+            min-height: 340px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(255,255,255,.7); border-radius: 30px;
+            background: linear-gradient(145deg, #c9e0f1, #8eb7d5); box-shadow: var(--sombra);
+        }
+        .hero-visual::before, .hero-visual::after { content: ''; position: absolute; border: 1px solid rgba(255,255,255,.5); border-radius: 50%; }
+        .hero-visual::before { width: 300px; height: 300px; }
+        .hero-visual::after { width: 220px; height: 220px; }
+        .visual-content { position: relative; z-index: 1; width: min(300px, 85%); padding: 2rem; border: 1px solid rgba(255,255,255,.7); border-radius: 24px; background: rgba(255,255,255,.82); text-align: center; box-shadow: 0 18px 40px rgba(11,43,74,.12); }
+        .visual-icon { display: grid; place-items: center; width: 88px; height: 88px; margin: 0 auto 1rem; border-radius: 26px; background: var(--azul); color: white; font-size: 2.5rem; transform: rotate(-5deg); }
+        .visual-content strong { display: block; color: var(--azul-escuro); font-size: 1.15rem; }
+        .visual-content p { margin-top: .35rem; color: var(--texto-suave); font-size: .92rem; }
+        .visual-tag { display: inline-flex; gap: .4rem; align-items: center; margin-top: 1rem; padding: .4rem .75rem; border-radius: 40px; color: #1e5b37; background: #e5f7eb; font-size: .75rem; font-weight: 700; }
+
+        /* ESTILOS GERAIS DAS SEÇÕES */
+        .section { padding: 4.3rem 0; }
+        .section-white { background: var(--branco); }
+        .section-heading { max-width: 760px; margin: 0 auto 2.4rem; text-align: center; }
+        .section-heading h2 { margin: .55rem 0 .65rem; color: var(--azul-escuro); font-size: clamp(1.75rem, 3vw, 2.45rem); line-height: 1.2; letter-spacing: -.7px; }
+        .section-heading p { color: var(--texto-suave); font-size: 1rem; }
+        .benefits-grid, .types-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+        .benefit-card, .type-card {
+            padding: 1.7rem; border: 1px solid var(--borda); border-radius: var(--raio); background: var(--branco);
+            box-shadow: 0 5px 18px rgba(0,20,40,.035); transition: transform .2s, box-shadow .2s, border-color .2s;
+        }
+        .benefit-card:hover, .type-card:hover { transform: translateY(-4px); border-color: #b5d1e7; box-shadow: var(--sombra); }
+        .icon-box { display: grid; place-items: center; width: 56px; height: 56px; margin-bottom: 1.15rem; border-radius: 17px; color: var(--azul); background: var(--azul-claro); font-size: 1.45rem; }
+        .benefit-card h3, .type-card h3 { margin-bottom: .45rem; color: var(--azul-escuro); font-size: 1.13rem; }
+        .benefit-card p, .type-card p { color: var(--texto-suave); font-size: .94rem; }
+        .types-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .type-card { padding: 1.45rem; }
+        .type-card .icon-box { width: 50px; height: 50px; border-radius: 15px; }
+
+        /* ETAPAS */
+        .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.2rem; counter-reset: etapa; }
+        .step { position: relative; padding: 1.5rem; border: 1px solid var(--borda); border-radius: var(--raio); background: var(--branco); }
+        .step-number { display: grid; place-items: center; width: 46px; height: 46px; margin-bottom: 1rem; border-radius: 50%; color: var(--branco); background: var(--azul); font-size: 1.05rem; font-weight: 800; }
+        .step h3 { margin-bottom: .5rem; color: var(--azul-escuro); font-size: 1.05rem; }
+        .step p { color: var(--texto-suave); font-size: .9rem; }
+
+        /* FORMULÁRIO */
+        .form-section { background: linear-gradient(180deg, #f4f7fc, #eaf2fa); }
+        .form-shell { max-width: 940px; margin: 0 auto; padding: clamp(1.25rem, 4vw, 3rem); border: 1px solid #dce7f1; border-radius: 30px; background: var(--branco); box-shadow: var(--sombra); }
+        .form-intro { max-width: 650px; margin: 0 auto 2rem; text-align: center; }
+        .form-intro .form-icon { display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 1rem; border-radius: 20px; color: var(--azul); background: var(--azul-claro); font-size: 1.7rem; }
+        .form-intro h2 { margin-bottom: .45rem; color: var(--azul-escuro); font-size: clamp(1.7rem, 3vw, 2.3rem); }
+        .form-intro p { color: var(--texto-suave); }
+        .form-group-title { display: flex; align-items: center; gap: .7rem; padding-bottom: .75rem; margin: 1.85rem 0 1.15rem; border-bottom: 1px solid var(--borda); color: var(--azul-escuro); font-size: 1.12rem; font-weight: 800; }
+        .form-group-title i { color: var(--azul); }
+        .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem 1.25rem; }
+        .field { min-width: 0; }
+        .field.full { grid-column: 1 / -1; }
+        .field label { display: block; margin-bottom: .4rem; color: #1a3a54; font-size: .9rem; font-weight: 700; }
+        .field label .optional { color: #65819a; font-weight: 400; }
+        .field input, .field select, .field textarea {
+            display: block; width: 100%; min-height: 48px; padding: .75rem .95rem; border: 1.5px solid #d4e0ec;
+            border-radius: 12px; outline: none; background: #fbfdff; color: var(--azul-escuro); transition: border-color .2s, box-shadow .2s, background .2s;
+        }
+        .field textarea { min-height: 135px; resize: vertical; }
+        .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--azul); box-shadow: 0 0 0 4px rgba(42,111,156,.11); background: var(--branco); }
+        .field input::placeholder, .field textarea::placeholder { color: #8295a8; }
+        .field small { display: block; margin-top: .35rem; color: #64809a; font-size: .78rem; }
+        .checkbox-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; }
+        .check-option { display: flex; align-items: flex-start; gap: .65rem; padding: .8rem; border: 1px solid var(--borda); border-radius: 12px; background: #fbfdff; color: #274760; font-size: .9rem; cursor: pointer; }
+        .check-option:hover { border-color: #a9c7df; background: #f3f8fc; }
+        .check-option input { flex: 0 0 auto; width: 17px; height: 17px; margin-top: .18rem; accent-color: var(--azul); }
+        .consentimento { display: flex; align-items: flex-start; gap: .7rem; margin-top: 1.5rem; color: #365a7a; font-size: .87rem; }
+        .consentimento input { flex: 0 0 auto; width: 18px; height: 18px; margin-top: .2rem; accent-color: var(--azul); }
+        .consentimento a { color: var(--azul); font-weight: 700; text-decoration: underline; }
+        .submit-area { display: flex; flex-direction: column; align-items: center; gap: .75rem; margin-top: 1.7rem; }
+        .submit-area .btn { min-width: min(100%, 300px); }
+        .form-privacy-note { max-width: 600px; color: #6a849b; font-size: .78rem; text-align: center; }
+        .form-status { display: none; width: 100%; padding: .9rem 1rem; border-radius: 12px; font-size: .9rem; }
+        .form-status.visivel { display: block; }
+        .form-status.aviso { color: #7a4a00; border: 1px solid #f0d39b; background: #fff8e8; }
+        .form-status.erro { color: #8a2525; border: 1px solid #f0bcbc; background: #fff0f0; }
+        .form-status.sucesso { color: #1f633b; border: 1px solid #b6e0c4; background: #effaf2; }
+
+        /* PERGUNTAS FREQUENTES */
+        .faq-list { max-width: 850px; margin: 0 auto; display: grid; gap: .8rem; }
+        .faq-list details { padding: 1rem 1.25rem; border: 1px solid var(--borda); border-radius: 15px; background: var(--branco); }
+        .faq-list summary { position: relative; padding-right: 2rem; color: var(--azul-escuro); font-weight: 700; cursor: pointer; list-style: none; }
+        .faq-list summary::-webkit-details-marker { display: none; }
+        .faq-list summary::after { content: '\f107'; position: absolute; right: .1rem; top: 0; color: var(--azul); font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+        .faq-list details[open] summary::after { content: '\f106'; }
+        .faq-list details p { padding-top: .75rem; color: var(--texto-suave); font-size: .94rem; }
+
+        /* CHAMADA FINAL E RODAPÉ */
+        .final-cta { padding: 3.5rem 0; background: var(--azul-escuro); color: var(--branco); text-align: center; }
+        .final-cta h2 { margin-bottom: .65rem; font-size: clamp(1.7rem, 3vw, 2.4rem); }
+        .final-cta p { max-width: 700px; margin: 0 auto 1.4rem; color: #d7e7f5; }
+        .final-cta .btn { color: var(--azul-escuro); border-color: var(--branco); background: var(--branco); }
+        .final-cta .btn:hover { background: #eaf2fa; }
+        .footer { background: var(--branco); border-top: 2px solid #e6edf5; }
+        .footer-main { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 2rem; padding-top: 2.7rem; padding-bottom: 2rem; }
+        .footer-brand { display: flex; align-items: center; gap: .7rem; margin-bottom: .8rem; color: var(--azul-escuro); font-size: 1.5rem; font-weight: 800; }
+        .footer-brand img { width: 44px; height: 44px; object-fit: contain; }
+        .footer p { color: var(--texto-suave); font-size: .9rem; }
+        .footer h3 { margin-bottom: .75rem; color: var(--azul-escuro); font-size: 1rem; }
+        .footer-links { display: grid; gap: .45rem; }
+        .footer-links a { width: fit-content; color: var(--texto-suave); font-size: .9rem; }
+        .footer-links a:hover { color: var(--azul); text-decoration: underline; }
+        .footer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.1rem 0; border-top: 1px solid var(--borda); color: #6a8ba8; font-size: .82rem; }
+
+        @media (max-width: 1000px) {
+            .top-bar { padding: 0 1.2rem; gap: 1rem; }
+            .nav-menu { gap: .35rem .75rem; }
+            .nav-menu > a:not(.btn-outline):not(.btn-solid) { font-size: .88rem; }
+            .hero-content { gap: 2rem; }
+            .types-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 760px) {
+            html { scroll-padding-top: 160px; }
+            .top-bar { position: relative; flex-direction: column; gap: .2rem; padding: .4rem 1rem .8rem; }
+            .logo-area { padding-top: .5rem; }
+            .logo-area h1 { font-size: 1.7rem; }
+            #Logo { width: 49px; height: 49px; }
+            .nav-menu { justify-content: center; gap: .25rem .8rem; padding-bottom: .25rem; }
+            .nav-menu > a:not(.btn-outline):not(.btn-solid) { font-size: .84rem; }
+            .nav-menu .btn-outline, .nav-menu .btn-solid { min-height: 36px; padding: .3rem .9rem; font-size: .84rem; }
+            #areaUsuario { justify-content: center; }
+            .hero-content { grid-template-columns: 1fr; padding-top: 3.2rem; padding-bottom: 3.2rem; }
+            .hero h2 { font-size: clamp(2.25rem, 8vw, 3.3rem); letter-spacing: -1px; }
+            .hero-visual { min-height: 270px; }
+            .section { padding: 3.3rem 0; }
+            .benefits-grid { grid-template-columns: 1fr; }
+            .footer-main { grid-template-columns: 1fr 1fr; }
+            .footer-main > div:first-child { grid-column: 1 / -1; }
+        }
+        @media (max-width: 520px) {
+            .container { width: min(100% - 28px, 1180px); }
+            .nav-menu { gap: .25rem .65rem; }
+            .hero-actions { flex-direction: column; align-items: stretch; }
+            .hero-actions .btn { width: 100%; }
+            .hero-visual { min-height: 250px; }
+            .types-grid, .steps, .form-grid, .checkbox-grid { grid-template-columns: 1fr; }
+            .field.full { grid-column: auto; }
+            .form-shell { padding: 1.2rem; border-radius: 20px; }
+            .section-heading { margin-bottom: 1.8rem; }
+            .footer-main { grid-template-columns: 1fr; }
+            .footer-main > div:first-child { grid-column: auto; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- CABEÇALHO PADRONIZADO COM AS OUTRAS PÁGINAS DO SPES -->
+    <header class="top-bar">
+        <a class="logo-area" href="index.html" aria-label="SPES - Página inicial">
+            <h1><img id="Logo" src="Imagens do site/Logo da SPES.png" alt="Logo da SPES" />SPES</h1>
+        </a>
+        <nav class="nav-menu" aria-label="Navegação principal">
+<a href="Minhas ocorrencias.html" class="link-minhas-ocorrencias">Minhas ocorrências</a>
+            <a href="index.html">Início</a>
+            <a href="Separação de casos.html">Desaparecidos</a>
+            <a href="Como ajudar.html">Como ajudar</a>
+            <a href="Seja nosso parceiro.html" class="ativo" aria-current="page">Parceiros</a>
+            <a href="Sobre.html">Sobre Nós</a>
+            <a href="Tela de login.htm" class="btn-outline" id="btnEntrar">Entrar</a>
+            <a href="Cadastro.htm" class="btn-solid" id="btnCadastrar">Cadastrar</a>
+            <div id="areaUsuario">
+                <span id="nomeUsuario"></span>
+                <a href="#" id="btnSair" class="btn-outline">Sair</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- APRESENTAÇÃO -->
+        <section class="hero" aria-labelledby="heroTitulo">
+            <div class="container hero-content">
+                <div>
+                    <span class="eyebrow"><i class="fas fa-handshake" aria-hidden="true"></i> Seja nosso parceiro</span>
+                    <h2 id="heroTitulo">Juntos, podemos transformar informação em esperança.</h2>
+                    <p class="hero-copy">A união entre empresas, organizações e sociedade pode ampliar o alcance das buscas por pessoas desaparecidas. Faça parte dessa rede de colaboração com o SPES.</p>
+                    <div class="hero-actions">
+                        <a class="btn btn-primario" href="#formulario"><i class="fas fa-paper-plane" aria-hidden="true"></i> Quero ser parceiro</a>
+                        <a class="btn btn-secundario" href="#como-funciona"><i class="fas fa-circle-info" aria-hidden="true"></i> Como funciona</a>
+                    </div>
+                    <p class="hero-note"><i class="fas fa-shield-alt" aria-hidden="true"></i><span>Você pode apresentar uma proposta sem compromisso. As possibilidades de colaboração serão avaliadas junto com a equipe do SPES.</span></p>
+                </div>
+                <div class="hero-visual" aria-label="Ilustração representando cooperação entre instituições">
+                    <div class="visual-content">
+                        <div class="visual-icon"><i class="fas fa-handshake" aria-hidden="true"></i></div>
+                        <strong>Uma rede de apoio</strong>
+                        <p>Instituições unidas por uma causa humana.</p>
+                        <span class="visual-tag"><i class="fas fa-heart" aria-hidden="true"></i> Solidariedade em ação</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BENEFÍCIOS -->
+        <section class="section section-white" aria-labelledby="beneficiosTitulo">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="eyebrow">Por que colaborar?</span>
+                    <h2 id="beneficiosTitulo">Sua parceria pode fazer a diferença</h2>
+                    <p>Cada instituição tem conhecimentos e recursos diferentes. Quando essas contribuições se conectam, a rede de apoio pode alcançar mais pessoas.</p>
+                </div>
+                <div class="benefits-grid">
+                    <article class="benefit-card">
+                        <div class="icon-box"><i class="fas fa-heart" aria-hidden="true"></i></div>
+                        <h3>Impacto social</h3>
+                        <p>Contribua com uma iniciativa voltada à busca por pessoas desaparecidas e ao apoio às famílias.</p>
+                    </article>
+                    <article class="benefit-card">
+                        <div class="icon-box"><i class="fas fa-bullhorn" aria-hidden="true"></i></div>
+                        <h3>Maior alcance</h3>
+                        <p>Ajude a divulgar informações e conteúdos autorizados para que cheguem a mais pessoas.</p>
+                    </article>
+                    <article class="benefit-card">
+                        <div class="icon-box"><i class="fas fa-users" aria-hidden="true"></i></div>
+                        <h3>Cooperação</h3>
+                        <p>Construa ações conjuntas com organizações, comunidades e instituições comprometidas com a causa.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- TIPOS DE PARCEIROS -->
+        <section class="section" aria-labelledby="tiposTitulo">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="eyebrow">Quem pode participar?</span>
+                    <h2 id="tiposTitulo">Toda contribuição responsável é bem-vinda</h2>
+                    <p>O SPES pode receber propostas de diferentes setores. O formato da colaboração será definido de acordo com as possibilidades de cada instituição.</p>
+                </div>
+                <div class="types-grid">
+                    <article class="type-card">
+                        <div class="icon-box"><i class="fas fa-building" aria-hidden="true"></i></div>
+                        <h3>Empresas</h3>
+                        <p>Apoio tecnológico, divulgação, estrutura, serviços ou recursos para ações do projeto.</p>
+                    </article>
+                    <article class="type-card">
+                        <div class="icon-box"><i class="fas fa-landmark" aria-hidden="true"></i></div>
+                        <h3>Órgãos públicos</h3>
+                        <p>Cooperação institucional, orientação e articulação com serviços públicos competentes.</p>
+                    </article>
+                    <article class="type-card">
+                        <div class="icon-box"><i class="fas fa-hands-helping" aria-hidden="true"></i></div>
+                        <h3>ONGs e associações</h3>
+                        <p>Mobilização comunitária, ações de acolhimento e apoio às famílias.</p>
+                    </article>
+                    <article class="type-card">
+                        <div class="icon-box"><i class="fas fa-graduation-cap" aria-hidden="true"></i></div>
+                        <h3>Instituições de ensino</h3>
+                        <p>Pesquisa, projetos acadêmicos, extensão, inovação e participação voluntária.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ETAPAS DA PARCERIA -->
+        <section class="section section-white" id="como-funciona" aria-labelledby="etapasTitulo">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="eyebrow">Passo a passo</span>
+                    <h2 id="etapasTitulo">Como funciona uma parceria?</h2>
+                    <p>O processo começa com uma proposta e segue com o diálogo entre as partes, sem compromisso automático de aprovação.</p>
+                </div>
+                <div class="steps">
+                    <article class="step">
+                        <div class="step-number">1</div>
+                        <h3>Envie sua proposta</h3>
+                        <p>Conte quem é sua instituição e de que forma gostaria de colaborar.</p>
+                    </article>
+                    <article class="step">
+                        <div class="step-number">2</div>
+                        <h3>Análise inicial</h3>
+                        <p>A equipe responsável avalia as informações e a compatibilidade da proposta com o projeto.</p>
+                    </article>
+                    <article class="step">
+                        <div class="step-number">3</div>
+                        <h3>Conversa e alinhamento</h3>
+                        <p>As partes conversam sobre objetivos, responsabilidades, recursos e próximos passos.</p>
+                    </article>
+                    <article class="step">
+                        <div class="step-number">4</div>
+                        <h3>Definição da parceria</h3>
+                        <p>Se houver acordo, a colaboração será formalizada conforme o formato combinado.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- FORMULÁRIO DE PARCERIA -->
+        <section class="section form-section" id="formulario" aria-labelledby="formTitulo">
+            <div class="container">
+                <div class="form-shell">
+                    <div class="form-intro">
+                        <div class="form-icon"><i class="fas fa-file-signature" aria-hidden="true"></i></div>
+                        <span class="eyebrow">Vamos conversar</span>
+                        <h2 id="formTitulo">Apresente sua proposta</h2>
+                        <p>Preencha os campos abaixo. Os itens marcados com <strong>*</strong> são obrigatórios.</p>
+                    </div>
+
+                    <form id="formParceria" autocomplete="on">
+                        <h3 class="form-group-title"><i class="fas fa-building" aria-hidden="true"></i> Dados da instituição</h3>
+                        <div class="form-grid">
+                            <div class="field full">
+                                <label for="instituicao">Nome da instituição <span aria-hidden="true">*</span></label>
+                                <input type="text" id="instituicao" name="instituicao" placeholder="Ex.: nome da empresa ou organização" maxlength="160" required />
+                            </div>
+                            <div class="field">
+                                <label for="tipoInstituicao">Tipo de instituição <span aria-hidden="true">*</span></label>
+                                <select id="tipoInstituicao" name="tipoInstituicao" required>
+                                    <option value="">Selecione uma opção</option>
+                                    <option value="empresa">Empresa privada</option>
+                                    <option value="ong">ONG ou associação</option>
+                                    <option value="orgao_publico">Órgão público</option>
+                                    <option value="ensino">Instituição de ensino</option>
+                                    <option value="coletivo">Coletivo ou comunidade</option>
+                                    <option value="pessoa_fisica">Pessoa física</option>
+                                    <option value="outro">Outra</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="cnpj">CNPJ <span class="optional">(opcional)</span></label>
+                                <input type="text" id="cnpj" name="cnpj" inputmode="numeric" placeholder="00.000.000/0000-00" maxlength="18" />
+                            </div>
+                            <div class="field">
+                                <label for="site">Site ou rede social <span class="optional">(opcional)</span></label>
+                                <input type="url" id="site" name="site" placeholder="https://www.exemplo.com.br" maxlength="250" />
+                            </div>
+                            <div class="field">
+                                <label for="localidade">Cidade e estado <span aria-hidden="true">*</span></label>
+                                <input type="text" id="localidade" name="localidade" placeholder="Ex.: Taboão da Serra - SP" maxlength="120" required />
+                            </div>
+                        </div>
+
+                        <h3 class="form-group-title"><i class="fas fa-user-tie" aria-hidden="true"></i> Responsável pelo contato</h3>
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="responsavel">Nome completo <span aria-hidden="true">*</span></label>
+                                <input type="text" id="responsavel" name="responsavel" autocomplete="name" placeholder="Nome de quem entrará em contato" maxlength="140" required />
+                            </div>
+                            <div class="field">
+                                <label for="cargo">Cargo ou função <span class="optional">(opcional)</span></label>
+                                <input type="text" id="cargo" name="cargo" placeholder="Ex.: responsável institucional" maxlength="100" />
+                            </div>
+                            <div class="field">
+                                <label for="email">E-mail <span aria-hidden="true">*</span></label>
+                                <input type="email" id="email" name="email" autocomplete="email" placeholder="contato@instituicao.com.br" maxlength="180" required />
+                            </div>
+                            <div class="field">
+                                <label for="telefone">Telefone <span aria-hidden="true">*</span></label>
+                                <input type="tel" id="telefone" name="telefone" autocomplete="tel" inputmode="tel" placeholder="(00) 00000-0000" maxlength="20" required />
+                            </div>
+                        </div>
+
+                        <h3 class="form-group-title"><i class="fas fa-handshake" aria-hidden="true"></i> Proposta de colaboração</h3>
+                        <div class="form-grid">
+                            <div class="field full">
+                                <label>Como sua instituição gostaria de contribuir? <span aria-hidden="true">*</span></label>
+                                <div class="checkbox-grid" id="tiposContribuicao">
+                                    <label class="check-option"><input type="checkbox" name="contribuicoes" value="divulgacao" /> <span>Divulgação de casos e campanhas</span></label>
+                                    <label class="check-option"><input type="checkbox" name="contribuicoes" value="tecnologia" /> <span>Apoio tecnológico ou desenvolvimento</span></label>
+                                    <label class="check-option"><input type="checkbox" name="contribuicoes" value="financeiro" /> <span>Apoio financeiro ou patrocínio</span></label>
+                                    <label class="check-option"><input type="checkbox" name="contribuicoes" value="voluntariado" /> <span>Voluntariado e mobilização</span></label>
+                                    <label class="check-option"><input type="checkbox" name="contribuicoes" value="institucional" /> <span>Cooperação institucional</span></label>
+                                    <label class="check-option"><input type="checkbox" name="contribuicoes" value="servicos" /> <span>Doação de serviços ou estrutura</span></label>
+                                    <label class="check-option"><input type="checkbox" name="contribuicoes" value="pesquisa" /> <span>Pesquisa ou projeto educacional</span></label>
+                                    <label class="check-option"><input type="checkbox" name="contribuicoes" value="outro" /> <span>Outra forma de colaboração</span></label>
+                                </div>
+                                <small>Selecione uma ou mais opções.</small>
+                            </div>
+                            <div class="field full">
+                                <label for="proposta">Conte um pouco sobre sua proposta <span aria-hidden="true">*</span></label>
+                                <textarea id="proposta" name="proposta" placeholder="Explique como gostaria de colaborar, quais recursos pode oferecer e qual seria o objetivo da parceria." minlength="20" maxlength="3000" required></textarea>
+                                <small>Escreva entre 20 e 3.000 caracteres. Não inclua dados pessoais de pessoas desaparecidas neste formulário.</small>
+                            </div>
+                        </div>
+
+                        <label class="consentimento" for="consentimento">
+                            <input type="checkbox" id="consentimento" name="consentimento" required />
+                            <span>Autorizo o uso dos dados informados para analisar esta proposta e entrar em contato sobre uma possível parceria. Li a <a href="documentos do site/Politica_de_Privacidade_SPES.docx" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>. <strong>*</strong></span>
+                        </label>
+
+                        <div class="submit-area">
+                            <div id="formStatus" class="form-status" role="status" aria-live="polite"></div>
+                            <button type="submit" class="btn btn-primario" id="btnEnviar"><i class="fas fa-paper-plane" aria-hidden="true"></i> Enviar proposta</button>
+                            <p class="form-privacy-note"><i class="fas fa-lock" aria-hidden="true"></i> Seus dados devem ser acessados apenas por pessoas autorizadas para tratar desta proposta.</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- PERGUNTAS FREQUENTES -->
+        <section class="section section-white" aria-labelledby="faqTitulo">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="eyebrow">Dúvidas frequentes</span>
+                    <h2 id="faqTitulo">Antes de enviar sua proposta</h2>
+                    <p>Algumas respostas para ajudar sua instituição a entender o processo.</p>
+                </div>
+                <div class="faq-list">
+                    <details>
+                        <summary>É necessário ser uma grande empresa para participar?</summary>
+                        <p>Não. Empresas de diferentes tamanhos, organizações sociais, instituições de ensino, coletivos e pessoas físicas podem apresentar propostas. Cada proposta será avaliada conforme sua natureza e viabilidade.</p>
+                    </details>
+                    <details>
+                        <summary>Existe algum custo para se tornar parceiro?</summary>
+                        <p>O envio da proposta não estabelece cobrança nem garante aprovação. Qualquer contribuição financeira ou obrigação deve ser discutida e acordada formalmente antes do início da parceria.</p>
+                    </details>
+                    <details>
+                        <summary>O que acontece depois que eu enviar o formulário?</summary>
+                        <p>As informações serão analisadas pela equipe responsável. Caso seja possível avançar, o contato informado será utilizado para conversar sobre os detalhes e os próximos passos. O prazo de resposta deve ser definido e divulgado oficialmente pelo SPES.</p>
+                    </details>
+                    <details>
+                        <summary>Posso propor uma parceria que não esteja nas opções?</summary>
+                        <p>Sim. Selecione “Outra forma de colaboração” e descreva sua ideia no campo de proposta.</p>
+                    </details>
+                    <details>
+                        <summary>Uma parceria permite acesso a informações restritas sobre desaparecidos?</summary>
+                        <p>Não automaticamente. O acesso a dados pessoais ou informações de investigação depende de autorização e das regras aplicáveis. A colaboração deve respeitar a privacidade das pessoas e a segurança das famílias.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAMADA FINAL -->
+        <section class="final-cta">
+            <div class="container">
+                <h2>Vamos construir essa rede juntos?</h2>
+                <p>Sua instituição pode ajudar o SPES a ampliar o alcance da informação e fortalecer uma rede de apoio para a causa das pessoas desaparecidas.</p>
+                <a href="#formulario" class="btn"><i class="fas fa-handshake" aria-hidden="true"></i> Apresentar uma proposta</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- RODAPÉ: sem listar instituições como parceiras oficiais sem confirmação -->
+    <footer class="footer">
+        <div class="container footer-main">
+            <div>
+                <a class="footer-brand" href="index.html"><img src="Imagens do site/Logo da SPES.png" alt="" /> SPES</a>
+                <p>Conectando pessoas e fortalecendo a rede de apoio na busca por pessoas desaparecidas. Informação responsável, colaboração e respeito às famílias.</p>
+            </div>
+            <div>
+                <h3>Navegação</h3>
+                <div class="footer-links">
+                    <a href="index.html">Início</a>
+                    <a href="Separação de casos.html">Pessoas desaparecidas</a>
+                    <a href="Como ajudar.html">Como ajudar</a>
+                    <a href="Sobre.html">Sobre nós</a>
+                </div>
+            </div>
+            <div>
+                <h3>Parcerias e privacidade</h3>
+                <div class="footer-links">
+                    <a href="#formulario">Enviar proposta de parceria</a>
+                    <a href="documentos do site/Politica_de_Privacidade_SPES.docx" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>
+                    <a href="documentos do site/Termos_de_Uso_SPES.docx" target="_blank" rel="noopener noreferrer">Termos de Uso</a>
+                </div>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <span>© <span id="anoAtual">2026</span> SPES — Todos os direitos reservados.</span>
+            <span>Uma iniciativa voltada à colaboração e ao apoio às famílias.</span>
+        </div>
+    </footer>
+
+    <script>
+        // LOGIN / LOGOUT — seguindo o padrão utilizado nas outras páginas do SPES.
+        const token = localStorage.getItem('token');
+        const userName = localStorage.getItem('userName');
+        const btnEntrar = document.getElementById('btnEntrar');
+        const btnCadastrar = document.getElementById('btnCadastrar');
+        const areaUsuario = document.getElementById('areaUsuario');
+        const nomeUsuario = document.getElementById('nomeUsuario');
+        const btnSair = document.getElementById('btnSair');
+
+        if (token && userName) {
+            if (btnEntrar) btnEntrar.style.display = 'none';
+            if (btnCadastrar) btnCadastrar.style.display = 'none';
+            if (areaUsuario) areaUsuario.style.display = 'flex';
+            if (nomeUsuario) nomeUsuario.textContent = `Olá, ${userName.split(' ')[0]}`;
+        }
+
+        if (btnSair) {
+            btnSair.addEventListener('click', (event) => {
+                event.preventDefault();
+                if (confirm('Deseja sair da sua conta?')) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userName');
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+
+        // Ano automático no rodapé.
+        document.getElementById('anoAtual').textContent = new Date().getFullYear();
+
+        // Máscaras simples para telefone e CNPJ. A validação definitiva deve ser feita também no backend.
+        const telefoneInput = document.getElementById('telefone');
+        telefoneInput.addEventListener('input', () => {
+            const numeros = telefoneInput.value.replace(/\D/g, '').slice(0, 11);
+            if (numeros.length <= 10) {
+                telefoneInput.value = numeros.replace(/^(\d{0,2})(\d{0,4})(\d{0,4}).*/, (m, ddd, parte1, parte2) => {
+                    let texto = ddd ? `(${ddd}` : '';
+                    if (ddd.length === 2) texto += ') ';
+                    if (parte1) texto += parte1;
+                    if (parte2) texto += `-${parte2}`;
+                    return texto;
+                });
+            } else {
+                telefoneInput.value = numeros.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+            }
+        });
+
+        const cnpjInput = document.getElementById('cnpj');
+        cnpjInput.addEventListener('input', () => {
+            const numeros = cnpjInput.value.replace(/\D/g, '').slice(0, 14);
+            cnpjInput.value = numeros
+                .replace(/^(\d{2})(\d)/, '$1.$2')
+                .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+                .replace(/\.(\d{3})(\d)/, '.$1/$2')
+                .replace(/(\d{4})(\d)/, '$1-$2');
+        });
+
+        // ENVIO DO FORMULÁRIO
+        // IMPORTANTE: os exemplos fornecidos mostram a API de autenticação, mas não apresentam
+        // uma rota confirmada para propostas de parceria. Não informe uma rota inventada aqui.
+        // Quando o backend tiver essa rota pronta, preencha a URL abaixo, por exemplo com a rota
+        // documentada pela equipe que mantém o backend.
+        const API_PARCEIROS_URL = '';
+
+        const formParceria = document.getElementById('formParceria');
+        const formStatus = document.getElementById('formStatus');
+        const btnEnviar = document.getElementById('btnEnviar');
+
+        function mostrarStatus(mensagem, tipo) {
+            formStatus.textContent = mensagem;
+            formStatus.className = `form-status visivel ${tipo}`;
+            formStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        formParceria.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            formStatus.className = 'form-status';
+            formStatus.textContent = '';
+
+            const contribuicoes = Array.from(document.querySelectorAll('input[name="contribuicoes"]:checked'))
+                .map((checkbox) => checkbox.value);
+
+            if (contribuicoes.length === 0) {
+                mostrarStatus('Selecione pelo menos uma forma de colaboração para continuar.', 'aviso');
+                document.getElementById('tiposContribuicao').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            if (!formParceria.reportValidity()) return;
+
+            const dados = Object.fromEntries(new FormData(formParceria).entries());
+            dados.contribuicoes = contribuicoes;
+            delete dados.consentimento;
+
+            if (!API_PARCEIROS_URL) {
+                mostrarStatus('O formulário está validado, mas o envio ainda não está conectado. Para receber propostas de verdade, configure API_PARCEIROS_URL com a rota de parcerias existente no backend.', 'aviso');
+                return;
+            }
+
+            btnEnviar.disabled = true;
+            btnEnviar.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Enviando...';
+
+            try {
+                const resposta = await fetch(API_PARCEIROS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+                const resultado = await resposta.json().catch(() => ({}));
+
+                if (!resposta.ok || resultado.success === false) {
+                    throw new Error(resultado.error || resultado.message || 'Não foi possível enviar a proposta. Tente novamente mais tarde.');
+                }
+
+                mostrarStatus('Proposta enviada com sucesso! Obrigado pelo interesse em colaborar com o SPES.', 'sucesso');
+                formParceria.reset();
+            } catch (erro) {
+                console.error('Erro ao enviar proposta de parceria:', erro);
+                mostrarStatus(erro.message || 'Ocorreu um erro ao enviar. Verifique sua conexão e tente novamente.', 'erro');
+            } finally {
+                btnEnviar.disabled = false;
+                btnEnviar.innerHTML = '<i class="fas fa-paper-plane" aria-hidden="true"></i> Enviar proposta';
+            }
+        });
+    </script>
+</body>
+</html>

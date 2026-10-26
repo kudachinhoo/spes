@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: spes-backend
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: spes-database
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRE
+        value: 7d
+      # ID do cliente OAuth do Google já usado pelo login atual (é público). Mantido como estava.
+      # NUNCA coloque aqui o segredo do cliente (GOCSPX-...): o login com botão não usa segredo.
+      - key: GOOGLE_CLIENT_ID
+        value: 159287534210-dko5uuksj44r7u5th9kd91v3hipac2uv.apps.googleusercontent.com
+      # Lista de IDs aceitos pela rota /auth/google (cadastro com Google), separados por vírgula, sem espaços.
+      # Inclui o ID do Cadastro.htm e o antigo, para o login atual continuar funcionando.
+      - key: GOOGLE_CLIENT_IDS
+        value: 159287534210-qqa5lsrjbhkqj5ktug2f75t5tj57lem3.apps.googleusercontent.com,159287534210-dko5uuksj44r7u5th9kd91v3hipac2uv.apps.googleusercontent.com
+      # "true" faz o Sequelize criar/ajustar colunas na inicialização
+      # (necessário para criar a coluna googleId e tornar a senha opcional).
+      # Deixe "true" no primeiro deploy após esta atualização e depois mude para "false".
+      - key: DB_SYNC_ALTER
+        value: "true"
+
+databases:
+  - name: spes-database
+    plan: free

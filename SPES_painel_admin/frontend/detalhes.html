@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SPES · Detalhes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(145deg, #f0f5fa 0%, #dae8f2 100%);
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+        }
+
+        .card {
+            background: #fff;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2.5rem;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px -12px rgba(0, 20, 40, 0.25);
+            border: 2px solid rgba(86, 164, 238);
+        }
+
+        .voltar {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: #2a6f9c;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .voltar:hover { text-decoration: underline; }
+
+        .foto {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #0b2b4a;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .status-badge {
+            display: block;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .status-badge.desaparecido {
+            color: #b13e3e;
+        }
+
+        .status-badge.encontrado {
+            color: #1f6b43;
+        }
+
+        .info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-item {
+            background: #f9fcff;
+            padding: 1rem;
+            border-radius: 16px;
+            border-left: 4px solid #2a6f9c;
+        }
+
+        .info-item.full {
+            grid-column: 1 / -1;
+        }
+
+        .info-item strong {
+            display: block;
+            color: #2a6f9c;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.5px;
+        }
+
+        .info-item span {
+            color: #1a3a54;
+            font-size: 1rem;
+            word-wrap: break-word;
+        }
+
+        .mensagem {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            color: #888;
+        }
+
+        .btn-voltar {
+            display: block;
+            margin: 2rem auto 0;
+            padding: 0.8rem 2rem;
+            background: #2a6f9c;
+            color: #fff;
+            border: none;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: 0.2s;
+            max-width: 250px;
+        }
+
+        .btn-voltar:hover {
+            background: #1d5a7e;
+        }
+
+        @media (max-width: 600px) {
+            .info { grid-template-columns: 1fr; }
+            .card { padding: 1.5rem; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <a href="index.html" class="voltar"><i class="fas fa-arrow-left"></i> Voltar para a página inicial</a>
+        <div id="conteudo">
+            <p class="mensagem">Carregando detalhes...</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://spes-backend.onrender.com/api';
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        const conteudo = document.getElementById('conteudo');
+
+        const escaparHTML = valor => String(valor ?? '').replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[c]);
+        const fotoSegura = valor => typeof valor === 'string' &&
+            (/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(valor) ||
+             /^https:\/\//.test(valor)) ? valor : '';
+
+        async function carregarDetalhes() {
+            if (!id) {
+                conteudo.innerHTML = '<p class="mensagem">ID não informado.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/people/${id}`);
+                if (!response.ok) throw new Error('Não encontrado');
+                const recebido = await response.json();
+                const p = recebido.data || recebido;
+
+                const idade = p.data_nascimento
+                    ? new Date().getFullYear() - new Date(p.data_nascimento).getFullYear()
+                    : 'N/I';
+
+                const dataDesap = p.data_desaparecimento
+                    ? new Date(p.data_desaparecimento).toLocaleDateString('pt-BR')
+                    : 'N/I';
+
+                const html = `
+                    ${fotoSegura(p.foto) ? `<img src="${escaparHTML(fotoSegura(p.foto))}" alt="Foto de ${escaparHTML(p.nome)}" class="foto">` : ''}
+                    <h1>${escaparHTML(p.nome)}</h1>
+                    <span class="status-badge ${escaparHTML(p.status)}">
+                        ${p.status === 'encontrado' ? '✅ ENCONTRADO' : '🔴 DESAPARECIDO'}
+                    </span>
+                    <div class="info">
+                        <div class="info-item"><strong>Idade</strong><span>${idade} anos</span></div>
+                        <div class="info-item"><strong>Cor / Raça</strong><span>${escaparHTML(p.etnia || 'Não informado')}</span></div>
+                        <div class="info-item"><strong>Altura</strong><span>${p.altura ? p.altura + ' cm' : 'Não informado'}</span></div>
+                        <div class="info-item"><strong>Peso</strong><span>${p.peso ? p.peso + ' kg' : 'Não informado'}</span></div>
+                        <div class="info-item"><strong>Cidade</strong><span>${escaparHTML(p.cidade || 'Não informado')}</span></div>
+                        <div class="info-item"><strong>Estado</strong><span>${escaparHTML(p.estado_desaparecimento || 'Não informado')}</span></div>
+                        <div class="info-item"><strong>Data do desaparecimento</strong><span>${dataDesap}</span></div>
+                        <div class="info-item"><strong>Data de nascimento</strong><span>${p.data_nascimento ? new Date(p.data_nascimento).toLocaleDateString('pt-BR') : 'Não informado'}</span></div>
+                        ${p.informacoes ? `<div class="info-item full"><strong>Informações</strong><span>${escaparHTML(p.informacoes)}</span></div>` : ''}
+                    </div>
+                    <a href="index.html" class="btn-voltar">Voltar</a>
+                `;
+                conteudo.innerHTML = html;
+            } catch (error) {
+                console.error('Erro:', error);
+                conteudo.innerHTML = `
+                    <p class="mensagem">Erro ao carregar detalhes. O servidor pode estar dormindo. Tente novamente em alguns segundos.</p>
+                    <a href="index.html" class="btn-voltar">Voltar</a>
+                `;
+            }
+        }
+
+        carregarDetalhes();
+    </script>
+</body>
+</html>
