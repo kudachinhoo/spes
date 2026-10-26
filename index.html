@@ -514,6 +514,8 @@
             .filtro-input { max-width: 100%; flex: 1 1 45%; }
         }
     </style>
+<link rel="stylesheet" href="galeria-spes.css">
+<script defer src="galeria-spes.js"></script>
 </head>
 <body>
 
@@ -720,14 +722,7 @@
             const local = [pessoa.cidade, pessoa.estado_desaparecimento].filter(Boolean).join(' - ');
             card.appendChild(criar('div', 'location', local || 'Local não informado'));
 
-            const fotoBox = document.createElement('div');
-            const img = criar('img', 'desaparecidos');
-            img.loading = 'lazy';
-            img.alt = `Foto de ${nome}`;
-            img.src = fotoSegura(pessoa.foto);
-            img.onerror = () => { img.onerror = null; img.src = FOTO_PADRAO; };
-            fotoBox.appendChild(img);
-            card.appendChild(fotoBox);
+            card.appendChild(criarGaleriaSPES(pessoa, FOTO_PADRAO, nome));
 
             const dias = diasDesde(lerData(pessoa.data_desaparecimento));
             let textoDias = 'Data do desaparecimento não informada';

@@ -214,7 +214,7 @@
 <div><label for="status">Situação</label><select id="status" name="status"><option value="desaparecido">Desaparecido</option><option value="encontrado">Encontrado</option></select></div>
 <div class="full"><label for="informacoes">Informações complementares</label><textarea id="informacoes" name="informacoes" maxlength="2000"></textarea></div>
 <div class="full"><label for="locais_favoritos">Lugares que costumava frequentar</label><textarea id="locais_favoritos" name="locais_favoritos"></textarea></div>
-</div><p>Campos vazios opcionais não serão apagados nesta versão. Foto e pontos do mapa permanecem inalterados.</p><div class="actions"><button type="submit" class="primary" id="save">Salvar alterações</button><button type="button" id="cancel">Cancelar</button></div></form></section>
+</div><div class="full"><label for="novasFotos">Adicionar fotos (até 6 no total)</label><input type="file" id="novasFotos" accept="image/png,image/jpeg,image/webp" multiple><p id="fotosAtuais"></p></div><p>As novas fotos serão acrescentadas à galeria. Campos vazios opcionais não serão apagados; pontos do mapa permanecem inalterados.</p><div class="actions"><button type="submit" class="primary" id="save">Salvar alterações</button><button type="button" id="cancel">Cancelar</button></div></form></section>
 <section id="history" class="card" hidden><h2>Histórico da ocorrência <span id="historyId"></span></h2><div id="historyItems"></div><button type="button" id="closeHistory">Fechar histórico</button></section></main><footer>SPES · Área do usuário</footer>
 <script>
 const API='https://spes-backend.onrender.com/api';
@@ -230,7 +230,8 @@ async function api(path,options={}){
  return data;
 }
 const campos=['nome','rg','data_nascimento','sexo','etnia','altura','peso','contato','cidade','estado_desaparecimento','data_desaparecimento','status','informacoes','locais_favoritos'];
-let editing=null;
+let editing=null; let fotosExistentes=[];
+function compactarFoto(file){return new Promise((resolve,reject)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{const c=document.createElement('canvas');const escala=Math.min(1,520/Math.max(img.width,img.height));c.width=Math.round(img.width*escala);c.height=Math.round(img.height*escala);c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);resolve(c.toDataURL('image/jpeg',.7));};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Não foi possível ler a imagem'));};img.src=url;});}
 async function load(){
  if(!token){notice('Faça login para acessar suas ocorrências.',true);return;}
  try{
@@ -252,6 +253,9 @@ async function openEdit(id){
  try{
   const p=await api(`/people/mine/${id}`);editing=id;
   for(const field of campos)$(field).value=p[field]??'';
+  fotosExistentes=Array.isArray(p.fotos)&&p.fotos.length?p.fotos:(p.foto?[p.foto]:[]);
+  $('fotosAtuais').textContent=`${fotosExistentes.length} foto(s) cadastrada(s).`;
+  $('novasFotos').value='';
   $('editingId').textContent='#'+id;$('editor').hidden=false;$('history').hidden=true;
   $('editor').scrollIntoView({behavior:'smooth',block:'start'});
  }catch(e){notice(e.message,true);}
@@ -262,6 +266,12 @@ $('editForm').addEventListener('submit',async e=>{
  const body={};for(const field of campos){const value=$(field).value.trim();if(value!=='')body[field]=value;}
  if(body.rg?.length>20||body.contato?.length>20){notice('RG e contato aceitam no máximo 20 caracteres.',true);return;}
  const btn=$('save');btn.disabled=true;
+ try {
+  const novas=[...$('novasFotos').files];
+  if(novas.length+fotosExistentes.length>6)throw new Error('Máximo de 6 fotos por ocorrência.');
+  if(novas.some(f=>!['image/png','image/jpeg','image/webp'].includes(f.type)||f.size>15*1024*1024))throw new Error('Use JPG, PNG ou WEBP de até 15 MB.');
+  if(novas.length)body.fotos=[...fotosExistentes,...await Promise.all(novas.map(compactarFoto))];
+ }catch(err){notice(err.message,true);btn.disabled=false;return;}
  try{const result=await api(`/people/${editing}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});notice(result.message||'Alterações salvas. O histórico foi atualizado.');$('editor').hidden=true;editing=null;await load();}
  catch(err){notice(err.message,true);}finally{btn.disabled=false;}
 });

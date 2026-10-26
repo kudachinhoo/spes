@@ -142,6 +142,8 @@
             h1 { font-size: 1.5rem; }
         }
     </style>
+<link rel="stylesheet" href="galeria-spes.css">
+<script defer src="galeria-spes.js"></script>
 </head>
 <body>
     <div class="card">
@@ -237,7 +239,7 @@
                     : 'N/I';
 
                 const html = `
-                    ${fotoSegura(p.foto) ? `<img src="${escaparHTML(fotoSegura(p.foto))}" alt="Foto de ${escaparHTML(p.nome)}" class="foto">` : ''}
+                    <div id="galeria-detalhes"></div>
                     <h1>${escaparHTML(p.nome)}</h1>
                     <span class="status-badge ${escaparHTML(p.status)}">
                         ${p.status === 'encontrado' ? '✅ ENCONTRADO' : '🔴 DESAPARECIDO'}
@@ -262,6 +264,7 @@
                     <a href="index.html" class="btn-voltar">Voltar</a>
                 `;
                 conteudo.innerHTML = html;
+                document.getElementById('galeria-detalhes').appendChild(criarGaleriaSPES(p, '', p.nome));
                 mostrarMapa(p);
             } catch (error) {
                 console.error('Erro:', error);
