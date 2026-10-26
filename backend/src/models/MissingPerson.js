@@ -56,6 +56,7 @@ const MissingPerson = sequelize.define('desaparecido', {
   foto: {
     type: DataTypes.TEXT
   },
+  fotos: { type: DataTypes.JSONB, allowNull: false, defaultValue: [] },
   status: {
     type: DataTypes.STRING(20),
     allowNull: false,

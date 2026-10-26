@@ -54,7 +54,9 @@ const regrasPessoa = (criar) => {
     body('informacoes').optional().trim().isLength({ max: 2000 }).withMessage('Informações muito longas (máximo 2000 caracteres)'),
     body('contato').optional().trim().isLength({ max: 20 }).withMessage('Contato muito longo'),
     body('ultimas_localizacoes').optional().trim().isLength({ max: 500 }).withMessage('Últimas localizações muito longas (máximo 500 caracteres)'),
-    body('foto').optional().custom(validarFoto)
+    body('foto').optional().custom(validarFoto),
+    body('fotos').optional().isArray({ min: 0, max: 6 }).withMessage('Selecione no máximo 6 fotos'),
+    body('fotos.*').optional().custom(validarFoto)
   ];
 
   if (!criar) {

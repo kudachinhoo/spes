@@ -10,7 +10,7 @@ const CAMPOS_CRIACAO = [
   'nome', 'rg', 'data_nascimento', 'sexo', 'etnia', 'altura', 'peso',
   'contato', 'informacoes', 'locais_favoritos',
   'cidade', 'estado_desaparecimento', 'data_desaparecimento',
-  'latitude', 'longitude', 'foto'
+  'latitude', 'longitude', 'foto', 'fotos'
 ];
 const CAMPOS_EDICAO = [...CAMPOS_CRIACAO, 'status'];
 
@@ -91,7 +91,7 @@ const CAMPOS_LOG = new Set([
   'nome', 'data_nascimento', 'sexo', 'etnia', 'altura', 'peso',
   'informacoes', 'cidade', 'estado_desaparecimento', 'data_desaparecimento', 'status'
 ]);
-const CAMPOS_RESTRITOS = new Set(['rg', 'contato', 'foto', 'locais_favoritos']);
+const CAMPOS_RESTRITOS = new Set(['rg', 'contato', 'foto', 'fotos', 'locais_favoritos']);
 const normalizar = (valor) => valor == null ? null : String(valor);
 const gerarAlteracoes = (antigo, novo) => {
   const alteracoes = {};
@@ -128,7 +128,7 @@ exports.findMineOne = async (req, res) => {
   try {
     const person = await MissingPerson.findOne({
       where: req.isAdmin ? { id_desaparecido: req.params.id } : { id_desaparecido: req.params.id, cpf_usuario: req.userCpf },
-      attributes: { exclude: ['cpf_usuario', 'foto'] }
+      attributes: { exclude: ['cpf_usuario'] }
     });
     if (!person) return res.status(404).json({ error: 'Ocorrência não encontrada na sua conta' });
     return res.json(person);
@@ -162,8 +162,10 @@ exports.getLogs = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const person = await sequelize.transaction(async (t) => {
+      const dados = pegarCampos(req.body, CAMPOS_CRIACAO);
+      if (Array.isArray(dados.fotos) && dados.fotos.length) dados.foto = dados.fotos[0];
       const nova = await MissingPerson.create(
-        { ...pegarCampos(req.body, CAMPOS_CRIACAO), cpf_usuario: req.userCpf },
+        { ...dados, cpf_usuario: req.userCpf },
         { transaction: t }
       );
 
@@ -291,8 +293,16 @@ exports.update = async (req, res) => {
       if (naoEhDono(person, req)) return { status: 403, error: 'Você só pode editar casos que você cadastrou' };
 
       const dados = pegarCampos(req.body, CAMPOS_EDICAO);
+      // Na edição, fotos é a lista completa enviada pelo proprietário.
+      if (Array.isArray(req.body.fotos)) {
+        dados.fotos = req.body.fotos;
+        if (dados.fotos.length) dados.foto = dados.fotos[0];
+      }
       const anterior = person.get({ plain: true });
       const alteracoes = gerarAlteracoes(anterior, dados);
+      if (dados.fotos && JSON.stringify(anterior.fotos || []) !== JSON.stringify(dados.fotos)) {
+        alteracoes.fotos = { alterado: true };
+      }
       if (Object.keys(alteracoes).length === 0) {
         return { status: 200, body: { success: true, message: 'Nenhuma alteração identificada' } };
       }
