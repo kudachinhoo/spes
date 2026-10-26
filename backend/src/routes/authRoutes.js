@@ -4,6 +4,7 @@ const { body } = require('express-validator');
 const rateLimit = require('express-rate-limit');
 const authController = require('../controllers/authController');
 const auth = require('../middleware/auth');
+const passwordReset = require('../controllers/passwordResetController');
 const validar = require('../middleware/validar');
 
 // Limite mais apertado para login/cadastro (dificulta tentativa de adivinhar senha)
@@ -36,6 +37,12 @@ const googleValidation = [
 router.post('/register', authLimiter, registerValidation, validar, authController.register);
 router.post('/login', authLimiter, loginValidation, validar, authController.login);
 router.post('/google', authLimiter, googleValidation, validar, authController.google);
+const resetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, max: 5, standardHeaders: true, legacyHeaders: false,
+  message: { error: 'Muitas solicitações. Tente novamente em alguns minutos.' }
+});
+router.post('/forgot-password', resetLimiter, passwordReset.request);
+router.post('/reset-password', resetLimiter, passwordReset.reset);
 router.get('/profile', auth, authController.getProfile);
 
 module.exports = router;
