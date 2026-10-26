@@ -611,15 +611,184 @@
         }
         }
     </style>
-</head>
+<style>
+/* Cabeçalho compartilhado: mesmo padrão da página inicial */
+.top-bar, .top-bar * {box-sizing:border-box}
+.top-bar a{text-decoration:none}
+
+        .top-bar {
+            background-color: #ffffff;
+            padding: 0 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #e6edf5;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area { display: flex; align-items: baseline; gap: 6px; padding: 1rem 0; }
+
+        .logo-area h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #Logo { width: 70px; height: 70px; margin-bottom: -10px; }
+
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.2rem 1.2rem;
+            padding: 0.8rem 0;
+        }
+
+        .nav-menu a {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1e3b5c;
+            padding: 0.3rem 0.2rem;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+        .nav-menu a:hover { border-bottom-color: #2a6f9c; color: #0b2b4a; }
+
+        .nav-menu .btn-outline {
+            border: 1.5px solid #2a6f9c;
+            border-radius: 30px;
+            padding: 0.3rem 1.2rem;
+            font-weight: 600;
+            color: #2a6f9c;
+            background: transparent;
+            transition: 0.2s;
+        }
+
+        .nav-menu .btn-outline:hover { background: #2a6f9c; color: #fff; }
+
+        .nav-menu .btn-solid {
+            background: #2a6f9c;
+            border-radius: 30px;
+            padding: 0.3rem 1.4rem;
+            font-weight: 600;
+            color: #fff;
+            transition: 0.2s;
+        }
+
+        .nav-menu .btn-solid:hover { background: #1d4f73; }
+
+        #areaUsuario {
+            display: none;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        #nomeUsuario { color: #1e3b5c; font-weight: 600; }
+
+        
+@media(max-width:620px){.top-bar{flex-direction:column;align-items:stretch;padding:0 1rem}.logo-area{justify-content:center;padding:.8rem 0 .2rem}.nav-menu{justify-content:center;gap:.2rem .9rem;padding:.6rem 0 1rem}#Logo{width:55px;height:55px}}
+</style><style>
+/* Cabeçalho compartilhado: mesmo padrão da página inicial */
+.top-bar, .top-bar * {box-sizing:border-box}
+.top-bar a{text-decoration:none}
+
+        .top-bar {
+            background-color: #ffffff;
+            padding: 0 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #e6edf5;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area { display: flex; align-items: baseline; gap: 6px; padding: 1rem 0; }
+
+        .logo-area h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #Logo { width: 70px; height: 70px; margin-bottom: -10px; }
+
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.2rem 1.2rem;
+            padding: 0.8rem 0;
+        }
+
+        .nav-menu a {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1e3b5c;
+            padding: 0.3rem 0.2rem;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+        .nav-menu a:hover { border-bottom-color: #2a6f9c; color: #0b2b4a; }
+
+        .nav-menu .btn-outline {
+            border: 1.5px solid #2a6f9c;
+            border-radius: 30px;
+            padding: 0.3rem 1.2rem;
+            font-weight: 600;
+            color: #2a6f9c;
+            background: transparent;
+            transition: 0.2s;
+        }
+
+        .nav-menu .btn-outline:hover { background: #2a6f9c; color: #fff; }
+
+        .nav-menu .btn-solid {
+            background: #2a6f9c;
+            border-radius: 30px;
+            padding: 0.3rem 1.4rem;
+            font-weight: 600;
+            color: #fff;
+            transition: 0.2s;
+        }
+
+        .nav-menu .btn-solid:hover { background: #1d4f73; }
+
+        #areaUsuario {
+            display: none;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        #nomeUsuario { color: #1e3b5c; font-weight: 600; }
+
+        
+@media(max-width:620px){.top-bar{flex-direction:column;align-items:stretch;padding:0 1rem}.logo-area{justify-content:center;padding:.8rem 0 .2rem}.nav-menu{justify-content:center;gap:.2rem .9rem;padding:.6rem 0 1rem}#Logo{width:55px;height:55px}}
+</style></head>
 <body>
 
     <!-- ===== TOP BAR ===== -->
     <header class="top-bar">
         <div class="logo-area">
-            
             <h1>
-                <span><img id="Logo" src="Imagens do site/Logo da SPES.png" alt=""></span>
+                <img id="Logo" src="Imagens do site/Logo da SPES.png" alt="Logo da SPES">
                 SPES
             </h1>
         </div>
@@ -627,11 +796,17 @@
 <a href="Minhas ocorrencias.html" class="link-minhas-ocorrencias">Minhas ocorrências</a>
             <a href="index.html">Início</a>
             <a href="Separação de casos.html">Desaparecidos</a>
-            <a href="#">Como ajudar</a>
-            <a href="#">Parceiros</a>
-            <a href="#">Sobre</a>
-            <a href="Tela de login.htm" class="btn-outline">Entrar</a>
-            <a href="Cadastro.htm" class="btn-solid">Cadastrar</a>
+            <a href="Como ajudar.html">Como ajudar</a>
+            <a href="Seja nosso parceiro.html">Parceiros</a>
+            <a href="Sobre.html">Sobre Nós</a>
+
+            <a href="Tela de login.htm" class="btn-outline" id="btnEntrar">Entrar</a>
+            <a href="Cadastro.htm" class="btn-solid" id="btnCadastrar">Cadastrar</a>
+
+            <div id="areaUsuario">
+                <span id="nomeUsuario"></span>
+                <a href="#" id="btnSair" class="btn-outline">Sair</a>
+            </div>
         </nav>
     </header>
 
@@ -670,5 +845,29 @@ Segurança e privacidade: Tratamos todos os dados com responsabilidade, protegen
             </div>
         </div>
     </footer>
-</body>
+<script>
+(function(){
+ const token=localStorage.getItem('token'), name=localStorage.getItem('userName');
+ const byId=id=>document.getElementById(id);
+ if(token){
+  if(byId('btnEntrar'))byId('btnEntrar').style.display='none';
+  if(byId('btnCadastrar'))byId('btnCadastrar').style.display='none';
+  if(byId('areaUsuario'))byId('areaUsuario').style.display='flex';
+  if(byId('nomeUsuario'))byId('nomeUsuario').textContent=name?'Olá, '+name.split(' ')[0]:'Minha conta';
+ }else{document.querySelectorAll('.link-minhas-ocorrencias').forEach(a=>a.style.display='none')}
+ if(byId('btnSair'))byId('btnSair').addEventListener('click',e=>{e.preventDefault();if(confirm('Deseja sair da sua conta?')){localStorage.removeItem('token');localStorage.removeItem('userName');location.href='index.html'}});
+})();
+</script><script>
+(function(){
+ const token=localStorage.getItem('token'), name=localStorage.getItem('userName');
+ const byId=id=>document.getElementById(id);
+ if(token){
+  if(byId('btnEntrar'))byId('btnEntrar').style.display='none';
+  if(byId('btnCadastrar'))byId('btnCadastrar').style.display='none';
+  if(byId('areaUsuario'))byId('areaUsuario').style.display='flex';
+  if(byId('nomeUsuario'))byId('nomeUsuario').textContent=name?'Olá, '+name.split(' ')[0]:'Minha conta';
+ }else{document.querySelectorAll('.link-minhas-ocorrencias').forEach(a=>a.style.display='none')}
+ if(byId('btnSair'))byId('btnSair').addEventListener('click',e=>{e.preventDefault();if(confirm('Deseja sair da sua conta?')){localStorage.removeItem('token');localStorage.removeItem('userName');location.href='index.html'}});
+})();
+</script></body>
 </html>
