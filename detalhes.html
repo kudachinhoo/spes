@@ -7,36 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-<script>
-    // Verifica se o usuário está logado
-    const token = localStorage.getItem('token');
-    const userName = localStorage.getItem('userName');
-    const btnEntrar = document.getElementById('btnEntrar');
-    const btnCadastrar = document.getElementById('btnCadastrar');
-    const areaUsuario = document.getElementById('areaUsuario');
-    const nomeUsuario = document.getElementById('nomeUsuario');
-    const btnSair = document.getElementById('btnSair');
 
-    if (token && userName) {
-        // Usuário está logado
-        if (btnEntrar) btnEntrar.style.display = 'none';
-        if (btnCadastrar) btnCadastrar.style.display = 'none';
-        if (areaUsuario) areaUsuario.style.display = 'flex';
-        if (nomeUsuario) nomeUsuario.textContent = `Olá, ${userName.split(' ')[0]}`;
-    }
-
-    // Botão Sair
-    if (btnSair) {
-        btnSair.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (confirm('Deseja sair da sua conta?')) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('userName');
-                window.location.href = 'index.html';
-            }
-        });
-    }
-</script>
         body {
             font-family: 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(145deg, #f0f5fa 0%, #dae8f2 100%);
@@ -181,6 +152,13 @@
         const id = params.get('id');
         const conteudo = document.getElementById('conteudo');
 
+        const escaparHTML = valor => String(valor ?? '').replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[c]);
+        const fotoSegura = valor => typeof valor === 'string' &&
+            (/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(valor) ||
+             /^https:\/\//.test(valor)) ? valor : '';
+
         async function carregarDetalhes() {
             if (!id) {
                 conteudo.innerHTML = '<p class="mensagem">ID não informado.</p>';
@@ -190,7 +168,8 @@
             try {
                 const response = await fetch(`${API_URL}/people/${id}`);
                 if (!response.ok) throw new Error('Não encontrado');
-                const p = await response.json();
+                const recebido = await response.json();
+                const p = recebido.data || recebido;
 
                 const idade = p.data_nascimento
                     ? new Date().getFullYear() - new Date(p.data_nascimento).getFullYear()
@@ -201,21 +180,21 @@
                     : 'N/I';
 
                 const html = `
-                    ${p.foto ? `<img src="${p.foto}" alt="Foto de ${p.nome}" class="foto">` : ''}
-                    <h1>${p.nome}</h1>
-                    <span class="status-badge ${p.status}">
+                    ${fotoSegura(p.foto) ? `<img src="${escaparHTML(fotoSegura(p.foto))}" alt="Foto de ${escaparHTML(p.nome)}" class="foto">` : ''}
+                    <h1>${escaparHTML(p.nome)}</h1>
+                    <span class="status-badge ${escaparHTML(p.status)}">
                         ${p.status === 'encontrado' ? '✅ ENCONTRADO' : '🔴 DESAPARECIDO'}
                     </span>
                     <div class="info">
                         <div class="info-item"><strong>Idade</strong><span>${idade} anos</span></div>
-                        <div class="info-item"><strong>Cor / Raça</strong><span>${p.etnia || 'Não informado'}</span></div>
+                        <div class="info-item"><strong>Cor / Raça</strong><span>${escaparHTML(p.etnia || 'Não informado')}</span></div>
                         <div class="info-item"><strong>Altura</strong><span>${p.altura ? p.altura + ' cm' : 'Não informado'}</span></div>
                         <div class="info-item"><strong>Peso</strong><span>${p.peso ? p.peso + ' kg' : 'Não informado'}</span></div>
-                        <div class="info-item"><strong>Cidade</strong><span>${p.cidade || 'Não informado'}</span></div>
-                        <div class="info-item"><strong>Estado</strong><span>${p.estado_desaparecimento || 'Não informado'}</span></div>
+                        <div class="info-item"><strong>Cidade</strong><span>${escaparHTML(p.cidade || 'Não informado')}</span></div>
+                        <div class="info-item"><strong>Estado</strong><span>${escaparHTML(p.estado_desaparecimento || 'Não informado')}</span></div>
                         <div class="info-item"><strong>Data do desaparecimento</strong><span>${dataDesap}</span></div>
                         <div class="info-item"><strong>Data de nascimento</strong><span>${p.data_nascimento ? new Date(p.data_nascimento).toLocaleDateString('pt-BR') : 'Não informado'}</span></div>
-                        ${p.informacoes ? `<div class="info-item full"><strong>Informações</strong><span>${p.informacoes}</span></div>` : ''}
+                        ${p.informacoes ? `<div class="info-item full"><strong>Informações</strong><span>${escaparHTML(p.informacoes)}</span></div>` : ''}
                     </div>
                     <a href="index.html" class="btn-voltar">Voltar</a>
                 `;

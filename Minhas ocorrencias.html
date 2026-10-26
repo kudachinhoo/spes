@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SPES · Minhas ocorrências</title>
+<style>
+:root{font-family:Inter,system-ui,Arial,sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0}header{background:white;border-bottom:1px solid #e2e8f0;padding:18px max(20px,calc((100vw - 1050px)/2));display:flex;justify-content:space-between;align-items:center;gap:16px}header strong{color:#1e40af;font-size:24px}a{color:#1e40af}main{max-width:1050px;margin:36px auto;padding:0 20px}h1{font-size:28px}p{color:#64748b}.card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 3px 12px #0f172a09}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:15px}.cards .card{margin:0}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}button{border:1px solid #1e40af;border-radius:8px;padding:10px 15px;background:white;color:#1e40af;cursor:pointer;font-weight:600}button.primary{background:#1e40af;color:white}button:disabled{opacity:.55;cursor:not-allowed}label{display:block;font-size:14px;font-weight:600;margin:10px 0 5px}input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}textarea{min-height:90px}.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 18px}.full{grid-column:1/-1}#notice{white-space:pre-wrap}#notice.error{color:#b91c1c}#notice.ok{color:#166534}#editor[hidden],#history[hidden]{display:none}.log{border-top:1px solid #e2e8f0;padding:12px 0}.log small{color:#64748b}.change{padding:5px 0;overflow-wrap:anywhere}footer{padding:25px;text-align:center;color:#64748b}
+</style></head><body>
+<header><strong>SPES</strong><nav><a href="index.html">Início</a> · <a href="Cadastro de desparecidos.html">Cadastrar desaparecido</a></nav></header>
+<main><h1>Minhas ocorrências</h1><p>Gerencie apenas as ocorrências cadastradas com a sua conta. Toda edição é registrada no histórico.</p><div id="notice" role="status" aria-live="polite"></div>
+<section id="list" class="cards" aria-label="Minhas ocorrências"></section>
+<section id="editor" class="card" hidden><h2>Editar ocorrência <span id="editingId"></span></h2><form id="editForm"><div class="fields">
+<div><label for="nome">Nome completo</label><input id="nome" name="nome" required minlength="2" maxlength="150"></div>
+<div><label for="rg">RG</label><input id="rg" name="rg" maxlength="20"></div>
+<div><label for="data_nascimento">Data de nascimento</label><input type="date" id="data_nascimento" name="data_nascimento"></div>
+<div><label for="sexo">Sexo</label><select id="sexo" name="sexo"><option value="">Não informado</option><option>Masculino</option><option>Feminino</option><option>Outro</option></select></div>
+<div><label for="etnia">Cor / Raça</label><select id="etnia" name="etnia"><option value="">Não informado</option><option>Branca</option><option>Preta</option><option>Parda</option><option>Amarela</option><option>Indígena</option><option>Outra</option></select></div>
+<div><label for="altura">Altura (cm)</label><input type="number" id="altura" name="altura" min="30" max="250" step="0.1"></div>
+<div><label for="peso">Peso (kg)</label><input type="number" id="peso" name="peso" min="1" max="400" step="0.1"></div>
+<div><label for="contato">Contato</label><input type="tel" id="contato" name="contato" maxlength="20"></div>
+<div><label for="cidade">Cidade</label><input id="cidade" name="cidade" maxlength="100"></div>
+<div><label for="estado_desaparecimento">Estado</label><select id="estado_desaparecimento" name="estado_desaparecimento" required></select></div>
+<div><label for="data_desaparecimento">Data do desaparecimento</label><input type="date" id="data_desaparecimento" name="data_desaparecimento" required></div>
+<div><label for="status">Situação</label><select id="status" name="status"><option value="desaparecido">Desaparecido</option><option value="encontrado">Encontrado</option></select></div>
+<div class="full"><label for="informacoes">Informações complementares</label><textarea id="informacoes" name="informacoes" maxlength="2000"></textarea></div>
+<div class="full"><label for="locais_favoritos">Lugares que costumava frequentar</label><textarea id="locais_favoritos" name="locais_favoritos"></textarea></div>
+</div><p>Campos vazios opcionais não serão apagados nesta versão. Foto e pontos do mapa permanecem inalterados.</p><div class="actions"><button type="submit" class="primary" id="save">Salvar alterações</button><button type="button" id="cancel">Cancelar</button></div></form></section>
+<section id="history" class="card" hidden><h2>Histórico da ocorrência <span id="historyId"></span></h2><div id="historyItems"></div><button type="button" id="closeHistory">Fechar histórico</button></section></main><footer>SPES · Área do usuário</footer>
+<script>
+const API='https://spes-backend.onrender.com/api';
+const token=localStorage.getItem('token');
+const $=id=>document.getElementById(id);
+const notice=(message,error=false)=>{ $('notice').textContent=message; $('notice').className=error?'error':'ok'; };
+const ESTADOS=['Acre','Alagoas','Amapá','Amazonas','Bahia','Ceará','Distrito Federal','Espírito Santo','Goiás','Maranhão','Mato Grosso','Mato Grosso do Sul','Minas Gerais','Pará','Paraíba','Paraná','Pernambuco','Piauí','Rio de Janeiro','Rio Grande do Norte','Rio Grande do Sul','Rondônia','Roraima','Santa Catarina','São Paulo','Sergipe','Tocantins'];
+$('estado_desaparecimento').append(...ESTADOS.map(nome=>new Option(nome,nome)));
+async function api(path,options={}){
+ const response=await fetch(API+path,{...options,headers:{Authorization:`Bearer ${token}`,...options.headers}});
+ const data=await response.json().catch(()=>null);
+ if(!response.ok)throw new Error(data?.errors?.[0]?.msg||data?.error||data?.message||`Erro HTTP ${response.status}`);
+ return data;
+}
+const campos=['nome','rg','data_nascimento','sexo','etnia','altura','peso','contato','cidade','estado_desaparecimento','data_desaparecimento','status','informacoes','locais_favoritos'];
+let editing=null;
+async function load(){
+ if(!token){notice('Faça login para acessar suas ocorrências.',true);return;}
+ try{
+  const people=await api('/people/mine');const list=$('list');list.replaceChildren();
+  if(!people.length){notice('Você ainda não cadastrou nenhuma ocorrência.');return;}
+  notice(`${people.length} ocorrência(s) carregada(s).`);
+  for(const p of people){
+   const card=document.createElement('article');card.className='card';
+   const h=document.createElement('h3');h.textContent=p.nome||'Sem nome';
+   const meta=document.createElement('p');meta.textContent=`#${p.id_desaparecido} · ${p.cidade||'Cidade não informada'} · ${p.status||'desaparecido'}`;
+   const actions=document.createElement('div');actions.className='actions';
+   const edit=document.createElement('button');edit.textContent='Editar';edit.onclick=()=>openEdit(p.id_desaparecido);
+   const hist=document.createElement('button');hist.textContent='Ver histórico';hist.onclick=()=>openHistory(p.id_desaparecido);
+   actions.append(edit,hist);card.append(h,meta,actions);list.append(card);
+  }
+ }catch(e){notice(e.message,true);}
+}
+async function openEdit(id){
+ try{
+  const p=await api(`/people/mine/${id}`);editing=id;
+  for(const field of campos)$(field).value=p[field]??'';
+  $('editingId').textContent='#'+id;$('editor').hidden=false;$('history').hidden=true;
+  $('editor').scrollIntoView({behavior:'smooth',block:'start'});
+ }catch(e){notice(e.message,true);}
+}
+$('cancel').onclick=()=>{$('editor').hidden=true;editing=null;};
+$('editForm').addEventListener('submit',async e=>{
+ e.preventDefault();if(!editing)return;
+ const body={};for(const field of campos){const value=$(field).value.trim();if(value!=='')body[field]=value;}
+ if(body.rg?.length>20||body.contato?.length>20){notice('RG e contato aceitam no máximo 20 caracteres.',true);return;}
+ const btn=$('save');btn.disabled=true;
+ try{const result=await api(`/people/${editing}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});notice(result.message||'Alterações salvas. O histórico foi atualizado.');$('editor').hidden=true;editing=null;await load();}
+ catch(err){notice(err.message,true);}finally{btn.disabled=false;}
+});
+async function openHistory(id){
+ try{
+  const logs=await api(`/people/${id}/logs`);$('historyId').textContent='#'+id;
+  const wrap=$('historyItems');wrap.replaceChildren();
+  if(!logs.length){wrap.textContent='Ainda não há registros.';}
+  for(const log of logs){
+   const item=document.createElement('div');item.className='log';
+   const h=document.createElement('strong');h.textContent=({criacao:'Cadastro',edicao:'Edição',exclusao:'Exclusão'})[log.acao]||log.acao;
+   const date=document.createElement('small');date.textContent=' · '+new Date(log.criado_em).toLocaleString('pt-BR');
+   item.append(h,date);
+   for(const [field,change] of Object.entries(log.alteracoes||{})){
+    const line=document.createElement('div');line.className='change';
+    line.textContent=change?.alterado?`${field}: alterado (valor protegido)`:`${field}: ${change?.anterior??'Não informado'} → ${change?.novo??'Não informado'}`;
+    item.append(line);
+   }wrap.append(item);
+  }
+  $('history').hidden=false;$('editor').hidden=true;$('history').scrollIntoView({behavior:'smooth'});
+ }catch(e){notice(e.message,true);}
+}
+$('closeHistory').onclick=()=>{$('history').hidden=true;};
+load();
+</script></body></html>
