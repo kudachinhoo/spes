@@ -1,9 +1,80 @@
 /* Galeria responsiva SPES */
-.spes-galeria{position:relative;width:100%;overflow:hidden;border-radius:12px;background:#e7edf4}
-.spes-galeria img{width:100%;height:240px;object-fit: cover;block;margin:0}
-.spes-seta{position:absolute;top:50%;transform:translateY(-50%);border:0;border-radius:50%;width:36px;height:36px;background:rgba(9,34,56,.82);color:white;font-size:20px;cursor:pointer;opacity:0;transition:opacity .15s;z-index:2}
-.spes-seta.anterior{left:8px}.spes-seta.proxima{right:8px}
-.spes-galeria:hover .spes-seta,.spes-galeria:focus-within .spes-seta{opacity:1}
-.spes-seta:focus-visible{opacity:1;outline:3px solid #f59e0b}
-.spes-contador{position:absolute;bottom:8px;right:8px;background:rgba(9,34,56,.75);color:white;border-radius:12px;padding:3px 9px;font-size:12px}
-@media(hover:none){.spes-seta{opacity:1}}
+.spes-galeria {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #e7edf4;
+}
+
+/* Imagens dos cards da página inicial */
+.spes-galeria img {
+    display: block;
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    margin: 0;
+}
+
+/* Imagens da página Ver detalhes */
+#galeria-detalhes .spes-galeria img {
+    display: block;
+    width: 100%;
+    height: 350px;
+    object-fit: contain;
+    margin: 0 auto;
+}
+
+/* Setas de navegação */
+.spes-seta {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    background: rgba(9,34,56,.82);
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 2;
+}
+
+.spes-seta.anterior {
+    left: 8px;
+}
+
+.spes-seta.proxima {
+    right: 8px;
+}
+
+.spes-galeria:hover .spes-seta,
+.spes-galeria:focus-within .spes-seta {
+    opacity: 1;
+}
+
+.spes-seta:focus-visible {
+    opacity: 1;
+    outline: 3px solid #f59e0b;
+}
+
+/* Contador de fotografias */
+.spes-contador {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(9,34,56,.75);
+    color: white;
+    border-radius: 12px;
+    padding: 3px 9px;
+    font-size: 12px;
+}
+
+@media (hover: none) {
+    .spes-seta {
+        opacity: 1;
+    }
+}
