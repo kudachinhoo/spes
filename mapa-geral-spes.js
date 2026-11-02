@@ -417,11 +417,12 @@
       ]);
 
       // TRIÂNGULO
-  L.polygon(coordenadas, {
-    color: '#d32f2f',
-    weight: 2,
-    fillColor: '#e74c3c',
-    fillOpacity: .16
+  const triangulo = L.polygon(coordenadas, {
+    color: cor,
+    weight: 2.5,
+    opacity: 0.9,
+    fillColor: cor,
+    fillOpacity: 0.14
 }).addTo(camada);
 
       const foto = fotoPublica(pessoa);
