@@ -252,6 +252,7 @@ exports.findAll = async (req, res) => {
     const people = await MissingPerson.findAll({
       where,
       attributes: ATRIBUTOS_PUBLICOS,
+      include: INCLUDES_DETALHE,
       order: [['data_desaparecimento', 'DESC'], ['id_desaparecido', 'DESC']],
       limit,
       offset
