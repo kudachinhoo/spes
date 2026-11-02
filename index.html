@@ -514,8 +514,6 @@
             .filtro-input { max-width: 100%; flex: 1 1 45%; }
         }
     </style>
-<link rel="stylesheet" href="galeria-spes.css">
-<script defer src="galeria-spes.js"></script>
 </head>
 <body>
 
@@ -528,7 +526,6 @@
             </h1>
         </div>
         <nav class="nav-menu">
-<a href="Minhas ocorrencias.html" class="link-minhas-ocorrencias">Minhas ocorrências</a>
             <a href="index.html">Início</a>
             <a href="Separação de casos.html">Desaparecidos</a>
             <a href="Como ajudar.html">Como ajudar</a>
@@ -570,6 +567,17 @@
 
     <!-- ===== MAIN ===== -->
     <div class="container">
+        <section class="spes-mapa-secao" aria-labelledby="spes-mapa-titulo">
+            <div class="spes-mapa-cabecalho">
+                <div>
+                    <h2 class="section-title" id="spes-mapa-titulo">Mapa de áreas informadas</h2>
+                    <p>Áreas formadas pelos três locais cadastrados. Não representam a localização atual da pessoa.</p>
+                </div>
+                <span id="spes-mapa-quantidade" aria-live="polite"></span>
+            </div>
+            <div id="spes-mapa-geral" role="region" aria-label="Mapa interativo das áreas informadas"></div>
+            <p id="spes-mapa-aviso" role="status" aria-live="polite">Carregando áreas cadastradas...</p>
+        </section>
         <h2 class="section-title">Pessoas Desaparecidas</h2>
         <div class="cards-grid"></div>
     </div>
@@ -722,7 +730,14 @@
             const local = [pessoa.cidade, pessoa.estado_desaparecimento].filter(Boolean).join(' - ');
             card.appendChild(criar('div', 'location', local || 'Local não informado'));
 
-            card.appendChild(criarGaleriaSPES(pessoa, FOTO_PADRAO, nome));
+            const fotoBox = document.createElement('div');
+            const img = criar('img', 'desaparecidos');
+            img.loading = 'lazy';
+            img.alt = `Foto de ${nome}`;
+            img.src = fotoSegura(pessoa.foto);
+            img.onerror = () => { img.onerror = null; img.src = FOTO_PADRAO; };
+            fotoBox.appendChild(img);
+            card.appendChild(fotoBox);
 
             const dias = diasDesde(lerData(pessoa.data_desaparecimento));
             let textoDias = 'Data do desaparecimento não informada';
@@ -921,6 +936,7 @@
 
                 if (pessoas.length === 0) {
                     mostrarMensagem('Nenhum caso encontrado com esses filtros.');
+                    if (window.atualizarMapaSPES) window.atualizarMapaSPES([]);
                     return;
                 }
 
@@ -932,10 +948,12 @@
                 }
 
                 cardsGrid.replaceChildren(...pessoas.map(criarCard));
+                if (window.atualizarMapaSPES) window.atualizarMapaSPES(pessoas);
             } catch (error) {
                 if (minhaBusca !== numeroDaBusca) return;
                 console.error('Erro ao carregar pessoas:', error);
                 mostrarMensagem('Não foi possível carregar os casos agora. Verifique sua conexão e tente de novo.', true);
+                if (window.erroMapaSPES) window.erroMapaSPES();
             }
         }
 
@@ -952,5 +970,5 @@
         montarBarraFiltros();
         carregarPessoas();
     </script>
-<script>(async()=>{const t=localStorage.getItem('token');if(!t)return;try{const r=await fetch('https://spes-backend.onrender.com/api/auth/profile',{headers:{Authorization:'Bearer '+t}});if(!r.ok)return;const u=await r.json();if(u.papel==='admin'){const a=document.createElement('a');a.href='Admin.html';a.textContent='Painel administrativo';a.style.cssText='position:fixed;bottom:18px;right:18px;padding:12px 18px;background:#0b2b4a;color:white;border-radius:12px;z-index:200';document.body.append(a)}}catch(e){}})();</script></body>
+</body>
 </html>
