@@ -981,6 +981,16 @@
         // ==================== INICIAR ====================
         montarBarraFiltros();
         carregarPessoas();
+        function atualizarMenuOcorrencias() {
+    const token = localStorage.getItem('token');
+
+    document.querySelectorAll('.link-minhas-ocorrencias')
+        .forEach(link => {
+            link.style.display = token ? '' : 'none';
+        });
+}
+
+atualizarMenuOcorrencias();
     </script>
 </body>
 </html>
