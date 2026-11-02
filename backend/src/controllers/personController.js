@@ -128,7 +128,8 @@ exports.findMineOne = async (req, res) => {
   try {
     const person = await MissingPerson.findOne({
       where: req.isAdmin ? { id_desaparecido: req.params.id } : { id_desaparecido: req.params.id, cpf_usuario: req.userCpf },
-      attributes: { exclude: ['cpf_usuario'] }
+      attributes: { exclude: ['cpf_usuario'] },
+      include: INCLUDES_DETALHE
     });
     if (!person) return res.status(404).json({ error: 'Ocorrência não encontrada na sua conta' });
     return res.json(person);
@@ -299,15 +300,47 @@ exports.update = async (req, res) => {
         dados.fotos = req.body.fotos;
         if (dados.fotos.length) dados.foto = dados.fotos[0];
       }
+      // Atualizar exclusivamente os três pontos da triangulação.
+      // Não aceitar valores parciais ou coordenadas fora dos limites.
+      let triangulacaoNova = null;
+      if (Object.prototype.hasOwnProperty.call(req.body, 'localizacoes')) {
+        const entrada = req.body.localizacoes;
+        if (!Array.isArray(entrada) || entrada.length !== 3 ||
+            entrada.some(l => !l || typeof l !== 'object' || l.latitude === null || l.longitude === null ||
+              l.latitude === '' || l.longitude === '' || !Number.isFinite(Number(l.latitude)) ||
+              !Number.isFinite(Number(l.longitude)) || Math.abs(Number(l.latitude)) > 90 ||
+              Math.abs(Number(l.longitude)) > 180 || ![1,2,3].includes(Number(l.ordem))) ||
+            new Set(entrada.map(l => Number(l.ordem))).size !== 3) {
+          return { status: 400, error: 'Informe exatamente três pontos válidos para a triangulação.' };
+        }
+        triangulacaoNova = entrada.map(l => ({
+          id_desaparecido: person.id_desaparecido,
+          latitude: Number(l.latitude), longitude: Number(l.longitude), ordem: Number(l.ordem)
+        })).sort((a,b) => a.ordem - b.ordem);
+      }
+      let triangulacaoAlterada = false;
+      if (triangulacaoNova) {
+        const atuais = await Location.findAll({
+          where: { id_desaparecido: person.id_desaparecido, ordem: { [Op.in]: [1,2,3] } },
+          transaction: t, order: [['ordem', 'ASC']]
+        });
+        const resumo = lista => lista.map(l => [Number(l.ordem),Number(l.latitude),Number(l.longitude)]);
+        triangulacaoAlterada = JSON.stringify(resumo(atuais)) !== JSON.stringify(resumo(triangulacaoNova));
+      }
       const anterior = person.get({ plain: true });
       const alteracoes = gerarAlteracoes(anterior, dados);
       if (dados.fotos && JSON.stringify(anterior.fotos || []) !== JSON.stringify(dados.fotos)) {
         alteracoes.fotos = { alterado: true };
       }
+      if (triangulacaoAlterada) alteracoes.localizacoes = { alterado: true };
       if (Object.keys(alteracoes).length === 0) {
         return { status: 200, body: { success: true, message: 'Nenhuma alteração identificada' } };
       }
-      await person.update(dados, { transaction: t });
+      if (triangulacaoAlterada) {
+        await Location.destroy({ where: { id_desaparecido: person.id_desaparecido, ordem: { [Op.in]: [1,2,3] } }, transaction: t });
+        await Location.bulkCreate(triangulacaoNova, { transaction: t });
+      }
+      if (Object.keys(dados).length) await person.update(dados, { transaction: t });
       await OccurrenceLog.create({
         id_desaparecido: person.id_desaparecido,
         cpf_usuario: req.userCpf,
