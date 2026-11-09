@@ -253,7 +253,7 @@
         });
 
         // LOGIN COM GOOGLE
-        const GOOGLE_CLIENT_ID = '159287534210-dko5uuksj44r7u5th9kd91v3hipac2uv.apps.googleusercontent.com';
+        const GOOGLE_CLIENT_ID = '746491845003-btbfji7phv3dbnuo97vv3rs4mneu89eu.apps.googleusercontent.com';
         let googleClient;
 
         window.addEventListener('load', () => {
@@ -284,9 +284,16 @@
         });
 
         document.querySelector('.social-btn.google').addEventListener('click', (e) => {
-            e.preventDefault();
-            googleClient.requestAccessToken();
-        });
+    e.preventDefault();
+
+    if (!googleClient) {
+        alert('O login com Google ainda não está disponível. Aguarde alguns segundos e tente novamente.');
+        console.error('Cliente OAuth do Google não foi inicializado.');
+        return;
+    }
+
+    googleClient.requestAccessToken();
+});
     </script>
 </body>
 </html>
