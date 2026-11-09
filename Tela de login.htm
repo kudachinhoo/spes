@@ -257,7 +257,12 @@
         let googleClient;
 
         window.addEventListener('load', () => {
-            googleClient = google.accounts.oauth2.initTokenClient({
+    if (!window.google?.accounts?.oauth2) {
+        console.error('A biblioteca Google Identity Services não foi carregada.');
+        return;
+    }
+
+    googleClient = google.accounts.oauth2.initTokenClient({
                 client_id: GOOGLE_CLIENT_ID,
                 scope: 'email profile openid',
                 callback: async (tokenResponse) => {
