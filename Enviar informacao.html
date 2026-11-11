@@ -1,3 +1,135 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SPES · Central de Informações</title><style>
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>SPES · Central de Informações</title><style>
 :root{font-family:'Segoe UI',Arial,sans-serif;color:#15324d;background:#f2f7fb}*{box-sizing:border-box}body{margin:0;line-height:1.55}header{background:#fff;border-bottom:1px solid #dce8f1;padding:18px max(20px,calc((100vw - 1050px)/2));display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}header strong{font-size:25px;color:#0f3e68}a{color:#1e5b8c}main{max-width:900px;margin:42px auto;padding:0 18px}h1{font-size:clamp(28px,4vw,40px);color:#0f3e68;line-height:1.15}h2{color:#0f3e68}p{color:#52677a}.panel{background:#fff;border:1px solid #d9e5ef;border-radius:18px;padding:28px;margin:22px 0;box-shadow:0 4px 20px #123c5c0b}.pill{display:inline-block;background:#e1effa;border-radius:99px;padding:6px 12px;font-size:12px;font-weight:700;color:#0f3e68}label{display:block;font-weight:650;margin:17px 0 6px}input,select,textarea{width:100%;padding:12px;border:1px solid #bdcedb;border-radius:9px;font:inherit;background:white}textarea{min-height:130px;resize:vertical}.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}.alert{border-left:4px solid #2a6f9c;background:#eaf4fc;border-radius:8px;padding:14px 17px;color:#284b66}.muted{font-size:13px;color:#627789}.button{display:inline-block;padding:12px 21px;border-radius:25px;background:#0f3e68;color:white;text-decoration:none;font-weight:700;border:0}.button:disabled{opacity:.5;cursor:not-allowed}footer{text-align:center;padding:28px;color:#6b7e8e}@media(max-width:650px){.cols{grid-template-columns:1fr}.panel{padding:19px}}
-</style></head><body><header><strong>SPES</strong><nav><a href="index.html">Início</a> · <a href="Como ajudar.html">Como ajudar</a> · <a href="Separação de casos.html">Desaparecidos</a></nav></header><main><span class="pill">CENTRAL DE INFORMAÇÕES E AVISTAMENTOS</span><h1>Compartilhe uma informação que pode ajudar</h1><p>Este espaço foi planejado para receber relatos sobre possíveis avistamentos e informações relacionadas a pessoas desaparecidas.</p><div class="alert"><strong>Atenção:</strong> a central está em preparação. O formulário abaixo é uma prévia e ainda não recebe relatos. Se houver urgência, entre em contato com as autoridades competentes.</div><section class="panel"><h2>Informações da ocorrência</h2><p id="casoMensagem">Para vincular um relato, abra uma ocorrência e selecione “Tenho informações”.</p><a href="Separação de casos.html">Encontrar uma ocorrência</a></section><form class="panel" id="relatoForm"><h2>Seu relato</h2><label for="tipo">Tipo de informação</label><select id="tipo" name="tipo"><option value="avistamento">Possível avistamento</option><option value="informacao">Informação relevante</option><option value="outro">Outro relato</option></select><div class="cols"><div><label for="data">Data aproximada (opcional)</label><input id="data" type="date"></div><div><label for="periodo">Período (opcional)</label><select id="periodo"><option value="">Não sei informar</option><option>Manhã</option><option>Tarde</option><option>Noite</option><option>Madrugada</option></select></div></div><label for="local">Local aproximado (opcional)</label><input id="local" maxlength="160" placeholder="Bairro, cidade ou ponto de referência"><label for="descricao">O que você sabe ou observou?</label><textarea id="descricao" maxlength="2000" placeholder="Descreva os fatos, sem incluir documentos, endereços residenciais ou dados pessoais desnecessários."></textarea><label for="contato">Contato para retorno (opcional)</label><input id="contato" maxlength="120" placeholder="E-mail ou telefone"><p class="muted">Os relatos deverão ser acessados apenas por responsáveis autorizados. Não publique informações sensíveis em redes sociais.</p><button class="button" type="submit" disabled aria-disabled="true">Envio disponível após integração segura</button><p class="muted">Nenhuma informação digitada aqui é transmitida ou salva nesta versão.</p></form></main><footer>SPES · Conectando pessoas, reunindo famílias.</footer><script>const id=new URLSearchParams(location.search).get('id');if(id && /^\d{1,10}$/.test(id)){document.getElementById('casoMensagem').textContent='Relato vinculado à ocorrência #'+id+'. O envio será habilitado quando a central estiver pronta.';}</script></body></html>
+</style><style>
+/* Cabeçalho compartilhado: mesmo padrão da página inicial */
+.top-bar, .top-bar * {box-sizing:border-box}
+.top-bar a{text-decoration:none}
+
+        .top-bar {
+            background-color: #ffffff;
+            padding: 0 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #e6edf5;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area { display: flex; align-items: baseline; gap: 6px; padding: 1rem 0; }
+
+        .logo-area h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #Logo { width: 70px; height: 70px; margin-bottom: -10px; }
+
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.2rem 1.2rem;
+            padding: 0.8rem 0;
+        }
+
+        .nav-menu a {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1e3b5c;
+            padding: 0.3rem 0.2rem;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+        .nav-menu a:hover { border-bottom-color: #2a6f9c; color: #0b2b4a; }
+
+        .nav-menu .btn-outline {
+            border: 1.5px solid #2a6f9c;
+            border-radius: 30px;
+            padding: 0.3rem 1.2rem;
+            font-weight: 600;
+            color: #2a6f9c;
+            background: transparent;
+            transition: 0.2s;
+        }
+
+        .nav-menu .btn-outline:hover { background: #2a6f9c; color: #fff; }
+
+        .nav-menu .btn-solid {
+            background: #2a6f9c;
+            border-radius: 30px;
+            padding: 0.3rem 1.4rem;
+            font-weight: 600;
+            color: #fff;
+            transition: 0.2s;
+        }
+
+        .nav-menu .btn-solid:hover { background: #1d4f73; }
+
+        #areaUsuario {
+            display: none;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        #nomeUsuario { color: #1e3b5c; font-weight: 600; }
+
+        
+@media(max-width:620px){.top-bar{flex-direction:column;align-items:stretch;padding:0 1rem}.logo-area{justify-content:center;padding:.8rem 0 .2rem}.nav-menu{justify-content:center;gap:.2rem .9rem;padding:.6rem 0 1rem}#Logo{width:55px;height:55px}}
+
+header.top-bar{max-width:none;width:100%;margin:0;padding:0 2rem;border-bottom:2px solid #e6edf5;position:sticky;top:0;z-index:100;}
+header.top-bar .nav-menu{display:flex;flex-wrap:wrap;align-items:center;gap:.2rem 1.2rem;padding:.8rem 0;}
+header.top-bar .nav-menu a{font-size:.95rem;text-decoration:none;}
+header.top-bar .logo-area h1{margin:0;line-height:1.3;}
+@media(max-width:620px){header.top-bar{padding:0 1rem;flex-direction:column;align-items:stretch;}header.top-bar .nav-menu{justify-content:center;gap:.2rem .9rem;padding:.6rem 0 1rem}}
+</style></head><body><header class="top-bar">
+<div class="logo-area">
+<h1>
+<img alt="Logo da SPES" id="Logo" src="Imagens do site/Logo da SPES.png"/>
+                SPES
+            </h1>
+</div>
+<nav class="nav-menu">
+<a class="link-minhas-ocorrencias" href="Minhas ocorrencias.html">Minhas ocorrências</a>
+<a href="index.html">Início</a>
+<a href="Separação de casos.html">Desaparecidos</a>
+<a aria-current="false" href="Como ajudar.html">Como ajudar</a>
+<a href="Seja nosso parceiro.html">Parceiros</a>
+<a href="Sobre.html">Sobre Nós</a>
+<a class="btn-outline" href="Tela de login.htm" id="btnEntrar">Entrar</a>
+<a class="btn-solid" href="Cadastro.htm" id="btnCadastrar">Cadastrar</a>
+<div id="areaUsuario">
+<span id="nomeUsuario"></span>
+<a class="btn-outline" href="#" id="btnSair">Sair</a>
+</div>
+</nav>
+</header><main><span class="pill">CENTRAL DE INFORMAÇÕES E AVISTAMENTOS</span><h1>Compartilhe uma informação que pode ajudar</h1><p>Este espaço foi planejado para receber relatos sobre possíveis avistamentos e informações relacionadas a pessoas desaparecidas.</p><div class="alert"><strong>Atenção:</strong> a central está em preparação. O formulário abaixo é uma prévia e ainda não recebe relatos. Se houver urgência, entre em contato com as autoridades competentes.</div><section class="panel"><h2>Informações da ocorrência</h2><p id="casoMensagem">Para vincular um relato, abra uma ocorrência e selecione “Tenho informações”.</p><a href="Separação de casos.html">Encontrar uma ocorrência</a></section><form class="panel" id="relatoForm"><h2>Seu relato</h2><label for="tipo">Tipo de informação</label><select id="tipo" name="tipo"><option value="avistamento">Possível avistamento</option><option value="informacao">Informação relevante</option><option value="outro">Outro relato</option></select><div class="cols"><div><label for="data">Data aproximada (opcional)</label><input id="data" type="date"/></div><div><label for="periodo">Período (opcional)</label><select id="periodo"><option value="">Não sei informar</option><option>Manhã</option><option>Tarde</option><option>Noite</option><option>Madrugada</option></select></div></div><label for="local">Local aproximado (opcional)</label><input id="local" maxlength="160" placeholder="Bairro, cidade ou ponto de referência"/><label for="descricao">O que você sabe ou observou?</label><textarea id="descricao" maxlength="2000" placeholder="Descreva os fatos, sem incluir documentos, endereços residenciais ou dados pessoais desnecessários."></textarea><label for="contato">Contato para retorno (opcional)</label><input id="contato" maxlength="120" placeholder="E-mail ou telefone"/><p class="muted">Os relatos deverão ser acessados apenas por responsáveis autorizados. Não publique informações sensíveis em redes sociais.</p><button aria-disabled="true" class="button" disabled="" type="submit">Envio disponível após integração segura</button><p class="muted">Nenhuma informação digitada aqui é transmitida ou salva nesta versão.</p></form></main><footer>SPES · Conectando pessoas, reunindo famílias.</footer><script>const id=new URLSearchParams(location.search).get('id');if(id && /^\d{1,10}$/.test(id)){document.getElementById('casoMensagem').textContent='Relato vinculado à ocorrência #'+id+'. O envio será habilitado quando a central estiver pronta.';}</script><script>(function(){
+  const token=localStorage.getItem('token');
+  const name=localStorage.getItem('userName');
+  const byId=id=>document.getElementById(id);
+  if(token){
+    if(byId('btnEntrar'))byId('btnEntrar').style.display='none';
+    if(byId('btnCadastrar'))byId('btnCadastrar').style.display='none';
+    if(byId('areaUsuario'))byId('areaUsuario').style.display='flex';
+    if(byId('nomeUsuario'))byId('nomeUsuario').textContent=name?'Olá, '+name.split(' ')[0]:'Minha conta';
+  }else{
+    document.querySelectorAll('.link-minhas-ocorrencias').forEach(a=>a.style.display='none');
+  }
+  if(byId('btnSair'))byId('btnSair').addEventListener('click',e=>{
+    e.preventDefault();
+    if(confirm('Deseja sair da sua conta?')){
+      localStorage.removeItem('token');localStorage.removeItem('userName');
+      location.href='index.html';
+    }
+  });
+})();</script></body></html>
