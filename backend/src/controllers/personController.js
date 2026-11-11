@@ -4,6 +4,7 @@ const MissingPerson = require('../models/MissingPerson');
 const Contact = require('../models/Contact');
 const Location = require('../models/Location');
 const OccurrenceLog = require('../models/OccurrenceLog');
+const User = require('../models/User');
 
 // Campos que o usuário pode enviar
 const CAMPOS_CRIACAO = [
@@ -88,10 +89,12 @@ const naoEhDono = (person, req) => !req.isAdmin && person.cpf_usuario !== req.us
 
 // Não registrar valores de documentos, contato, fotos ou endereços pessoais em logs.
 const CAMPOS_LOG = new Set([
-  'nome', 'data_nascimento', 'sexo', 'etnia', 'altura', 'peso',
-  'informacoes', 'cidade', 'estado_desaparecimento', 'data_desaparecimento', 'status'
+  'nome', 'cidade', 'estado_desaparecimento', 'data_desaparecimento', 'status'
 ]);
-const CAMPOS_RESTRITOS = new Set(['rg', 'contato', 'foto', 'fotos', 'locais_favoritos']);
+const CAMPOS_RESTRITOS = new Set([
+  'rg', 'contato', 'foto', 'fotos', 'locais_favoritos',
+  'informacoes', 'data_nascimento', 'sexo', 'etnia', 'altura', 'peso'
+]);
 const normalizar = (valor) => valor == null ? null : String(valor);
 
 const gerarAlteracoes = (antigo, novo) => {
@@ -155,17 +158,43 @@ exports.getLogs = async (req, res) => {
     const person = await MissingPerson.findByPk(req.params.id);
     if (!person) return res.status(404).json({ error: 'Ocorrência não encontrada' });
     if (naoEhDono(person, req)) return res.status(403).json({ error: 'Acesso negado ao histórico' });
+
     const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 50, 1), 100);
     const offset = Math.max(Number.parseInt(req.query.offset, 10) || 0, 0);
     const logs = await OccurrenceLog.findAll({
-      where: req.isAdmin ? { id_desaparecido: person.id_desaparecido } : { id_desaparecido: person.id_desaparecido, cpf_usuario: req.userCpf },
-      attributes: ['id', 'id_desaparecido', 'acao', 'alteracoes', 'criado_em'],
-      order: [['criado_em', 'DESC'], ['id', 'DESC']], limit, offset
+      where: { id_desaparecido: person.id_desaparecido },
+      attributes: ['id', 'id_desaparecido', 'cpf_usuario', 'acao', 'alteracoes', 'criado_em'],
+      order: [['criado_em', 'DESC'], ['id', 'DESC']],
+      limit, offset
     });
-    res.json(logs);
+
+    const cpfs = [...new Set(logs.map(log => log.cpf_usuario).filter(Boolean))];
+    const usuarios = cpfs.length ? await User.findAll({
+      where: { cpf: { [Op.in]: cpfs } },
+      attributes: ['cpf', 'nome']
+    }) : [];
+    const nomesPorCpf = new Map(usuarios.map(usuario => [usuario.cpf, usuario.nome]));
+
+    const resultado = logs.map(log => {
+      const registro = log.toJSON();
+      registro.alterado_por = nomesPorCpf.get(registro.cpf_usuario) || 'Usuário não identificado';
+      delete registro.cpf_usuario;
+
+      if (!req.isAdmin) {
+        const protegidas = {};
+        for (const campo of Object.keys(registro.alteracoes || {})) {
+          protegidas[campo] = { alterado: true };
+        }
+        registro.alteracoes = protegidas;
+      }
+      return registro;
+    });
+
+    res.set('Cache-Control', 'no-store');
+    return res.json(resultado);
   } catch (error) {
     console.error('Erro ao buscar histórico:', error);
-    res.status(500).json({ error: 'Erro ao buscar histórico' });
+    return res.status(500).json({ error: 'Erro ao buscar histórico' });
   }
 };
 
