@@ -277,6 +277,7 @@
                     <span class="status-badge ${escaparHTML(p.status)}">
                         ${p.status === 'encontrado' ? '✅ ENCONTRADO' : '🔴 DESAPARECIDO'}
                     </span>
+                    <div style="text-align:center;margin:8px 0 24px"><a href="Enviar informacao.html?id=${encodeURIComponent(id)}" style="display:inline-block;background:#0f3e68;color:white;padding:13px 22px;border-radius:28px;text-decoration:none;font-weight:700">Tenho informações sobre esta pessoa</a><p style="font-size:13px;color:#61798d;margin-top:10px">Informações não são publicadas automaticamente. Em caso de urgência, contate as autoridades.</p></div>
                     <div class="info">
                         <div class="info-item"><strong>Idade</strong><span>${idade} anos</span></div>
                         <div class="info-item"><strong>Cor / Raça</strong><span>${escaparHTML(p.etnia || 'Não informado')}</span></div>
