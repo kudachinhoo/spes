@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SPES · Minhas ocorrências</title>
 <style>
-:root{font-family:Inter,system-ui,Arial,sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0}header{background:white;border-bottom:1px solid #e2e8f0;padding:18px max(20px,calc((100vw - 1050px)/2));display:flex;justify-content:space-between;align-items:center;gap:16px}header strong{color:#1e40af;font-size:24px}a{color:#1e40af}main{max-width:1050px;margin:36px auto;padding:0 20px}h1{font-size:28px}p{color:#64748b}.card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 3px 12px #0f172a09}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:15px}.cards .card{margin:0}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}button{border:1px solid #1e40af;border-radius:8px;padding:10px 15px;background:white;color:#1e40af;cursor:pointer;font-weight:600}button.primary{background:#1e40af;color:white}button:disabled{opacity:.55;cursor:not-allowed}label{display:block;font-size:14px;font-weight:600;margin:10px 0 5px}input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}textarea{min-height:90px}.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 18px}.full{grid-column:1/-1}#notice{white-space:pre-wrap}#notice.error{color:#b91c1c}#notice.ok{color:#166534}#editor[hidden],#history[hidden]{display:none}.log{border-top:1px solid #e2e8f0;padding:12px 0}.log small{color:#64748b}.change{padding:5px 0;overflow-wrap:anywhere}footer{padding:25px;text-align:center;color:#64748b}
+:root{font-family:Inter,system-ui,Arial,sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0}header{background:white;border-bottom:1px solid #e2e8f0;padding:18px max(20px,calc((100vw - 1050px)/2));display:flex;justify-content:space-between;align-items:center;gap:16px}header strong{color:#1e40af;font-size:24px}a{color:#1e40af}main{max-width:1050px;margin:36px auto;padding:0 20px}h1{font-size:28px}p{color:#64748b}.card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 3px 12px #0f172a09}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:15px}.cards .card{margin:0}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}button{border:1px solid #1e40af;border-radius:8px;padding:10px 15px;background:white;color:#1e40af;cursor:pointer;font-weight:600}button.primary{background:#1e40af;color:white}button:disabled{opacity:.55;cursor:not-allowed}label{display:block;font-size:14px;font-weight:600;margin:10px 0 5px}input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}textarea{min-height:90px}.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 18px}.full{grid-column:1/-1}#notice{white-space:pre-wrap}#notice.error{color:#b91c1c}#notice.ok{color:#166534}#editor[hidden],#history[hidden]{display:none}.log{border-top:1px solid #e2e8f0;padding:12px 0}.log small{color:#64748b}.change{padding:5px 0;overflow-wrap:anywhere}.log-author{font-size:14px;color:#334155;margin:7px 0;font-weight:500}footer{padding:25px;text-align:center;color:#64748b}
 </style><style>
 /* Cabeçalho compartilhado: mesmo padrão da página inicial */
 .top-bar, .top-bar * {box-sizing:border-box}
@@ -333,25 +333,76 @@ async function removeOccurrence(id){
  try{await api(`/people/${id}`,{method:'DELETE'});notice('Ocorrência excluída.');await load();}
  catch(err){notice(err.message,true);}
 }
-async function openHistory(id){
- try{
-  const logs=await api(`/people/${id}/logs`);$('historyId').textContent='#'+id;
-  const wrap=$('historyItems');wrap.replaceChildren();
-  if(!logs.length){wrap.textContent='Ainda não há registros.';}
-  for(const log of logs){
-   const item=document.createElement('div');item.className='log';
-   const h=document.createElement('strong');h.textContent=({criacao:'Cadastro',edicao:'Edição',exclusao:'Exclusão'})[log.acao]||log.acao;
-   const date=document.createElement('small');date.textContent=' · '+new Date(log.criado_em).toLocaleString('pt-BR');
-   item.append(h,date);
-   for(const [field,change] of Object.entries(log.alteracoes||{})){
-    const line=document.createElement('div');line.className='change';
-    line.textContent=change?.alterado?`${field}: alterado (valor protegido)`:`${field}: ${change?.anterior??'Não informado'} → ${change?.novo??'Não informado'}`;
-    item.append(line);
-   }wrap.append(item);
+// Histórico: identifica o autor e interpreta os campos antes/depois do backend.
+const ROTULOS_HISTORICO = {
+  nome: 'Nome', status: 'Situação', cidade: 'Cidade',
+  estado_desaparecimento: 'Estado', data_desaparecimento: 'Data do desaparecimento',
+  data_nascimento: 'Data de nascimento', informacoes: 'Informações',
+  locais_favoritos: 'Locais favoritos', localizacoes: 'Localizações',
+  rg: 'RG', contato: 'Contato', foto: 'Foto', fotos: 'Fotos',
+  sexo: 'Sexo', etnia: 'Cor / raça', altura: 'Altura', peso: 'Peso'
+};
+function formatarValorHistorico(campo, valor) {
+  if (valor === null || valor === undefined || valor === '') return 'Não informado';
+  if (campo === 'status') {
+    if (valor === 'desaparecido') return 'Desaparecido';
+    if (valor === 'encontrado') return 'Encontrado';
   }
-  $('history').hidden=false;$('editor').hidden=true;$('history').scrollIntoView({behavior:'smooth'});
- }catch(e){notice(e.message,true);}
+  if (['data_desaparecimento', 'data_nascimento'].includes(campo) && typeof valor === 'string' && /^\d{4}-\d{2}-\d{2}/.test(valor)) {
+    const [ano, mes, dia] = valor.slice(0, 10).split('-');
+    return `${dia}/${mes}/${ano}`;
+  }
+  if (typeof valor === 'object') return '[Informação estruturada]';
+  return String(valor);
 }
+async function openHistory(id){
+  try {
+    const logs = await api(`/people/${id}/logs`);
+    $('historyId').textContent = '#' + id;
+    const wrap = $('historyItems');
+    wrap.replaceChildren();
+    if (!logs.length) wrap.textContent = 'Ainda não há registros.';
+    for (const log of logs) {
+      const item = document.createElement('div');
+      item.className = 'log';
+      const h = document.createElement('strong');
+      h.textContent = ({criacao:'Cadastro', edicao:'Edição', exclusao:'Exclusão'})[log.acao] || log.acao;
+      const date = document.createElement('small');
+      date.textContent = ' · ' + new Date(log.criado_em).toLocaleString('pt-BR');
+      item.append(h, date);
+
+      const autor = document.createElement('div');
+      autor.className = 'log-author';
+      autor.textContent = 'Realizado por: ' + (log.alterado_por || 'Não identificado');
+      item.append(autor);
+
+      for (const [campo, change] of Object.entries(log.alteracoes || {})) {
+        const line = document.createElement('div');
+        line.className = 'change';
+        const rotulo = ROTULOS_HISTORICO[campo] || campo;
+        const temAntes = change && Object.prototype.hasOwnProperty.call(change, 'antes');
+        const temDepois = change && Object.prototype.hasOwnProperty.call(change, 'depois');
+        const temAnterior = change && Object.prototype.hasOwnProperty.call(change, 'anterior');
+        const temNovo = change && Object.prototype.hasOwnProperty.call(change, 'novo');
+        if (temAntes || temDepois || temAnterior || temNovo) {
+          const anterior = temAntes ? change.antes : change.anterior;
+          const novo = temDepois ? change.depois : change.novo;
+          line.textContent = `${rotulo}: ${formatarValorHistorico(campo, anterior)} → ${formatarValorHistorico(campo, novo)}`;
+        } else {
+          line.textContent = `${rotulo}: alterado (valor protegido)`;
+        }
+        item.append(line);
+      }
+      wrap.append(item);
+    }
+    $('history').hidden = false;
+    $('editor').hidden = true;
+    $('history').scrollIntoView({behavior:'smooth'});
+  } catch(e) {
+    notice(e.message, true);
+  }
+}
+
 $('closeHistory').onclick=()=>{$('history').hidden=true;};
 load().then(()=>{const id=new URLSearchParams(location.search).get('id');if(id && /^\d+$/.test(id))openEdit(id);});
 </script><script>
