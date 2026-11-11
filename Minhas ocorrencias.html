@@ -224,6 +224,7 @@
 <div class="mapa-botoes"><button type="button" id="limparTriangulo">Limpar pontos</button><button type="button" id="restaurarTriangulo">Restaurar pontos originais</button></div>
 <p id="statusTriangulo" aria-live="polite"></p></div>
 <div class="full"><h3>Gerenciar fotos da ocorrência</h3><p class="photo-help">Substitua ou remova fotos individualmente. A primeira foto será a capa da ocorrência. Mantenha pelo menos uma foto e no máximo seis.</p><div id="galeriaFotos" class="photo-gallery" aria-label="Fotos cadastradas"></div><p id="fotosAtuais" class="photo-count" aria-live="polite"></p><label for="novasFotos">Adicionar mais fotos</label><input type="file" id="novasFotos" accept="image/png,image/jpeg,image/webp" multiple><p class="photo-help">As alterações nas fotos só serão enviadas ao clicar em Salvar alterações.</p></div><p>Campos vazios opcionais não serão apagados. A triangulação será salva somente se você alterá-la.</p><div class="actions"><button type="submit" class="primary" id="save">Salvar alterações</button><button type="button" id="cancel">Cancelar</button></div></form></section>
+<section id="relatosOcorrencia" class="card" hidden><h2>Informações recebidas <span id="relatosId"></span></h2><p>Somente relatos analisados e liberados pela administração são exibidos aqui. Contatos pessoais não são compartilhados.</p><div id="relatosLista"></div><button type="button" onclick="document.getElementById('relatosOcorrencia').hidden=true">Fechar</button></section>
 <section id="history" class="card" hidden><h2>Histórico da ocorrência <span id="historyId"></span></h2><div id="historyItems"></div><button type="button" id="closeHistory">Fechar histórico</button></section></main><footer>SPES · Área do usuário</footer>
 <script>
 const API='https://spes-backend.onrender.com/api';
@@ -326,9 +327,15 @@ async function load(){
    const actions=document.createElement('div');actions.className='actions';
    const edit=document.createElement('button');edit.textContent='Editar';edit.onclick=()=>openEdit(p.id_desaparecido);
    const hist=document.createElement('button');hist.textContent='Ver histórico';hist.onclick=()=>openHistory(p.id_desaparecido);
-   const remove=document.createElement('button');remove.textContent='Excluir';remove.onclick=()=>removeOccurrence(p.id_desaparecido);actions.append(edit,hist,remove);card.append(h,meta,actions);list.append(card);
+   const remove=document.createElement('button');remove.textContent='Excluir';remove.onclick=()=>removeOccurrence(p.id_desaparecido);const relatosBtn=document.createElement('button');relatosBtn.textContent='Informações recebidas';relatosBtn.onclick=()=>abrirRelatos(p.id_desaparecido);actions.append(edit,hist,relatosBtn,remove);card.append(h,meta,actions);list.append(card);
   }
  }catch(e){notice(e.message,true);}
+}
+async function abrirRelatos(id){
+ const sec=$('relatosOcorrencia'), lista=$('relatosLista');sec.hidden=false;$('relatosId').textContent='#'+id;lista.replaceChildren();
+ try{const rows=await api('/relatos/minhas-ocorrencias/'+id);if(!rows.length){lista.textContent='Ainda não há relatos liberados para esta ocorrência.';return;}
+  rows.forEach(r=>{const div=document.createElement('div');div.className='log';const h=document.createElement('strong');h.textContent=r.tipo+' · '+new Date(r.criado_em).toLocaleDateString('pt-BR');const p=document.createElement('p');p.textContent=r.descricao;div.append(h,p);if(r.local_informado){const l=document.createElement('p');l.textContent='Local informado: '+r.local_informado;div.append(l);}lista.append(div);});
+ }catch(e){lista.textContent=e.message;}sec.scrollIntoView({behavior:'smooth'});
 }
 async function openEdit(id){
  try{

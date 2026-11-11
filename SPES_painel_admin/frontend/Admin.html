@@ -9,4 +9,4 @@ for(const p of occ){const tr=document.createElement('tr');cell(tr,p.id_desaparec
 for(const u of users){const tr=document.createElement('tr');cell(tr,u.nome);cell(tr,u.email);cell(tr,u.papel);el('users').append(tr)}
 for(const l of logs){const tr=document.createElement('tr');cell(tr,new Date(l.criado_em).toLocaleString('pt-BR'));cell(tr,l.id_desaparecido);cell(tr,l.cpf_usuario);cell(tr,l.acao);el('logs').append(tr)}
 }catch(e){el('error').textContent=e.message}})();
-</script></body></html>
+</script><a href="Central de relatos admin.html" style="position:fixed;bottom:18px;right:18px;background:#0f3e68;color:white;padding:13px 18px;border-radius:30px;text-decoration:none;z-index:1000">Central de relatos</a></body></html>

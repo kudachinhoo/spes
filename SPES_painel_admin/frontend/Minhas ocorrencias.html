@@ -1,9 +1,206 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SPES · Minhas ocorrências</title>
 <style>
-:root{font-family:Inter,system-ui,Arial,sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0}header{background:white;border-bottom:1px solid #e2e8f0;padding:18px max(20px,calc((100vw - 1050px)/2));display:flex;justify-content:space-between;align-items:center;gap:16px}header strong{color:#1e40af;font-size:24px}a{color:#1e40af}main{max-width:1050px;margin:36px auto;padding:0 20px}h1{font-size:28px}p{color:#64748b}.card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 3px 12px #0f172a09}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:15px}.cards .card{margin:0}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}button{border:1px solid #1e40af;border-radius:8px;padding:10px 15px;background:white;color:#1e40af;cursor:pointer;font-weight:600}button.primary{background:#1e40af;color:white}button:disabled{opacity:.55;cursor:not-allowed}label{display:block;font-size:14px;font-weight:600;margin:10px 0 5px}input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}textarea{min-height:90px}.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 18px}.full{grid-column:1/-1}#notice{white-space:pre-wrap}#notice.error{color:#b91c1c}#notice.ok{color:#166534}#editor[hidden],#history[hidden]{display:none}.log{border-top:1px solid #e2e8f0;padding:12px 0}.log small{color:#64748b}.change{padding:5px 0;overflow-wrap:anywhere}footer{padding:25px;text-align:center;color:#64748b}
-</style></head><body>
-<header><strong>SPES</strong><nav><a href="index.html">Início</a> · <a href="Cadastro de desparecidos.html">Cadastrar desaparecido</a></nav></header>
+:root{font-family:Inter,system-ui,Arial,sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0}header{background:white;border-bottom:1px solid #e2e8f0;padding:18px max(20px,calc((100vw - 1050px)/2));display:flex;justify-content:space-between;align-items:center;gap:16px}header strong{color:#1e40af;font-size:24px}a{color:#1e40af}main{max-width:1050px;margin:36px auto;padding:0 20px}h1{font-size:28px}p{color:#64748b}.card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 3px 12px #0f172a09}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:15px}.cards .card{margin:0}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}button{border:1px solid #1e40af;border-radius:8px;padding:10px 15px;background:white;color:#1e40af;cursor:pointer;font-weight:600}button.primary{background:#1e40af;color:white}button:disabled{opacity:.55;cursor:not-allowed}label{display:block;font-size:14px;font-weight:600;margin:10px 0 5px}input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}textarea{min-height:90px}.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 18px}.full{grid-column:1/-1}#notice{white-space:pre-wrap}#notice.error{color:#b91c1c}#notice.ok{color:#166534}#editor[hidden],#history[hidden]{display:none}.log{border-top:1px solid #e2e8f0;padding:12px 0}.log small{color:#64748b}.change{padding:5px 0;overflow-wrap:anywhere}.log-author{font-size:14px;color:#334155;margin:7px 0;font-weight:500}footer{padding:25px;text-align:center;color:#64748b}
+.photo-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px;margin:12px 0}.photo-tile{border:1px solid #cbd5e1;border-radius:10px;padding:9px;background:#f8fafc}.photo-tile img{width:100%;height:125px;object-fit:cover;border-radius:7px;background:#e2e8f0}.photo-tile .actions{margin-top:8px;gap:5px}.photo-tile button{padding:7px;font-size:12px;flex:1}.photo-count{font-size:13px;color:#475569}.photo-help{font-size:13px;color:#475569}
+</style><style>
+/* Cabeçalho compartilhado: mesmo padrão da página inicial */
+.top-bar, .top-bar * {box-sizing:border-box}
+.top-bar a{text-decoration:none}
+
+        .top-bar {
+            background-color: #ffffff;
+            padding: 0 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #e6edf5;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area { display: flex; align-items: baseline; gap: 6px; padding: 1rem 0; }
+
+        .logo-area h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #Logo { width: 70px; height: 70px; margin-bottom: -10px; }
+
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.2rem 1.2rem;
+            padding: 0.8rem 0;
+        }
+
+        .nav-menu a {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1e3b5c;
+            padding: 0.3rem 0.2rem;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+        .nav-menu a:hover { border-bottom-color: #2a6f9c; color: #0b2b4a; }
+
+        .nav-menu .btn-outline {
+            border: 1.5px solid #2a6f9c;
+            border-radius: 30px;
+            padding: 0.3rem 1.2rem;
+            font-weight: 600;
+            color: #2a6f9c;
+            background: transparent;
+            transition: 0.2s;
+        }
+
+        .nav-menu .btn-outline:hover { background: #2a6f9c; color: #fff; }
+
+        .nav-menu .btn-solid {
+            background: #2a6f9c;
+            border-radius: 30px;
+            padding: 0.3rem 1.4rem;
+            font-weight: 600;
+            color: #fff;
+            transition: 0.2s;
+        }
+
+        .nav-menu .btn-solid:hover { background: #1d4f73; }
+
+        #areaUsuario {
+            display: none;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        #nomeUsuario { color: #1e3b5c; font-weight: 600; }
+
+        
+@media(max-width:620px){.top-bar{flex-direction:column;align-items:stretch;padding:0 1rem}.logo-area{justify-content:center;padding:.8rem 0 .2rem}.nav-menu{justify-content:center;gap:.2rem .9rem;padding:.6rem 0 1rem}#Logo{width:55px;height:55px}}
+</style><style>
+/* Cabeçalho compartilhado: mesmo padrão da página inicial */
+.top-bar, .top-bar * {box-sizing:border-box}
+.top-bar a{text-decoration:none}
+
+        .top-bar {
+            background-color: #ffffff;
+            padding: 0 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #e6edf5;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area { display: flex; align-items: baseline; gap: 6px; padding: 1rem 0; }
+
+        .logo-area h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #Logo { width: 70px; height: 70px; margin-bottom: -10px; }
+
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.2rem 1.2rem;
+            padding: 0.8rem 0;
+        }
+
+        .nav-menu a {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1e3b5c;
+            padding: 0.3rem 0.2rem;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+        .nav-menu a:hover { border-bottom-color: #2a6f9c; color: #0b2b4a; }
+
+        .nav-menu .btn-outline {
+            border: 1.5px solid #2a6f9c;
+            border-radius: 30px;
+            padding: 0.3rem 1.2rem;
+            font-weight: 600;
+            color: #2a6f9c;
+            background: transparent;
+            transition: 0.2s;
+        }
+
+        .nav-menu .btn-outline:hover { background: #2a6f9c; color: #fff; }
+
+        .nav-menu .btn-solid {
+            background: #2a6f9c;
+            border-radius: 30px;
+            padding: 0.3rem 1.4rem;
+            font-weight: 600;
+            color: #fff;
+            transition: 0.2s;
+        }
+
+        .nav-menu .btn-solid:hover { background: #1d4f73; }
+
+        #areaUsuario {
+            display: none;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        #nomeUsuario { color: #1e3b5c; font-weight: 600; }
+
+        
+@media(max-width:620px){.top-bar{flex-direction:column;align-items:stretch;padding:0 1rem}.logo-area{justify-content:center;padding:.8rem 0 .2rem}.nav-menu{justify-content:center;gap:.2rem .9rem;padding:.6rem 0 1rem}#Logo{width:55px;height:55px}}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>#mapa-edicao{height:360px;width:100%;border-radius:12px;border:1px solid #cbd5e1} .mapa-ajuda{font-size:13px;color:#475569} .mapa-botoes{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}</style></head><body>
+<header class="top-bar">
+        <div class="logo-area">
+            <h1>
+                <img id="Logo" src="Imagens do site/Logo da SPES.png" alt="Logo da SPES">
+                SPES
+            </h1>
+        </div>
+        <nav class="nav-menu">
+<a href="Minhas ocorrencias.html" class="link-minhas-ocorrencias">Minhas ocorrências</a>
+            <a href="index.html">Início</a>
+            <a href="Separação de casos.html">Desaparecidos</a>
+            <a href="Como ajudar.html">Como ajudar</a>
+            <a href="Seja nosso parceiro.html">Parceiros</a>
+            <a href="Sobre.html">Sobre Nós</a>
+
+            <a href="Tela de login.htm" class="btn-outline" id="btnEntrar">Entrar</a>
+            <a href="Cadastro.htm" class="btn-solid" id="btnCadastrar">Cadastrar</a>
+
+            <div id="areaUsuario">
+                <span id="nomeUsuario"></span>
+                <a href="#" id="btnSair" class="btn-outline">Sair</a>
+            </div>
+        </nav>
+    </header>
 <main><h1>Minhas ocorrências</h1><p>Gerencie apenas as ocorrências cadastradas com a sua conta. Toda edição é registrada no histórico.</p><div id="notice" role="status" aria-live="polite"></div>
 <section id="list" class="cards" aria-label="Minhas ocorrências"></section>
 <section id="editor" class="card" hidden><h2>Editar ocorrência <span id="editingId"></span></h2><form id="editForm"><div class="fields">
@@ -21,7 +218,13 @@
 <div><label for="status">Situação</label><select id="status" name="status"><option value="desaparecido">Desaparecido</option><option value="encontrado">Encontrado</option></select></div>
 <div class="full"><label for="informacoes">Informações complementares</label><textarea id="informacoes" name="informacoes" maxlength="2000"></textarea></div>
 <div class="full"><label for="locais_favoritos">Lugares que costumava frequentar</label><textarea id="locais_favoritos" name="locais_favoritos"></textarea></div>
-</div><p>Campos vazios opcionais não serão apagados nesta versão. Foto e pontos do mapa permanecem inalterados.</p><div class="actions"><button type="submit" class="primary" id="save">Salvar alterações</button><button type="button" id="cancel">Cancelar</button></div></form></section>
+</div>
+<div class="full"><h3>Editar triangulação</h3><p class="mapa-ajuda">Arraste os três marcadores para alterar os pontos. Você também pode clicar no mapa para adicionar ou substituir pontos (na ordem 1, 2 e 3). O triângulo representa apenas a área informada, não a localização atual da pessoa.</p>
+<div id="mapa-edicao" role="application" aria-label="Mapa para editar os três pontos da triangulação"></div>
+<div class="mapa-botoes"><button type="button" id="limparTriangulo">Limpar pontos</button><button type="button" id="restaurarTriangulo">Restaurar pontos originais</button></div>
+<p id="statusTriangulo" aria-live="polite"></p></div>
+<div class="full"><h3>Gerenciar fotos da ocorrência</h3><p class="photo-help">Substitua ou remova fotos individualmente. A primeira foto será a capa da ocorrência. Mantenha pelo menos uma foto e no máximo seis.</p><div id="galeriaFotos" class="photo-gallery" aria-label="Fotos cadastradas"></div><p id="fotosAtuais" class="photo-count" aria-live="polite"></p><label for="novasFotos">Adicionar mais fotos</label><input type="file" id="novasFotos" accept="image/png,image/jpeg,image/webp" multiple><p class="photo-help">As alterações nas fotos só serão enviadas ao clicar em Salvar alterações.</p></div><p>Campos vazios opcionais não serão apagados. A triangulação será salva somente se você alterá-la.</p><div class="actions"><button type="submit" class="primary" id="save">Salvar alterações</button><button type="button" id="cancel">Cancelar</button></div></form></section>
+<section id="relatosOcorrencia" class="card" hidden><h2>Informações recebidas <span id="relatosId"></span></h2><p>Somente relatos analisados e liberados pela administração são exibidos aqui. Contatos pessoais não são compartilhados.</p><div id="relatosLista"></div><button type="button" onclick="document.getElementById('relatosOcorrencia').hidden=true">Fechar</button></section>
 <section id="history" class="card" hidden><h2>Histórico da ocorrência <span id="historyId"></span></h2><div id="historyItems"></div><button type="button" id="closeHistory">Fechar histórico</button></section></main><footer>SPES · Área do usuário</footer>
 <script>
 const API='https://spes-backend.onrender.com/api';
@@ -37,7 +240,80 @@ async function api(path,options={}){
  return data;
 }
 const campos=['nome','rg','data_nascimento','sexo','etnia','altura','peso','contato','cidade','estado_desaparecimento','data_desaparecimento','status','informacoes','locais_favoritos'];
-let editing=null;
+let editing=null; let fotosExistentes=[]; let fotosEditadas=false;
+let mapaEdicao=null, poligonoEdicao=null, marcadoresEdicao=[], pontosEdicao=[], pontosOriginais=[], proximoPonto=0;
+const copiaPontos = pontos => pontos.map(p=>({...p}));
+function normalizarPontos(locais){
+ return (Array.isArray(locais)?locais:[]).filter(l=>[1,2,3].includes(Number(l.ordem)) && Number.isFinite(Number(l.latitude)) && Number.isFinite(Number(l.longitude)))
+ .sort((a,b)=>Number(a.ordem)-Number(b.ordem)).slice(0,3)
+ .map(l=>({latitude:Number(l.latitude),longitude:Number(l.longitude),ordem:Number(l.ordem)}));
+}
+function redesenharTriangulo(){
+ if(!mapaEdicao)return;
+ marcadoresEdicao.forEach(m=>mapaEdicao.removeLayer(m));marcadoresEdicao=[];
+ if(poligonoEdicao){mapaEdicao.removeLayer(poligonoEdicao);poligonoEdicao=null;}
+ pontosEdicao.forEach((p,i)=>{
+  const marker=L.marker([p.latitude,p.longitude],{draggable:true}).addTo(mapaEdicao).bindTooltip('Ponto '+p.ordem);
+  marker.on('dragend',()=>{const ll=marker.getLatLng();p.latitude=ll.lat;p.longitude=ll.lng;redesenharTriangulo();});
+  marcadoresEdicao.push(marker);
+ });
+ if(pontosEdicao.length===3){poligonoEdicao=L.polygon(pontosEdicao.map(p=>[p.latitude,p.longitude]),{color:'#2563eb',fillOpacity:.18}).addTo(mapaEdicao);}
+ $('statusTriangulo').textContent=`${pontosEdicao.length}/3 pontos definidos.`;
+}
+function iniciarMapaEdicao(locais){
+ pontosOriginais=normalizarPontos(locais);pontosEdicao=copiaPontos(pontosOriginais);proximoPonto=0;
+ if(!window.L){$('statusTriangulo').textContent='Não foi possível carregar o mapa. Verifique sua conexão.';return;}
+ if(!mapaEdicao){
+  mapaEdicao=L.map('mapa-edicao').setView([-14.235,-51.925],4);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(mapaEdicao);
+  mapaEdicao.on('click',e=>{
+   const p={latitude:e.latlng.lat,longitude:e.latlng.lng,ordem:proximoPonto+1};
+   const idx=pontosEdicao.findIndex(x=>x.ordem===p.ordem);
+   if(idx>=0)pontosEdicao[idx]=p;else pontosEdicao.push(p);
+   pontosEdicao.sort((a,b)=>a.ordem-b.ordem);proximoPonto=(proximoPonto+1)%3;redesenharTriangulo();
+  });
+ }
+ setTimeout(()=>{
+  mapaEdicao.invalidateSize();redesenharTriangulo();
+  if(pontosEdicao.length){const bounds=L.latLngBounds(pontosEdicao.map(p=>[p.latitude,p.longitude]));mapaEdicao.fitBounds(bounds.pad(.35),{maxZoom:14});}
+  else mapaEdicao.setView([-14.235,-51.925],4);
+ },120);
+}
+$('limparTriangulo').onclick=()=>{pontosEdicao=[];proximoPonto=0;redesenharTriangulo();};
+$('restaurarTriangulo').onclick=()=>{pontosEdicao=copiaPontos(pontosOriginais);proximoPonto=0;redesenharTriangulo();};
+function compactarFoto(file){return new Promise((resolve,reject)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{const c=document.createElement('canvas');const escala=Math.min(1,520/Math.max(img.width,img.height));c.width=Math.round(img.width*escala);c.height=Math.round(img.height*escala);c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);resolve(c.toDataURL('image/jpeg',.7));};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Não foi possível ler a imagem'));};img.src=url;});}
+const tiposFotosPermitidos = ['image/png','image/jpeg','image/webp'];
+function validarArquivoFoto(file){
+ if(!file || !tiposFotosPermitidos.includes(file.type) || file.size>15*1024*1024) throw new Error('Use JPG, PNG ou WEBP de até 15 MB.');
+}
+function renderizarGaleriaFotos(){
+ const galeria=$('galeriaFotos');galeria.replaceChildren();
+ fotosExistentes.forEach((foto,indice)=>{
+  const tile=document.createElement('div');tile.className='photo-tile';
+  const img=document.createElement('img');img.src=foto;img.alt=`Foto ${indice+1} da ocorrência`;
+  const label=document.createElement('div');label.className='photo-count';label.textContent=indice===0?'Foto 1 · Capa':`Foto ${indice+1}`;
+  const actions=document.createElement('div');actions.className='actions';
+  const substituir=document.createElement('button');substituir.type='button';substituir.textContent='Substituir';
+  substituir.onclick=()=>{
+   const picker=document.createElement('input');picker.type='file';picker.accept='image/png,image/jpeg,image/webp';
+   picker.onchange=async()=>{const file=picker.files?.[0];if(!file)return;try{validarArquivoFoto(file);const imagem=await compactarFoto(file);fotosExistentes[indice]=imagem;fotosEditadas=true;renderizarGaleriaFotos();}catch(e){notice(e.message,true);}};
+   picker.click();
+  };
+  const remover=document.createElement('button');remover.type='button';remover.textContent='Remover';
+  remover.onclick=()=>{if(fotosExistentes.length<=1){notice('Mantenha pelo menos uma foto na ocorrência.',true);return;}fotosExistentes.splice(indice,1);fotosEditadas=true;renderizarGaleriaFotos();};
+  actions.append(substituir,remover);tile.append(img,label,actions);galeria.append(tile);
+ });
+ $('fotosAtuais').textContent=`${fotosExistentes.length} de 6 fotos selecionadas${fotosEditadas?' · alterações pendentes':''}.`;
+}
+$('novasFotos').addEventListener('change',async()=>{
+ const input=$('novasFotos');const arquivos=[...input.files];if(!arquivos.length)return;
+ try{
+  if(fotosExistentes.length+arquivos.length>6)throw new Error('O limite é de 6 fotos. Remova ou substitua fotos existentes antes de adicionar outras.');
+  arquivos.forEach(validarArquivoFoto);
+  const imagens=await Promise.all(arquivos.map(compactarFoto));
+  fotosExistentes.push(...imagens);fotosEditadas=true;renderizarGaleriaFotos();
+ }catch(e){notice(e.message,true);}finally{input.value='';}
+});
 async function load(){
  if(!token){notice('Faça login para acessar suas ocorrências.',true);return;}
  try{
@@ -51,24 +327,42 @@ async function load(){
    const actions=document.createElement('div');actions.className='actions';
    const edit=document.createElement('button');edit.textContent='Editar';edit.onclick=()=>openEdit(p.id_desaparecido);
    const hist=document.createElement('button');hist.textContent='Ver histórico';hist.onclick=()=>openHistory(p.id_desaparecido);
-   const remove=document.createElement('button');remove.textContent='Excluir';remove.onclick=()=>removeOccurrence(p.id_desaparecido);actions.append(edit,hist,remove);card.append(h,meta,actions);list.append(card);
+   const remove=document.createElement('button');remove.textContent='Excluir';remove.onclick=()=>removeOccurrence(p.id_desaparecido);const relatosBtn=document.createElement('button');relatosBtn.textContent='Informações recebidas';relatosBtn.onclick=()=>abrirRelatos(p.id_desaparecido);actions.append(edit,hist,relatosBtn,remove);card.append(h,meta,actions);list.append(card);
   }
  }catch(e){notice(e.message,true);}
+}
+async function abrirRelatos(id){
+ const sec=$('relatosOcorrencia'), lista=$('relatosLista');sec.hidden=false;$('relatosId').textContent='#'+id;lista.replaceChildren();
+ try{const rows=await api('/relatos/minhas-ocorrencias/'+id);if(!rows.length){lista.textContent='Ainda não há relatos liberados para esta ocorrência.';return;}
+  rows.forEach(r=>{const div=document.createElement('div');div.className='log';const h=document.createElement('strong');h.textContent=r.tipo+' · '+new Date(r.criado_em).toLocaleDateString('pt-BR');const p=document.createElement('p');p.textContent=r.descricao;div.append(h,p);if(r.local_informado){const l=document.createElement('p');l.textContent='Local informado: '+r.local_informado;div.append(l);}lista.append(div);});
+ }catch(e){lista.textContent=e.message;}sec.scrollIntoView({behavior:'smooth'});
 }
 async function openEdit(id){
  try{
   const p=await api(`/people/mine/${id}`);editing=id;
   for(const field of campos)$(field).value=p[field]??'';
+  fotosExistentes=Array.isArray(p.fotos)&&p.fotos.length?p.fotos:(p.foto?[p.foto]:[]);
+  fotosEditadas=false;renderizarGaleriaFotos();
+  $('novasFotos').value='';
   $('editingId').textContent='#'+id;$('editor').hidden=false;$('history').hidden=true;
-  $('editor').scrollIntoView({behavior:'smooth',block:'start'});
+  iniciarMapaEdicao(p.localizacoes);
+   $('editor').scrollIntoView({behavior:'smooth',block:'start'});
  }catch(e){notice(e.message,true);}
 }
 $('cancel').onclick=()=>{$('editor').hidden=true;editing=null;};
 $('editForm').addEventListener('submit',async e=>{
  e.preventDefault();if(!editing)return;
  const body={};for(const field of campos){const value=$(field).value.trim();if(value!=='')body[field]=value;}
- if(body.rg?.length>20||body.contato?.length>20){notice('RG e contato aceitam no máximo 20 caracteres.',true);return;}
+ if(JSON.stringify(pontosEdicao)!==JSON.stringify(pontosOriginais)){
+   if(pontosEdicao.length!==3){notice('Para salvar a triangulação, marque exatamente três pontos ou restaure os originais.',true);return;}
+   body.localizacoes=pontosEdicao.map(p=>({latitude:p.latitude,longitude:p.longitude,ordem:p.ordem}));
+  }
+  if(body.rg?.length>20||body.contato?.length>20){notice('RG e contato aceitam no máximo 20 caracteres.',true);return;}
  const btn=$('save');btn.disabled=true;
+ try {
+  if(fotosExistentes.length<1 || fotosExistentes.length>6)throw new Error('Mantenha entre 1 e 6 fotos.');
+  if(fotosEditadas)body.fotos=[...fotosExistentes];
+ }catch(err){notice(err.message,true);btn.disabled=false;return;}
  try{const result=await api(`/people/${editing}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});notice(result.message||'Alterações salvas. O histórico foi atualizado.');$('editor').hidden=true;editing=null;await load();}
  catch(err){notice(err.message,true);}finally{btn.disabled=false;}
 });
@@ -77,25 +371,100 @@ async function removeOccurrence(id){
  try{await api(`/people/${id}`,{method:'DELETE'});notice('Ocorrência excluída.');await load();}
  catch(err){notice(err.message,true);}
 }
-async function openHistory(id){
- try{
-  const logs=await api(`/people/${id}/logs`);$('historyId').textContent='#'+id;
-  const wrap=$('historyItems');wrap.replaceChildren();
-  if(!logs.length){wrap.textContent='Ainda não há registros.';}
-  for(const log of logs){
-   const item=document.createElement('div');item.className='log';
-   const h=document.createElement('strong');h.textContent=({criacao:'Cadastro',edicao:'Edição',exclusao:'Exclusão'})[log.acao]||log.acao;
-   const date=document.createElement('small');date.textContent=' · '+new Date(log.criado_em).toLocaleString('pt-BR');
-   item.append(h,date);
-   for(const [field,change] of Object.entries(log.alteracoes||{})){
-    const line=document.createElement('div');line.className='change';
-    line.textContent=change?.alterado?`${field}: alterado (valor protegido)`:`${field}: ${change?.anterior??'Não informado'} → ${change?.novo??'Não informado'}`;
-    item.append(line);
-   }wrap.append(item);
+// Histórico: identifica o autor e interpreta os campos antes/depois do backend.
+const ROTULOS_HISTORICO = {
+  nome: 'Nome', status: 'Situação', cidade: 'Cidade',
+  estado_desaparecimento: 'Estado', data_desaparecimento: 'Data do desaparecimento',
+  data_nascimento: 'Data de nascimento', informacoes: 'Informações',
+  locais_favoritos: 'Locais favoritos', localizacoes: 'Localizações',
+  rg: 'RG', contato: 'Contato', foto: 'Foto', fotos: 'Fotos',
+  sexo: 'Sexo', etnia: 'Cor / raça', altura: 'Altura', peso: 'Peso'
+};
+function formatarValorHistorico(campo, valor) {
+  if (valor === null || valor === undefined || valor === '') return 'Não informado';
+  if (campo === 'status') {
+    if (valor === 'desaparecido') return 'Desaparecido';
+    if (valor === 'encontrado') return 'Encontrado';
   }
-  $('history').hidden=false;$('editor').hidden=true;$('history').scrollIntoView({behavior:'smooth'});
- }catch(e){notice(e.message,true);}
+  if (['data_desaparecimento', 'data_nascimento'].includes(campo) && typeof valor === 'string' && /^\d{4}-\d{2}-\d{2}/.test(valor)) {
+    const [ano, mes, dia] = valor.slice(0, 10).split('-');
+    return `${dia}/${mes}/${ano}`;
+  }
+  if (typeof valor === 'object') return '[Informação estruturada]';
+  return String(valor);
 }
+async function openHistory(id){
+  try {
+    const logs = await api(`/people/${id}/logs`);
+    $('historyId').textContent = '#' + id;
+    const wrap = $('historyItems');
+    wrap.replaceChildren();
+    if (!logs.length) wrap.textContent = 'Ainda não há registros.';
+    for (const log of logs) {
+      const item = document.createElement('div');
+      item.className = 'log';
+      const h = document.createElement('strong');
+      h.textContent = ({criacao:'Cadastro', edicao:'Edição', exclusao:'Exclusão'})[log.acao] || log.acao;
+      const date = document.createElement('small');
+      date.textContent = ' · ' + new Date(log.criado_em).toLocaleString('pt-BR');
+      item.append(h, date);
+
+      const autor = document.createElement('div');
+      autor.className = 'log-author';
+      autor.textContent = 'Realizado por: ' + (log.alterado_por || 'Não identificado');
+      item.append(autor);
+
+      for (const [campo, change] of Object.entries(log.alteracoes || {})) {
+        const line = document.createElement('div');
+        line.className = 'change';
+        const rotulo = ROTULOS_HISTORICO[campo] || campo;
+        const temAntes = change && Object.prototype.hasOwnProperty.call(change, 'antes');
+        const temDepois = change && Object.prototype.hasOwnProperty.call(change, 'depois');
+        const temAnterior = change && Object.prototype.hasOwnProperty.call(change, 'anterior');
+        const temNovo = change && Object.prototype.hasOwnProperty.call(change, 'novo');
+        if (temAntes || temDepois || temAnterior || temNovo) {
+          const anterior = temAntes ? change.antes : change.anterior;
+          const novo = temDepois ? change.depois : change.novo;
+          line.textContent = `${rotulo}: ${formatarValorHistorico(campo, anterior)} → ${formatarValorHistorico(campo, novo)}`;
+        } else {
+          line.textContent = `${rotulo}: alterado (valor protegido)`;
+        }
+        item.append(line);
+      }
+      wrap.append(item);
+    }
+    $('history').hidden = false;
+    $('editor').hidden = true;
+    $('history').scrollIntoView({behavior:'smooth'});
+  } catch(e) {
+    notice(e.message, true);
+  }
+}
+
 $('closeHistory').onclick=()=>{$('history').hidden=true;};
 load().then(()=>{const id=new URLSearchParams(location.search).get('id');if(id && /^\d+$/.test(id))openEdit(id);});
+</script><script>
+(function(){
+ const token=localStorage.getItem('token'), name=localStorage.getItem('userName');
+ const byId=id=>document.getElementById(id);
+ if(token){
+  if(byId('btnEntrar'))byId('btnEntrar').style.display='none';
+  if(byId('btnCadastrar'))byId('btnCadastrar').style.display='none';
+  if(byId('areaUsuario'))byId('areaUsuario').style.display='flex';
+  if(byId('nomeUsuario'))byId('nomeUsuario').textContent=name?'Olá, '+name.split(' ')[0]:'Minha conta';
+ }else{document.querySelectorAll('.link-minhas-ocorrencias').forEach(a=>a.style.display='none')}
+ if(byId('btnSair'))byId('btnSair').addEventListener('click',e=>{e.preventDefault();if(confirm('Deseja sair da sua conta?')){localStorage.removeItem('token');localStorage.removeItem('userName');location.href='index.html'}});
+})();
+</script><script>
+(function(){
+ const token=localStorage.getItem('token'), name=localStorage.getItem('userName');
+ const byId=id=>document.getElementById(id);
+ if(token){
+  if(byId('btnEntrar'))byId('btnEntrar').style.display='none';
+  if(byId('btnCadastrar'))byId('btnCadastrar').style.display='none';
+  if(byId('areaUsuario'))byId('areaUsuario').style.display='flex';
+  if(byId('nomeUsuario'))byId('nomeUsuario').textContent=name?'Olá, '+name.split(' ')[0]:'Minha conta';
+ }else{document.querySelectorAll('.link-minhas-ocorrencias').forEach(a=>a.style.display='none')}
+ if(byId('btnSair'))byId('btnSair').addEventListener('click',e=>{e.preventDefault();if(confirm('Deseja sair da sua conta?')){localStorage.removeItem('token');localStorage.removeItem('userName');location.href='index.html'}});
+})();
 </script></body></html>
