@@ -93,19 +93,29 @@ const CAMPOS_LOG = new Set([
 ]);
 const CAMPOS_RESTRITOS = new Set(['rg', 'contato', 'foto', 'fotos', 'locais_favoritos']);
 const normalizar = (valor) => valor == null ? null : String(valor);
-const gerarAlteracoes = (antigo, novo) => {
-  const alteracoes = {};
-  for (const [campo, valor] of Object.entries(novo)) {
-    if (normalizar(antigo[campo]) === normalizar(valor)) continue;
-    if (CAMPOS_LOG.has(campo)) {
-      alteracoes[campo] = { alterado: true };
-    } else if (CAMPOS_RESTRITOS.has(campo)) {
-      alteracoes[campo] = { alterado: true }; // sem dados sensíveis
-    }
-  }
-  return alteracoes;
-};
 
+const gerarAlteracoes = (antigo, novo) => {
+    const alteracoes = {};
+
+    for (const [campo, valor] of Object.entries(novo)) {
+        if (normalizar(antigo[campo]) === normalizar(valor)) {
+            continue;
+        }
+
+        if (CAMPOS_LOG.has(campo)) {
+            alteracoes[campo] = {
+                antes: antigo[campo] ?? null,
+                depois: valor ?? null
+            };
+        } else if (CAMPOS_RESTRITOS.has(campo)) {
+            alteracoes[campo] = {
+                alterado: true
+            };
+        }
+    }
+
+    return alteracoes;
+};
 // ---------- minhas ocorrências (acesso autenticado) ----------
 exports.findMine = async (req, res) => {
   try {
