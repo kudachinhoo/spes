@@ -141,24 +141,40 @@
             .card { padding: 1.5rem; }
             h1 { font-size: 1.5rem; }
         }
+        /* Galeria responsiva: evita que o contêiner encolha com fotos verticais. */
+        #galeria-detalhes {
+            width: 100%;
+            max-width: 620px;
+            min-width: 0;
+            margin: 0 auto 24px;
+        }
+        #galeria-detalhes > * {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            margin-left: auto;
+            margin-right: auto;
+        }
         #galeria-detalhes img {
-    display: block;
-    width: auto;
-    max-width: 100%;
-    height: auto;
-    max-height: 350px;
-    object-fit: contain;
-    margin: 0 auto;
-}
-
-#galeria-detalhes {
-    width: fit-content;
-    max-width: 100%;
-    margin: 0 auto 20px;
-}
-        
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: 420px;
+            max-height: min(65vh, 420px);
+            object-fit: contain;
+            margin: 0 auto;
+        }
+        @media (max-width: 600px) {
+            #galeria-detalhes img { height: 330px; max-height: 55vh; }
+        }
     </style>
 <link rel="stylesheet" href="galeria-spes.css">
+    <style>
+      /* Sobrescreve dimensões restritivas da galeria compartilhada apenas nesta página. */
+      #galeria-detalhes { width: 100% !important; max-width: 620px !important; }
+      #galeria-detalhes > * { width: 100% !important; max-width: 100% !important; min-width: 0; }
+      #galeria-detalhes img { width: 100% !important; max-width: 100% !important; object-fit: contain !important; }
+    </style>
   
 <script defer src="galeria-spes.js"></script>
 </head>
