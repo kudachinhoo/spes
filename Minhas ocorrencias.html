@@ -2,6 +2,7 @@
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SPES · Minhas ocorrências</title>
 <style>
 :root{font-family:Inter,system-ui,Arial,sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0}header{background:white;border-bottom:1px solid #e2e8f0;padding:18px max(20px,calc((100vw - 1050px)/2));display:flex;justify-content:space-between;align-items:center;gap:16px}header strong{color:#1e40af;font-size:24px}a{color:#1e40af}main{max-width:1050px;margin:36px auto;padding:0 20px}h1{font-size:28px}p{color:#64748b}.card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 3px 12px #0f172a09}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:15px}.cards .card{margin:0}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}button{border:1px solid #1e40af;border-radius:8px;padding:10px 15px;background:white;color:#1e40af;cursor:pointer;font-weight:600}button.primary{background:#1e40af;color:white}button:disabled{opacity:.55;cursor:not-allowed}label{display:block;font-size:14px;font-weight:600;margin:10px 0 5px}input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}textarea{min-height:90px}.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 18px}.full{grid-column:1/-1}#notice{white-space:pre-wrap}#notice.error{color:#b91c1c}#notice.ok{color:#166534}#editor[hidden],#history[hidden]{display:none}.log{border-top:1px solid #e2e8f0;padding:12px 0}.log small{color:#64748b}.change{padding:5px 0;overflow-wrap:anywhere}.log-author{font-size:14px;color:#334155;margin:7px 0;font-weight:500}footer{padding:25px;text-align:center;color:#64748b}
+.photo-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px;margin:12px 0}.photo-tile{border:1px solid #cbd5e1;border-radius:10px;padding:9px;background:#f8fafc}.photo-tile img{width:100%;height:125px;object-fit:cover;border-radius:7px;background:#e2e8f0}.photo-tile .actions{margin-top:8px;gap:5px}.photo-tile button{padding:7px;font-size:12px;flex:1}.photo-count{font-size:13px;color:#475569}.photo-help{font-size:13px;color:#475569}
 </style><style>
 /* Cabeçalho compartilhado: mesmo padrão da página inicial */
 .top-bar, .top-bar * {box-sizing:border-box}
@@ -222,7 +223,7 @@
 <div id="mapa-edicao" role="application" aria-label="Mapa para editar os três pontos da triangulação"></div>
 <div class="mapa-botoes"><button type="button" id="limparTriangulo">Limpar pontos</button><button type="button" id="restaurarTriangulo">Restaurar pontos originais</button></div>
 <p id="statusTriangulo" aria-live="polite"></p></div>
-<div class="full"><label for="novasFotos">Adicionar fotos (até 6 no total)</label><input type="file" id="novasFotos" accept="image/png,image/jpeg,image/webp" multiple><p id="fotosAtuais"></p></div><p>As novas fotos serão acrescentadas à galeria. Campos vazios opcionais não serão apagados. A triangulação será salva somente se você alterá-la.</p><div class="actions"><button type="submit" class="primary" id="save">Salvar alterações</button><button type="button" id="cancel">Cancelar</button></div></form></section>
+<div class="full"><h3>Gerenciar fotos da ocorrência</h3><p class="photo-help">Substitua ou remova fotos individualmente. A primeira foto será a capa da ocorrência. Mantenha pelo menos uma foto e no máximo seis.</p><div id="galeriaFotos" class="photo-gallery" aria-label="Fotos cadastradas"></div><p id="fotosAtuais" class="photo-count" aria-live="polite"></p><label for="novasFotos">Adicionar mais fotos</label><input type="file" id="novasFotos" accept="image/png,image/jpeg,image/webp" multiple><p class="photo-help">As alterações nas fotos só serão enviadas ao clicar em Salvar alterações.</p></div><p>Campos vazios opcionais não serão apagados. A triangulação será salva somente se você alterá-la.</p><div class="actions"><button type="submit" class="primary" id="save">Salvar alterações</button><button type="button" id="cancel">Cancelar</button></div></form></section>
 <section id="history" class="card" hidden><h2>Histórico da ocorrência <span id="historyId"></span></h2><div id="historyItems"></div><button type="button" id="closeHistory">Fechar histórico</button></section></main><footer>SPES · Área do usuário</footer>
 <script>
 const API='https://spes-backend.onrender.com/api';
@@ -238,7 +239,7 @@ async function api(path,options={}){
  return data;
 }
 const campos=['nome','rg','data_nascimento','sexo','etnia','altura','peso','contato','cidade','estado_desaparecimento','data_desaparecimento','status','informacoes','locais_favoritos'];
-let editing=null; let fotosExistentes=[];
+let editing=null; let fotosExistentes=[]; let fotosEditadas=false;
 let mapaEdicao=null, poligonoEdicao=null, marcadoresEdicao=[], pontosEdicao=[], pontosOriginais=[], proximoPonto=0;
 const copiaPontos = pontos => pontos.map(p=>({...p}));
 function normalizarPontos(locais){
@@ -280,6 +281,38 @@ function iniciarMapaEdicao(locais){
 $('limparTriangulo').onclick=()=>{pontosEdicao=[];proximoPonto=0;redesenharTriangulo();};
 $('restaurarTriangulo').onclick=()=>{pontosEdicao=copiaPontos(pontosOriginais);proximoPonto=0;redesenharTriangulo();};
 function compactarFoto(file){return new Promise((resolve,reject)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{const c=document.createElement('canvas');const escala=Math.min(1,520/Math.max(img.width,img.height));c.width=Math.round(img.width*escala);c.height=Math.round(img.height*escala);c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);resolve(c.toDataURL('image/jpeg',.7));};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Não foi possível ler a imagem'));};img.src=url;});}
+const tiposFotosPermitidos = ['image/png','image/jpeg','image/webp'];
+function validarArquivoFoto(file){
+ if(!file || !tiposFotosPermitidos.includes(file.type) || file.size>15*1024*1024) throw new Error('Use JPG, PNG ou WEBP de até 15 MB.');
+}
+function renderizarGaleriaFotos(){
+ const galeria=$('galeriaFotos');galeria.replaceChildren();
+ fotosExistentes.forEach((foto,indice)=>{
+  const tile=document.createElement('div');tile.className='photo-tile';
+  const img=document.createElement('img');img.src=foto;img.alt=`Foto ${indice+1} da ocorrência`;
+  const label=document.createElement('div');label.className='photo-count';label.textContent=indice===0?'Foto 1 · Capa':`Foto ${indice+1}`;
+  const actions=document.createElement('div');actions.className='actions';
+  const substituir=document.createElement('button');substituir.type='button';substituir.textContent='Substituir';
+  substituir.onclick=()=>{
+   const picker=document.createElement('input');picker.type='file';picker.accept='image/png,image/jpeg,image/webp';
+   picker.onchange=async()=>{const file=picker.files?.[0];if(!file)return;try{validarArquivoFoto(file);const imagem=await compactarFoto(file);fotosExistentes[indice]=imagem;fotosEditadas=true;renderizarGaleriaFotos();}catch(e){notice(e.message,true);}};
+   picker.click();
+  };
+  const remover=document.createElement('button');remover.type='button';remover.textContent='Remover';
+  remover.onclick=()=>{if(fotosExistentes.length<=1){notice('Mantenha pelo menos uma foto na ocorrência.',true);return;}fotosExistentes.splice(indice,1);fotosEditadas=true;renderizarGaleriaFotos();};
+  actions.append(substituir,remover);tile.append(img,label,actions);galeria.append(tile);
+ });
+ $('fotosAtuais').textContent=`${fotosExistentes.length} de 6 fotos selecionadas${fotosEditadas?' · alterações pendentes':''}.`;
+}
+$('novasFotos').addEventListener('change',async()=>{
+ const input=$('novasFotos');const arquivos=[...input.files];if(!arquivos.length)return;
+ try{
+  if(fotosExistentes.length+arquivos.length>6)throw new Error('O limite é de 6 fotos. Remova ou substitua fotos existentes antes de adicionar outras.');
+  arquivos.forEach(validarArquivoFoto);
+  const imagens=await Promise.all(arquivos.map(compactarFoto));
+  fotosExistentes.push(...imagens);fotosEditadas=true;renderizarGaleriaFotos();
+ }catch(e){notice(e.message,true);}finally{input.value='';}
+});
 async function load(){
  if(!token){notice('Faça login para acessar suas ocorrências.',true);return;}
  try{
@@ -302,7 +335,7 @@ async function openEdit(id){
   const p=await api(`/people/mine/${id}`);editing=id;
   for(const field of campos)$(field).value=p[field]??'';
   fotosExistentes=Array.isArray(p.fotos)&&p.fotos.length?p.fotos:(p.foto?[p.foto]:[]);
-  $('fotosAtuais').textContent=`${fotosExistentes.length} foto(s) cadastrada(s).`;
+  fotosEditadas=false;renderizarGaleriaFotos();
   $('novasFotos').value='';
   $('editingId').textContent='#'+id;$('editor').hidden=false;$('history').hidden=true;
   iniciarMapaEdicao(p.localizacoes);
@@ -320,10 +353,8 @@ $('editForm').addEventListener('submit',async e=>{
   if(body.rg?.length>20||body.contato?.length>20){notice('RG e contato aceitam no máximo 20 caracteres.',true);return;}
  const btn=$('save');btn.disabled=true;
  try {
-  const novas=[...$('novasFotos').files];
-  if(novas.length+fotosExistentes.length>6)throw new Error('Máximo de 6 fotos por ocorrência.');
-  if(novas.some(f=>!['image/png','image/jpeg','image/webp'].includes(f.type)||f.size>15*1024*1024))throw new Error('Use JPG, PNG ou WEBP de até 15 MB.');
-  if(novas.length)body.fotos=[...fotosExistentes,...await Promise.all(novas.map(compactarFoto))];
+  if(fotosExistentes.length<1 || fotosExistentes.length>6)throw new Error('Mantenha entre 1 e 6 fotos.');
+  if(fotosEditadas)body.fotos=[...fotosExistentes];
  }catch(err){notice(err.message,true);btn.disabled=false;return;}
  try{const result=await api(`/people/${editing}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});notice(result.message||'Alterações salvas. O histórico foi atualizado.');$('editor').hidden=true;editing=null;await load();}
  catch(err){notice(err.message,true);}finally{btn.disabled=false;}
