@@ -353,27 +353,121 @@
 .central-spes{max-width:1300px;margin:0 auto 60px;padding:50px 40px;background:#f0f7fc;border-radius:18px;display:grid;grid-template-columns:1.3fr 1fr;gap:35px;align-items:center}
 .central-spes h2{font-size:32px;color:#0f3e68;margin:10px 0 15px}.central-spes p{color:#42566a;margin-bottom:18px}.central-spes .eyebrow{color:#1e5b8c;font-size:13px;font-weight:800;letter-spacing:.1em}.central-spes .passos{background:white;border:1px solid #d6e4f0;padding:24px;border-radius:14px}.central-spes .passos li{margin:10px 0 10px 20px;color:#42566a}.central-spes .central-link{display:inline-block;background:#0f3e68;color:white;padding:13px 23px;border-radius:28px;text-decoration:none;font-weight:700}.central-spes .aviso{font-size:13px;margin-top:15px;color:#5c6f80}
 @media(max-width:800px){.central-spes{grid-template-columns:1fr;margin:0 16px 45px;padding:28px 22px}}
+</style><style>
+/* Cabeçalho compartilhado: mesmo padrão da página inicial */
+.top-bar, .top-bar * {box-sizing:border-box}
+.top-bar a{text-decoration:none}
+
+        .top-bar {
+            background-color: #ffffff;
+            padding: 0 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #e6edf5;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area { display: flex; align-items: baseline; gap: 6px; padding: 1rem 0; }
+
+        .logo-area h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #Logo { width: 70px; height: 70px; margin-bottom: -10px; }
+
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.2rem 1.2rem;
+            padding: 0.8rem 0;
+        }
+
+        .nav-menu a {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1e3b5c;
+            padding: 0.3rem 0.2rem;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+        .nav-menu a:hover { border-bottom-color: #2a6f9c; color: #0b2b4a; }
+
+        .nav-menu .btn-outline {
+            border: 1.5px solid #2a6f9c;
+            border-radius: 30px;
+            padding: 0.3rem 1.2rem;
+            font-weight: 600;
+            color: #2a6f9c;
+            background: transparent;
+            transition: 0.2s;
+        }
+
+        .nav-menu .btn-outline:hover { background: #2a6f9c; color: #fff; }
+
+        .nav-menu .btn-solid {
+            background: #2a6f9c;
+            border-radius: 30px;
+            padding: 0.3rem 1.4rem;
+            font-weight: 600;
+            color: #fff;
+            transition: 0.2s;
+        }
+
+        .nav-menu .btn-solid:hover { background: #1d4f73; }
+
+        #areaUsuario {
+            display: none;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        #nomeUsuario { color: #1e3b5c; font-weight: 600; }
+
+        
+@media(max-width:620px){.top-bar{flex-direction:column;align-items:stretch;padding:0 1rem}.logo-area{justify-content:center;padding:.8rem 0 .2rem}.nav-menu{justify-content:center;gap:.2rem .9rem;padding:.6rem 0 1rem}#Logo{width:55px;height:55px}}
+
+header.top-bar{max-width:none;width:100%;margin:0;padding:0 2rem;border-bottom:2px solid #e6edf5;position:sticky;top:0;z-index:100;}
+header.top-bar .nav-menu{display:flex;flex-wrap:wrap;align-items:center;gap:.2rem 1.2rem;padding:.8rem 0;}
+header.top-bar .nav-menu a{font-size:.95rem;text-decoration:none;}
+header.top-bar .logo-area h1{margin:0;line-height:1.3;}
+@media(max-width:620px){header.top-bar{padding:0 1rem;flex-direction:column;align-items:stretch;}header.top-bar .nav-menu{justify-content:center;gap:.2rem .9rem;padding:.6rem 0 1rem}}
 </style></head>
 <body>
 <!-- Header -->
-<header>
-<div>
-<!-- Ícone simples para simular a logo -->
-<img alt="" id="Logo" src="Imagens do site/Logo da SPES.png"/>
+<header class="top-bar">
+<div class="logo-area">
+<h1>
+<img alt="Logo da SPES" id="Logo" src="Imagens do site/Logo da SPES.png"/>
+                SPES
+            </h1>
 </div>
-<nav>
-<ul>
-<li><a href="index.html">Início</a></li>
-<li><a href="Separação de casos.html">Desaparecidos</a></li>
-<li><a class="ativo" href="Como ajudar.html">Como ajudar</a></li>
-<li><a href="Seja nosso parceiro.html">Parceiros</a></li>
-<li><a href="Sobre.html">Sobre</a></li>
-</ul>
+<nav class="nav-menu">
+<a class="link-minhas-ocorrencias" href="Minhas ocorrencias.html">Minhas ocorrências</a>
+<a href="index.html">Início</a>
+<a href="Separação de casos.html">Desaparecidos</a>
+<a aria-current="page" href="Como ajudar.html">Como ajudar</a>
+<a href="Seja nosso parceiro.html">Parceiros</a>
+<a href="Sobre.html">Sobre Nós</a>
+<a class="btn-outline" href="Tela de login.htm" id="btnEntrar">Entrar</a>
+<a class="btn-solid" href="Cadastro.htm" id="btnCadastrar">Cadastrar</a>
+<div id="areaUsuario">
+<span id="nomeUsuario"></span>
+<a class="btn-outline" href="#" id="btnSair">Sair</a>
+</div>
 </nav>
-<div class="header-botoes">
-<a class="btn btn-outline" href="Tela de login.htm">Entrar</a>
-<a class="btn btn-solid" href="Cadastro.htm">Cadastrar</a>
-</div>
 </header>
 <!-- Hero Section -->
 <section class="hero" id="main">
@@ -458,36 +552,25 @@
 </div>
 </div>
 </footer>
-<script>
-            
-                // Verifica se o usuário está logado
-                const token = localStorage.getItem('token');
-                const userName = localStorage.getItem('userName');
-                const btnEntrar = document.getElementById('btnEntrar');
-                const btnCadastrar = document.getElementById('btnCadastrar');
-                const areaUsuario = document.getElementById('areaUsuario');
-                const nomeUsuario = document.getElementById('nomeUsuario');
-                const btnSair = document.getElementById('btnSair');
-            
-                if (token && userName) {
-                    // Usuário está logado
-                    if (btnEntrar) btnEntrar.style.display = 'none';
-                    if (btnCadastrar) btnCadastrar.style.display = 'none';
-                    if (areaUsuario) areaUsuario.style.display = 'flex';
-                    if (nomeUsuario) nomeUsuario.textContent = `Olá, ${userName.split(' ')[0]}`;
-                }
-            
-                // Botão Sair
-                if (btnSair) {
-                    btnSair.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        if (confirm('Deseja sair da sua conta?')) {
-                            localStorage.removeItem('token');
-                            localStorage.removeItem('userName');
-                            window.location.href = 'index.html';
-                        }
-                    });
-                }
-            </script>
-</body>
+
+<script>(function(){
+  const token=localStorage.getItem('token');
+  const name=localStorage.getItem('userName');
+  const byId=id=>document.getElementById(id);
+  if(token){
+    if(byId('btnEntrar'))byId('btnEntrar').style.display='none';
+    if(byId('btnCadastrar'))byId('btnCadastrar').style.display='none';
+    if(byId('areaUsuario'))byId('areaUsuario').style.display='flex';
+    if(byId('nomeUsuario'))byId('nomeUsuario').textContent=name?'Olá, '+name.split(' ')[0]:'Minha conta';
+  }else{
+    document.querySelectorAll('.link-minhas-ocorrencias').forEach(a=>a.style.display='none');
+  }
+  if(byId('btnSair'))byId('btnSair').addEventListener('click',e=>{
+    e.preventDefault();
+    if(confirm('Deseja sair da sua conta?')){
+      localStorage.removeItem('token');localStorage.removeItem('userName');
+      location.href='index.html';
+    }
+  });
+})();</script></body>
 </html>
