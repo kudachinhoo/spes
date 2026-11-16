@@ -397,9 +397,9 @@
                     <input type="checkbox" id="consentimento" required />
                     <label for="consentimento">
                         Li e concordo com os
-                        <a href="#" class="doc-link" data-doc="documentos do site/Termos_de_Uso_SPES.docx" data-titulo="Termos de Uso">Termos de Uso</a>
+                        <a href="#" class="doc-link" data-doc="documentos do site/Termos_de_Uso_SPES.docx?v=20261116" data-titulo="Termos de Uso">Termos de Uso</a>
                         e a
-                        <a href="#" class="doc-link" data-doc="documentos do site/Politica_de_Privacidade_SPES.docx" data-titulo="Política de Privacidade">Política de Privacidade</a>
+                        <a href="#" class="doc-link" data-doc="documentos do site/Politica_de_Privacidade_SPES.docx?v=20261116" data-titulo="Política de Privacidade">Política de Privacidade</a>
                     </label>
                 </div>
 
@@ -478,7 +478,7 @@
             document.body.style.overflow = 'hidden';
 
             try {
-                const resp = await fetch(encodeURI(caminho));
+                const resp = await fetch(encodeURI(caminho), { cache: "no-store" });
                 if (!resp.ok) throw new Error('Arquivo não encontrado');
                 const buffer = await resp.arrayBuffer();
                 const resultado = await mammoth.convertToHtml({ arrayBuffer: buffer });
