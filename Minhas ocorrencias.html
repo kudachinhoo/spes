@@ -176,7 +176,7 @@
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<style>#mapa-edicao{height:360px;width:100%;border-radius:12px;border:1px solid #cbd5e1} .mapa-ajuda{font-size:13px;color:#475569} .mapa-botoes{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}</style><link rel="stylesheet" href="notificacoes-spes.css"></head><body>
+<style>#mapa-edicao{height:360px;width:100%;border-radius:12px;border:1px solid #cbd5e1} .mapa-ajuda{font-size:13px;color:#475569} .mapa-botoes{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}</style><link rel="stylesheet" href="notificacoes-spes.css"><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"><link rel="stylesheet" href="mapa-relatos-spes.css"></head><body><script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script><script src="mapa-relatos-spes.js"></script>
 <header class="top-bar">
         <div class="logo-area">
             <h1>
@@ -334,7 +334,7 @@ async function load(){
 async function abrirRelatos(id){
  const sec=$('relatosOcorrencia'), lista=$('relatosLista');sec.hidden=false;$('relatosId').textContent='#'+id;lista.replaceChildren();
  try{const rows=await api('/relatos/minhas-ocorrencias/'+id);if(!rows.length){lista.textContent='Ainda não há relatos liberados para esta ocorrência.';return;}
-  rows.forEach(r=>{const div=document.createElement('div');div.className='log';const h=document.createElement('strong');h.textContent=r.tipo+' · '+new Date(r.criado_em).toLocaleDateString('pt-BR');const p=document.createElement('p');p.textContent=r.descricao;div.append(h,p);for(const [label,value] of [['Data do avistamento',r.data_avistamento],['Período',r.periodo]]){if(value){const info=document.createElement('p');info.textContent=label+': '+value;div.append(info);}}if(r.local_informado){const l=document.createElement('p');l.textContent='Local informado: '+r.local_informado;div.append(l);}lista.append(div);});
+  rows.forEach(r=>{const div=document.createElement('div');div.className='log';const h=document.createElement('strong');h.textContent=r.tipo+' · '+new Date(r.criado_em).toLocaleDateString('pt-BR');const p=document.createElement('p');p.textContent=r.descricao;div.append(h,p);for(const [label,value] of [['Data do avistamento',r.data_avistamento],['Período',r.periodo]]){if(value){const info=document.createElement('p');info.textContent=label+': '+value;div.append(info);}}if(r.local_informado){const l=document.createElement('p');l.textContent='Local informado: '+r.local_informado;div.append(l);}if(window.SPESRelatoMapa)window.SPESRelatoMapa.mostrar(div,r.local_informado);lista.append(div);});
  }catch(e){lista.textContent=e.message;}sec.scrollIntoView({behavior:'smooth'});
 }
 async function openEdit(id){
