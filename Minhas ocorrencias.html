@@ -176,7 +176,7 @@
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<style>#mapa-edicao{height:360px;width:100%;border-radius:12px;border:1px solid #cbd5e1} .mapa-ajuda{font-size:13px;color:#475569} .mapa-botoes{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}</style></head><body>
+<style>#mapa-edicao{height:360px;width:100%;border-radius:12px;border:1px solid #cbd5e1} .mapa-ajuda{font-size:13px;color:#475569} .mapa-botoes{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}</style><link rel="stylesheet" href="notificacoes-spes.css"></head><body>
 <header class="top-bar">
         <div class="logo-area">
             <h1>
@@ -334,7 +334,7 @@ async function load(){
 async function abrirRelatos(id){
  const sec=$('relatosOcorrencia'), lista=$('relatosLista');sec.hidden=false;$('relatosId').textContent='#'+id;lista.replaceChildren();
  try{const rows=await api('/relatos/minhas-ocorrencias/'+id);if(!rows.length){lista.textContent='Ainda não há relatos liberados para esta ocorrência.';return;}
-  rows.forEach(r=>{const div=document.createElement('div');div.className='log';const h=document.createElement('strong');h.textContent=r.tipo+' · '+new Date(r.criado_em).toLocaleDateString('pt-BR');const p=document.createElement('p');p.textContent=r.descricao;div.append(h,p);if(r.local_informado){const l=document.createElement('p');l.textContent='Local informado: '+r.local_informado;div.append(l);}lista.append(div);});
+  rows.forEach(r=>{const div=document.createElement('div');div.className='log';const h=document.createElement('strong');h.textContent=r.tipo+' · '+new Date(r.criado_em).toLocaleDateString('pt-BR');const p=document.createElement('p');p.textContent=r.descricao;div.append(h,p);for(const [label,value] of [['Data do avistamento',r.data_avistamento],['Período',r.periodo]]){if(value){const info=document.createElement('p');info.textContent=label+': '+value;div.append(info);}}if(r.local_informado){const l=document.createElement('p');l.textContent='Local informado: '+r.local_informado;div.append(l);}lista.append(div);});
  }catch(e){lista.textContent=e.message;}sec.scrollIntoView({behavior:'smooth'});
 }
 async function openEdit(id){
@@ -363,12 +363,12 @@ $('editForm').addEventListener('submit',async e=>{
   if(fotosExistentes.length<1 || fotosExistentes.length>6)throw new Error('Mantenha entre 1 e 6 fotos.');
   if(fotosEditadas)body.fotos=[...fotosExistentes];
  }catch(err){notice(err.message,true);btn.disabled=false;return;}
- try{const result=await api(`/people/${editing}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});notice(result.message||'Alterações salvas. O histórico foi atualizado.');$('editor').hidden=true;editing=null;await load();}
+ try{const result=await api(`/people/${editing}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});notice(result.message||'Alterações salvas. O histórico foi atualizado.');$('editor').hidden=true;editing=null;await load();window.dispatchEvent(new Event('spes:movimentacao'));}
  catch(err){notice(err.message,true);}finally{btn.disabled=false;}
 });
 async function removeOccurrence(id){
  if(!confirm('Excluir esta ocorrência? A ação não pode ser desfeita e será registrada no histórico de auditoria.'))return;
- try{await api(`/people/${id}`,{method:'DELETE'});notice('Ocorrência excluída.');await load();}
+ try{await api(`/people/${id}`,{method:'DELETE'});notice('Ocorrência excluída.');await load();window.dispatchEvent(new Event('spes:movimentacao'));}
  catch(err){notice(err.message,true);}
 }
 // Histórico: identifica o autor e interpreta os campos antes/depois do backend.
@@ -442,7 +442,7 @@ async function openHistory(id){
 }
 
 $('closeHistory').onclick=()=>{$('history').hidden=true;};
-load().then(()=>{const id=new URLSearchParams(location.search).get('id');if(id && /^\d+$/.test(id))openEdit(id);});
+load().then(()=>{const q=new URLSearchParams(location.search);const id=q.get('id');if(id && /^\d+$/.test(id))openEdit(id);const ocorrencia=q.get('ocorrencia');if(ocorrencia && /^\d+$/.test(ocorrencia)){if(q.get('aba')==='relatos')abrirRelatos(ocorrencia);else openHistory(ocorrencia);}});
 </script><script>
 (function(){
  const token=localStorage.getItem('token'), name=localStorage.getItem('userName');
@@ -467,4 +467,4 @@ load().then(()=>{const id=new URLSearchParams(location.search).get('id');if(id &
  }else{document.querySelectorAll('.link-minhas-ocorrencias').forEach(a=>a.style.display='none')}
  if(byId('btnSair'))byId('btnSair').addEventListener('click',e=>{e.preventDefault();if(confirm('Deseja sair da sua conta?')){localStorage.removeItem('token');localStorage.removeItem('userName');location.href='index.html'}});
 })();
-</script></body></html>
+</script><script src="notificacoes-spes.js"></script></body></html>

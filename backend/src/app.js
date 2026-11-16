@@ -26,7 +26,7 @@ app.use(helmet({
 }));
 app.use(cors({
   origin: '*', // Permite qualquer site (quando o site tiver domínio fixo, troque pelo endereço dele)
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -53,6 +53,7 @@ app.use('/api/people', personRoutes);
 app.use('/api/cases', caseRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/relatos', reportRoutes);
+app.use('/api/notificacoes', require('./routes/notificationRoutes'));
 
 // Rota não encontrada
 app.use((req, res) => {

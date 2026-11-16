@@ -14,4 +14,5 @@ const OccurrenceLog = sequelize.define('ocorrencia_log', {
   { fields: ['cpf_usuario', 'criado_em'] }
 ] });
 
+OccurrenceLog.addHook('afterCreate', (log, options) => require('../services/notifications').fromLog(log, options));
 module.exports = OccurrenceLog;

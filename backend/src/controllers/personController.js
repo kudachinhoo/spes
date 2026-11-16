@@ -412,6 +412,7 @@ exports.delete = async (req, res) => {
       await OccurrenceLog.create({
         id_desaparecido, cpf_usuario: req.userCpf, acao: 'exclusao', alteracoes: {}
       }, { transaction: t });
+      await require('../models/Report').update({ id_desaparecido: null }, { where: { id_desaparecido }, transaction: t });
       await person.destroy({ transaction: t });
       return true;
     });

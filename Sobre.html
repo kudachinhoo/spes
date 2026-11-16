@@ -781,7 +781,7 @@
 
         
 @media(max-width:620px){.top-bar{flex-direction:column;align-items:stretch;padding:0 1rem}.logo-area{justify-content:center;padding:.8rem 0 .2rem}.nav-menu{justify-content:center;gap:.2rem .9rem;padding:.6rem 0 1rem}#Logo{width:55px;height:55px}}
-</style></head>
+</style><link rel="stylesheet" href="notificacoes-spes.css"></head>
 <body>
 
     <!-- ===== TOP BAR ===== -->
@@ -869,5 +869,5 @@ Segurança e privacidade: Tratamos todos os dados com responsabilidade, protegen
  }else{document.querySelectorAll('.link-minhas-ocorrencias').forEach(a=>a.style.display='none')}
  if(byId('btnSair'))byId('btnSair').addEventListener('click',e=>{e.preventDefault();if(confirm('Deseja sair da sua conta?')){localStorage.removeItem('token');localStorage.removeItem('userName');location.href='index.html'}});
 })();
-</script></body>
+</script><script src="notificacoes-spes.js"></script></body>
 </html>
