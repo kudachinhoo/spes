@@ -3,6 +3,22 @@
  const area = document.getElementById('areaUsuario');
  if (!area || !localStorage.getItem('token')) return;
  const base = 'https://spes-backend.onrender.com/api';
+ // A visibilidade usa o perfil confirmado pela API; as rotas continuam protegidas no servidor.
+ async function mostrarPainelAdmin() {
+  const currentToken = localStorage.getItem('token');
+  try {
+   const response = await fetch(base + '/auth/profile', { headers: { Authorization: 'Bearer ' + currentToken } });
+   if (!response.ok) return;
+   const profile = await response.json();
+   if (profile.papel !== 'admin' || localStorage.getItem('token') !== currentToken || document.getElementById('spes-link-admin')) return;
+   const link = document.createElement('a');
+   link.id = 'spes-link-admin'; link.className = 'spes-link-admin';
+   link.href = 'Admin.html'; link.textContent = 'Painel admin';
+   area.append(link);
+  } catch (error) { console.warn('Não foi possível verificar o acesso ao painel administrativo.'); }
+ }
+ mostrarPainelAdmin();
+
  const host = document.createElement('div'); host.className = 'spes-notificacoes';
  const bell = document.createElement('button'); bell.type = 'button'; bell.className = 'spes-sino'; bell.setAttribute('aria-label','Notificações'); bell.setAttribute('aria-expanded','false'); bell.setAttribute('aria-controls','spes-painel-notificacoes');
  bell.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>';
