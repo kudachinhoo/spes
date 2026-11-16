@@ -9,7 +9,9 @@ const authRoutes = require('./routes/authRoutes');
 const personRoutes = require('./routes/personRoutes');
 const caseRoutes = require('./routes/caseRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const reportRoutes = require('./routes/reportRoutes');
 require('./models/PasswordReset');
+require('./models/Report'); // registra a tabela de relatos no Sequelize
 require('./models/OccurrenceLog'); // registra a tabela de auditoria no Sequelize
 
 const app = express();
@@ -50,6 +52,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/people', personRoutes);
 app.use('/api/cases', caseRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/relatos', reportRoutes);
 
 // Rota não encontrada
 app.use((req, res) => {
