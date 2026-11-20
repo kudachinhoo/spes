@@ -640,11 +640,7 @@
         });
 
         // ENVIO DO FORMULÁRIO
-        // IMPORTANTE: os exemplos fornecidos mostram a API de autenticação, mas não apresentam
-        // uma rota confirmada para propostas de parceria. Não informe uma rota inventada aqui.
-        // Quando o backend tiver essa rota pronta, preencha a URL abaixo, por exemplo com a rota
-        // documentada pela equipe que mantém o backend.
-        const API_PARCEIROS_URL = '';
+        const API_PARCEIROS_URL = 'https://spes-backend.onrender.com/api/parcerias';
 
         const formParceria = document.getElementById('formParceria');
         const formStatus = document.getElementById('formStatus');
@@ -674,7 +670,7 @@
 
             const dados = Object.fromEntries(new FormData(formParceria).entries());
             dados.contribuicoes = contribuicoes;
-            delete dados.consentimento;
+            dados.consentimento = document.getElementById('consentimento').checked;
 
             if (!API_PARCEIROS_URL) {
                 mostrarStatus('O formulário está validado, mas o envio ainda não está conectado. Para receber propostas de verdade, configure API_PARCEIROS_URL com a rota de parcerias existente no backend.', 'aviso');

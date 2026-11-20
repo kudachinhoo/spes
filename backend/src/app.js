@@ -55,6 +55,8 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/relatos', reportRoutes);
 app.use('/api/notificacoes', require('./routes/notificationRoutes'));
 
+app.use('/api/parcerias', require('./routes/partnershipRoutes'));
+
 // Rota não encontrada
 app.use((req, res) => {
   res.status(404).json({ error: 'Rota não encontrada' });
