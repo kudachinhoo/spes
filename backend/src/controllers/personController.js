@@ -17,7 +17,7 @@ const CAMPOS_EDICAO = [...CAMPOS_CRIACAO, 'status'];
 
 // Dados que NÃO aparecem publicamente
 const ATRIBUTOS_PUBLICOS = {
-  exclude: ['cpf_usuario', 'rg', 'contato', 'locais_favoritos']
+  exclude: ['cpf_usuario', 'rg', 'contato', 'locais_favoritos', 'boletim_ocorrencia']
 };
 
 const LIMITE_PADRAO = 60;
@@ -126,7 +126,7 @@ exports.findMine = async (req, res) => {
     const offset = Math.max(Number.parseInt(req.query.offset, 10) || 0, 0);
     const people = await MissingPerson.findAll({
       where: { cpf_usuario: req.userCpf },
-      attributes: { exclude: ['cpf_usuario', 'foto'] },
+      attributes: { exclude: ['cpf_usuario', 'foto', 'boletim_ocorrencia'] },
       order: [['id_desaparecido', 'DESC']], limit, offset
     });
     res.json(people);
@@ -141,7 +141,7 @@ exports.findMineOne = async (req, res) => {
   try {
     const person = await MissingPerson.findOne({
       where: req.isAdmin ? { id_desaparecido: req.params.id } : { id_desaparecido: req.params.id, cpf_usuario: req.userCpf },
-      attributes: { exclude: ['cpf_usuario'] },
+      attributes: { exclude: ['cpf_usuario', 'boletim_ocorrencia'] },
       include: INCLUDES_DETALHE
     });
     if (!person) return res.status(404).json({ error: 'Ocorrência não encontrada na sua conta' });
@@ -205,7 +205,7 @@ exports.create = async (req, res) => {
       const dados = pegarCampos(req.body, CAMPOS_CRIACAO);
       if (Array.isArray(dados.fotos) && dados.fotos.length) dados.foto = dados.fotos[0];
       const nova = await MissingPerson.create(
-        { ...dados, cpf_usuario: req.userCpf },
+        { ...dados, cpf_usuario: req.userCpf, boletim_ocorrencia: req.body.boletim_ocorrencia, status_aprovacao: 'pendente' },
         { transaction: t }
       );
 
@@ -226,7 +226,7 @@ exports.create = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Pessoa cadastrada com sucesso',
+      message: 'Ocorrência enviada para aprovação',
       person: { id_desaparecido: person.id_desaparecido, nome: person.nome }
     });
   } catch (error) {
@@ -240,7 +240,7 @@ exports.findAll = async (req, res) => {
   try {
     const { search, estado, sexo, idadeMin, idadeMax, startDate, endDate, status } = req.query;
 
-    const where = { status: status === 'encontrado' ? 'encontrado' : 'desaparecido' };
+    const where = { status_aprovacao: 'aprovado', status: status === 'encontrado' ? 'encontrado' : 'desaparecido' };
 
     if (typeof search === 'string' && search.trim()) {
       const termo = `%${search.trim().slice(0, 100).replace(/[\\%_]/g, '\\$&')}%`;
@@ -308,7 +308,8 @@ exports.findAll = async (req, res) => {
 // ---------- detalhe ----------
 exports.findOne = async (req, res) => {
   try {
-    const person = await MissingPerson.findByPk(req.params.id, {
+    const person = await MissingPerson.findOne({
+      where: { id_desaparecido: req.params.id, status_aprovacao: 'aprovado' },
       attributes: ATRIBUTOS_PUBLICOS,
       include: INCLUDES_DETALHE
     });
@@ -379,6 +380,7 @@ exports.update = async (req, res) => {
         await Location.destroy({ where: { id_desaparecido: person.id_desaparecido, ordem: { [Op.in]: [1,2,3] } }, transaction: t });
         await Location.bulkCreate(triangulacaoNova, { transaction: t });
       }
+      if (!req.isAdmin && person.status_aprovacao === 'aprovado' && person.boletim_ocorrencia && Object.keys(alteracoes).some(c => c !== 'status')) dados.status_aprovacao = 'pendente';
       if (Object.keys(dados).length) await person.update(dados, { transaction: t });
       await OccurrenceLog.create({
         id_desaparecido: person.id_desaparecido,
@@ -429,7 +431,7 @@ exports.getStats = async (req, res) => {
   try {
     const linhas = await MissingPerson.findAll({
       attributes: ['estado_desaparecimento', [fn('COUNT', col('id_desaparecido')), 'count']],
-      where: { status: 'desaparecido' },
+      where: { status: 'desaparecido', status_aprovacao: 'aprovado' },
       group: ['estado_desaparecimento'],
       raw: true
     });

@@ -57,6 +57,8 @@ const MissingPerson = sequelize.define('desaparecido', {
     type: DataTypes.TEXT
   },
   fotos: { type: DataTypes.JSONB, allowNull: false, defaultValue: [] },
+  boletim_ocorrencia: { type: DataTypes.TEXT },
+  status_aprovacao: { type: DataTypes.STRING(20), allowNull: false, defaultValue: 'pendente' },
   status: {
     type: DataTypes.STRING(20),
     allowNull: false,

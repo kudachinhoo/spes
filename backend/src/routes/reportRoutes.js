@@ -22,7 +22,7 @@ const campos = [
 router.post('/', envioLimit, campos, validar, async (req,res) => {
  try {
   const id = req.body.id_desaparecido || null;
-  if(id && !(await MissingPerson.findByPk(id))) return res.status(404).json({error:'Ocorrência não encontrada'});
+  if(id && !(await MissingPerson.findOne({where:{id_desaparecido:id,status_aprovacao:'aprovado'}}))) return res.status(404).json({error:'Ocorrência não encontrada'});
   const clean = (v) => typeof v === 'string' ? v.trim() || null : null;
   const relato = await sequelize.transaction(async transaction => {
   const person = id ? await MissingPerson.findByPk(id, { transaction, lock: transaction.LOCK.UPDATE }) : null;

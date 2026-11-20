@@ -508,6 +508,7 @@
                 </div>
 
                 <div id="status" class="status" role="alert"></div>
+                <div style="margin:20px 0"><label for="boletim_ocorrencia"><strong>Boletim de ocorrência (obrigatório)</strong></label><p>PDF, JPG ou PNG de até 2 MB. Acesso exclusivo da administração.</p><input type="file" id="boletim_ocorrencia" name="boletim_ocorrencia" accept="application/pdf,image/jpeg,image/png" required></div>
                 <button type="submit" class="btn-continue">Cadastrar desaparecido</button>
             </form>
         </div>
@@ -822,6 +823,9 @@
                     dados.foto = dados.fotos[0];
                 }
 
+                const bo = fd.get('boletim_ocorrencia');
+                if (!bo || !bo.size || bo.size > 2*1024*1024 || !['application/pdf','image/jpeg','image/png'].includes(bo.type)) throw new Error('Anexe um B.O. válido de até 2 MB.');
+                dados.boletim_ocorrencia = await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('Erro ao ler B.O.'));r.readAsDataURL(bo);});
                 const response = await fetch(`${API_URL}/people`, {
                     method: 'POST',
                     headers: {
@@ -834,8 +838,8 @@
                 const data = await response.json().catch(() => ({}));
 
                 if (data.success) {
-                    mostrarStatus('Cadastrado com sucesso! Redirecionando...', 'ok');
-                    setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+                    mostrarStatus('Enviado para análise! Aguarde a aprovação do administrador.', 'ok');
+                    setTimeout(() => { window.location.href = 'Minhas ocorrencias.html'; }, 2200);
                     return;
                 }
 

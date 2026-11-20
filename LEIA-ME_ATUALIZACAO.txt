@@ -1,0 +1,8 @@
+SPES — atualização de aprovação e imagens
+
+1. Faça backup do banco e do repositório. Pause novos cadastros durante a atualização.
+2. Execute backend/MIGRACAO_APROVACAO.sql no Query Tool do pgAdmin no banco correto.
+3. Substitua os arquivos deste pacote nos mesmos caminhos do repositório (backend/ da raiz, não SPES_painel_admin). Faça commit e aguarde Render Live, depois publique frontend.
+4. Não habilite DB_SYNC_ALTER para esta migração.
+5. Teste com dados fictícios: sem B.O. deve falhar; com PDF/JPG/PNG até 2 MB deve criar pendente; consultar home, mapa, detalhes por ID, estados e estatísticas deve ocultar; administrador baixa B.O. e aprova/reprova; usuário comum recebe acesso negado nas rotas administrativas. Teste fotos verticais em celular e desktop.
+Decisões: cadastros antigos ficam aprovados sem B.O.; novos reprovados ficam ocultos e podem ser excluídos e cadastrados novamente. Edições de conteúdo de casos novos aprovados voltam para análise (exceto mudança de situação). Arquivos ficam no PostgreSQL, não em pasta pública. Validação de assinatura não equivale a antivírus ou autenticação do B.O.; revise retenção, acesso, backups e proteção de documentos antes de produção. Não foi realizado teste integrado com banco ou Render.

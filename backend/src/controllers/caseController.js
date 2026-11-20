@@ -9,7 +9,7 @@ exports.getAllStates = async (req, res) => {
   try {
     const linhas = await MissingPerson.findAll({
       attributes: ['estado_desaparecimento', [fn('COUNT', col('id_desaparecido')), 'count']],
-      where: { status: 'desaparecido' },
+      where: { status_aprovacao: 'aprovado', status: 'desaparecido' },
       group: ['estado_desaparecimento'],
       raw: true
     });
@@ -30,9 +30,9 @@ exports.getCasesByState = async (req, res) => {
     const cases = await MissingPerson.findAll({
       where: {
         estado_desaparecimento: req.params.state,
-        status: 'desaparecido'
+        status_aprovacao: 'aprovado', status: 'desaparecido'
       },
-      attributes: { exclude: ['cpf_usuario'] },
+      attributes: { exclude: ['cpf_usuario','boletim_ocorrencia','rg','contato','locais_favoritos'] },
       order: [['data_desaparecimento', 'DESC'], ['id_desaparecido', 'DESC']],
       limit: 100
     });

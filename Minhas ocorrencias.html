@@ -323,7 +323,7 @@ async function load(){
   for(const p of people){
    const card=document.createElement('article');card.className='card';
    const h=document.createElement('h3');h.textContent=p.nome||'Sem nome';
-   const meta=document.createElement('p');meta.textContent=`#${p.id_desaparecido} · ${p.cidade||'Cidade não informada'} · ${p.status||'desaparecido'}`;
+   const meta=document.createElement('p');meta.textContent=`#${p.id_desaparecido} · ${p.cidade||'Cidade não informada'} · ${p.status||'desaparecido'} · ${({pendente:'Aguardando aprovação',aprovado:'Aprovado',reprovado:'Reprovado'})[p.status_aprovacao]||''}`;
    const actions=document.createElement('div');actions.className='actions';
    const edit=document.createElement('button');edit.textContent='Editar';edit.onclick=()=>openEdit(p.id_desaparecido);
    const hist=document.createElement('button');hist.textContent='Ver histórico';hist.onclick=()=>openHistory(p.id_desaparecido);

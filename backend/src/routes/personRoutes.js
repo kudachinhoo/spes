@@ -67,7 +67,15 @@ const regrasPessoa = (criar) => {
 
 const idValido = param('id').isInt({ min: 1 }).withMessage('ID inválido');
 
-router.post('/', auth, regrasPessoa(true), validar, personController.create);
+router.post('/', auth, (req,res,next) => {
+  const v = req.body.boletim_ocorrencia;
+  const m = typeof v === 'string' && v.length <= 2796250 && /^data:(application\/pdf|image\/jpeg|image\/png);base64,([A-Za-z0-9+/]+={0,2})$/.exec(v);
+  if (!m) return res.status(400).json({error:'Anexe um B.O. em PDF, JPG ou PNG de até 2 MB.'});
+  const b = Buffer.from(m[2], 'base64');
+  const ok = m[1] === 'application/pdf' ? b.subarray(0,5).toString() === '%PDF-' : m[1] === 'image/jpeg' ? b.subarray(0,3).equals(Buffer.from([255,216,255])) : b.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]));
+  if (!ok || b.length > 2*1024*1024 || b.toString('base64') !== m[2]) return res.status(400).json({error:'Arquivo de B.O. inválido.'});
+  next();
+}, regrasPessoa(true), validar, personController.create);
 router.get('/', personController.findAll);
 router.get('/mine', auth, personController.findMine);
 router.get('/mine/:id', auth, optionalAdmin, idValido, validar, personController.findMineOne);
