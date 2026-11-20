@@ -19,4 +19,13 @@ router.post('/', rateLimit({windowMs:3600000,max:5,message:{error:'Limite de pro
  try { const rows = await db.query(`INSERT INTO propostas_parceria (instituicao,tipo_instituicao,cnpj,site,localidade,responsavel,cargo,email,telefone,contribuicoes,proposta,consentimento) VALUES (:instituicao,:tipoInstituicao,:cnpj,:site,:localidade,:responsavel,:cargo,:email,:telefone,CAST(:contribuicoes AS jsonb),:proposta,true) RETURNING id_proposta`,{replacements:vals,type:QueryTypes.SELECT}); return res.status(201).json({success:true,id_proposta:rows[0].id_proposta}); } catch {return res.status(500).json({error:'Não foi possível salvar a proposta.'});}
 });
 router.get('/admin',auth,admin,async(req,res)=>{try {res.json(await db.query('SELECT * FROM propostas_parceria ORDER BY criado_em DESC LIMIT 200',{type:QueryTypes.SELECT}));}catch{res.status(500).json({error:'Erro ao consultar propostas.'});}});
+router.get('/',async(req,res)=>{try {
+ res.set('Cache-Control','no-store');
+ res.json(await db.query("SELECT id_proposta,instituicao,tipo_instituicao,site FROM propostas_parceria WHERE status = 'aceita' ORDER BY instituicao",{type:QueryTypes.SELECT}));
+}catch{res.status(500).json({error:'Erro ao consultar parceiros.'});}});
+router.patch('/admin/:id',auth,admin,async(req,res)=>{
+ const id=req.params.id, status=req.body?.status;
+ if(!/^[1-9][0-9]{0,18}$/.test(id)||!['recebida','em_analise','aceita','recusada'].includes(status))return res.status(400).json({error:'Dados inválidos.'});
+ try {const rows=await db.query('UPDATE propostas_parceria SET status=:status, atualizado_em=NOW() WHERE id_proposta=:id RETURNING id_proposta,status',{replacements:{id,status},type:QueryTypes.SELECT});if(!rows.length)return res.status(404).json({error:'Proposta não encontrada.'});res.json(rows[0]);}catch{res.status(500).json({error:'Erro ao atualizar proposta.'});}
+});
 module.exports = router;

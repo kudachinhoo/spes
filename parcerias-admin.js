@@ -1,0 +1,9 @@
+(async()=>{
+ const root=document.getElementById('partner-admin'), msg=document.getElementById('partner-error');
+ const labels={recebida:'Recebida',em_analise:'Em análise',aceita:'Aceita',recusada:'Recusada'};
+ async function load(){const rows=await api('/parcerias/admin');root.replaceChildren();if(!rows.length)root.textContent='Nenhuma proposta recebida.';
+ for(const p of rows){const card=document.createElement('article');card.style.cssText='border:1px solid #dce7f1;border-radius:12px;padding:18px;margin:12px 0;overflow-wrap:anywhere';const h=document.createElement('h3');h.textContent=p.instituicao;card.append(h);
+ for(const [k,v] of Object.entries({'Situação':labels[p.status],'Tipo':p.tipo_instituicao,'CNPJ':p.cnpj,'Site':p.site,'Localidade':p.localidade,'Responsável':p.responsavel,'Cargo':p.cargo,'E-mail':p.email,'Telefone':p.telefone,'Contribuições':(p.contribuicoes||[]).join(', '),'Proposta':p.proposta,'Recebida em':new Date(p.criado_em).toLocaleString('pt-BR')})){const line=document.createElement('p');line.textContent=k+': '+(v||'—');card.append(line);}
+ for(const [status,label] of Object.entries({em_analise:'Em análise',aceita:'Aceitar e publicar',recusada:'Recusar / retirar'})){const b=document.createElement('button');b.textContent=label;b.style.margin='4px';b.disabled=p.status===status;b.onclick=async()=>{if(!confirm('Confirmar: '+label+'?'))return;b.disabled=true;try{const r=await fetch(API+'/parcerias/admin/'+encodeURIComponent(p.id_proposta),{method:'PATCH',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({status})});if(!r.ok)throw Error((await r.json()).error);await load();msg.textContent='Situação atualizada.';}catch(e){msg.textContent=e.message;b.disabled=false;}};card.append(b);}root.append(card);}}
+ try{if(!token)return;const me=await api('/auth/profile');if(me.papel==='admin')await load();}catch(e){msg.textContent=e.message;}
+})();

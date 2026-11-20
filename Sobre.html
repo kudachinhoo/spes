@@ -781,7 +781,7 @@
 
         
 @media(max-width:620px){.top-bar{flex-direction:column;align-items:stretch;padding:0 1rem}.logo-area{justify-content:center;padding:.8rem 0 .2rem}.nav-menu{justify-content:center;gap:.2rem .9rem;padding:.6rem 0 1rem}#Logo{width:55px;height:55px}}
-</style><link rel="stylesheet" href="notificacoes-spes.css"></head>
+</style><link rel="stylesheet" href="notificacoes-spes.css"><link rel="stylesheet" href="sobre-spes.css"></head>
 <body>
 
     <!-- ===== TOP BAR ===== -->
@@ -810,54 +810,11 @@
         </nav>
     </header>
 
-    <!-- ===== HERO ===== -->
-    <section class="hero">
-        <h2>Cada informação pode reunir uma família novamente.</h2>
-        <p>Buscamos conectar pessoas e levar esperança para quem mais precisa.</p>
-        <div id="MVV">
-
-            <h2>Missão</h2>
-            <p style="text-align: justify;">Desenvolver uma plataforma tecnológica que centralize e facilite a divulgação de informações sobre pessoas desaparecidas, promovendo a colaboração entre familiares, sociedade e órgãos públicos para aumentar as chances de localização de forma rápida, segura e acessível. </p>
-            <h2>Visão</h2>
-            <p style="text-align: justify;">Ser, até 2032, a principal plataforma brasileira de apoio à localização de pessoas desaparecidas, tornando-se referência em inovação, confiabilidade e impacto social na integração entre tecnologia e segurança pública. </p>
-            <h2>Valores</h2>
-            <p style="text-align: justify;">Compromisso com a vida: Colocamos a proteção da vida e a localização de pessoas desaparecidas como prioridade em nossa conduta.  
-Empatia: Agimos com respeito, sensibilidade e acolhimento das famílias e pessoas envolvidas, entendendo o peso emocional de cada caso. 
-Ética e Transparência: Garantimos informações claras, confiáveis e atualizadas, promovendo comunicação ética entre usuários, familiares e autoridades. 
-Responsabilidade social: Atuar com foco no bem-estar da sociedade e no impacto positivo gerado pelo projeto. 
-Inovação: Buscamos desenvolver soluções tecnológicas modernas que tornem as buscas mais rápidas e eficientes  
-Segurança e privacidade: Tratamos todos os dados com responsabilidade, protegendo as informações dos usuários.</p>
-        </div>
-
-    </div>
-
-            <div class="footer-bottom">
-                <div class="support-bar">
-                    <i class="fas fa-headset"></i>
-                    <span>Suporte:</span>
-                    <span class="number">0800 123 4567</span>
-                    <i class="fas fa-clock" style="margin-left:0.5rem; font-size:0.9rem;"></i>
-                    <span style="font-weight:400; font-size:0.85rem;">24h</span>
-                </div>
-                <div class="footer-copy">
-                    &copy; 2026 SPES - Todos os direitos reservados.
-                </div>
-            </div>
-        </div>
-    </footer>
+<main class="about">
+<section class="about-hero"><div><span class="about-kicker">SOBRE O SPES</span><h1>Cada informação pode reunir uma família novamente.</h1><p>Conectamos pessoas, tecnologia e solidariedade para apoiar a busca por pessoas desaparecidas.</p><div class="about-actions"><a href="Separação de casos.html">Consultar desaparecidos</a><a href="Como ajudar.html">Como ajudar</a></div></div><aside><i class="fas fa-hands-helping" aria-hidden="true"></i><strong>Esperança que conecta.</strong><span>Uma rede de colaboração em favor da vida.</span></aside></section>
+<section class="about-section"><span class="about-kicker">NOSSO PROPÓSITO</span><h2>Tecnologia a serviço da vida</h2><p class="about-intro">O SPES centraliza informações sobre desaparecimentos e oferece recursos para divulgação, consulta e envio de informações. A plataforma apoia familiares e a sociedade, sem substituir os canais oficiais de investigação.</p><div class="about-grid two"><article><i class="fas fa-bullseye"></i><h3>Missão</h3><p>Facilitar a divulgação de informações sobre pessoas desaparecidas, promovendo a colaboração entre familiares, sociedade e órgãos públicos para aumentar as chances de localização de forma rápida, segura e acessível.</p></article><article><i class="fas fa-eye"></i><h3>Visão</h3><p>Ser, até 2032, uma plataforma brasileira de referência no apoio à localização de pessoas desaparecidas, com inovação, confiabilidade e impacto social.</p></article></div></section>
+<section class="about-section"><span class="about-kicker">O QUE NOS MOVE</span><h2>Nossos valores</h2><div class="about-grid"><article><i class="fas fa-heart" aria-hidden="true"></i><h3>Compromisso com a vida</h3><p>A proteção da vida é nossa prioridade.</p></article><article><i class="fas fa-hands-helping" aria-hidden="true"></i><h3>Empatia</h3><p>Respeito, sensibilidade e acolhimento às famílias.</p></article><article><i class="fas fa-balance-scale" aria-hidden="true"></i><h3>Ética e transparência</h3><p>Comunicação responsável e informações claras.</p></article><article><i class="fas fa-users" aria-hidden="true"></i><h3>Responsabilidade social</h3><p>Colaboração para gerar impacto positivo na sociedade.</p></article><article><i class="fas fa-lightbulb" aria-hidden="true"></i><h3>Inovação</h3><p>Tecnologia para facilitar a divulgação e as buscas.</p></article><article><i class="fas fa-shield-alt" aria-hidden="true"></i><h3>Segurança e privacidade</h3><p>Tratamento responsável e proteção das informações.</p></article></div></section><section class="about-cta"><div><h2>Faça parte dessa rede de esperança.</h2><p>Uma informação ou uma nova parceria pode fazer a diferença.</p></div><a href="Seja nosso parceiro.html">Seja nosso parceiro</a></section></main><footer class="about-footer">© 2026 SPES — Todos os direitos reservados.</footer>
 <script>
-(function(){
- const token=localStorage.getItem('token'), name=localStorage.getItem('userName');
- const byId=id=>document.getElementById(id);
- if(token){
-  if(byId('btnEntrar'))byId('btnEntrar').style.display='none';
-  if(byId('btnCadastrar'))byId('btnCadastrar').style.display='none';
-  if(byId('areaUsuario'))byId('areaUsuario').style.display='flex';
-  if(byId('nomeUsuario'))byId('nomeUsuario').textContent=name?'Olá, '+name.split(' ')[0]:'Minha conta';
- }else{document.querySelectorAll('.link-minhas-ocorrencias').forEach(a=>a.style.display='none')}
- if(byId('btnSair'))byId('btnSair').addEventListener('click',e=>{e.preventDefault();if(confirm('Deseja sair da sua conta?')){localStorage.removeItem('token');localStorage.removeItem('userName');location.href='index.html'}});
-})();
-</script><script>
 (function(){
  const token=localStorage.getItem('token'), name=localStorage.getItem('userName');
  const byId=id=>document.getElementById(id);
