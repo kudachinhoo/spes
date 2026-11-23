@@ -426,7 +426,7 @@
                             <button type="button" id="mapa-satelite" aria-pressed="false">Satélite</button>
                         </div>
                         <div id="mapa"></div>
-                        <small id="mapa-chave-aviso">Para ativar o mapa vetorial e a pesquisa, configure sua chave pública gratuita do MapTiler no JavaScript. Sem chave, o mapa alternativo continua disponível.</small>
+                        <small id="mapa-chave-aviso">A pesquisa de endereços usa o MapTiler. Se falhar, confira a chave pública e as origens autorizadas no painel do MapTiler.</small>
                         <div class="mapa-acoes">
                             <span id="contador-pontos">0 pontos selecionados</span>
                             <button type="button" id="limpar-pontos">Limpar pontos</button>
@@ -522,7 +522,7 @@
         const MAPTILER_KEY = 'gkXgq6TLnkBlYlb86MYw';
         const chaveConfigurada =
             MAPTILER_KEY.trim() !== '' &&
-            MAPTILER_KEY !== 'gkXgq6TLnkBlYlb86MYw';
+            !['SUA_CHAVE_MAPTILER', 'COLOQUE_SUA_CHAVE_AQUI'].includes(MAPTILER_KEY.trim());
         let mapa;
         const pontosLocalizacao = [];
         const marcadoresLocalizacao = [];
@@ -610,7 +610,7 @@
             mapa.addControl(new maplibregl.NavigationControl(), 'top-right');
             mapa.on('error', e => {
                 console.error('Erro no mapa:', e.error);
-                feedback.textContent = 'Falha ao carregar o mapa. Confira a chave MapTiler e as origens permitidas.';
+                feedback.textContent = 'Falha ao carregar o mapa. Confira a conexão e a configuração do provedor de mapas.';
             });
             mapa.on('click', evento => {
                 if (pontosLocalizacao.length >= LIMITE_PONTOS) {
@@ -656,7 +656,7 @@
                 try {
                     const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(termo)}.json?key=${encodeURIComponent(MAPTILER_KEY)}&language=pt&limit=5&country=br`;
                     const resposta = await fetch(url);
-                    if (!resposta.ok) throw new Error(`Pesquisa indisponível (HTTP ${resposta.status}). Verifique sua chave e permissões.`);
+                    if (!resposta.ok) throw new Error(resposta.status === 403 ? 'A pesquisa foi bloqueada pelo MapTiler (403). Verifique a chave e os domínios autorizados.' : `Pesquisa indisponível (HTTP ${resposta.status}). Tente novamente.`);
                     const dados = await resposta.json();
                     if (!dados.features?.length) { feedback.textContent = 'Nenhum endereço encontrado. Tente uma pesquisa mais específica.'; return; }
                     dados.features.forEach(local => {
@@ -665,7 +665,7 @@
                         botao.type = 'button';
                         botao.textContent = local.place_name || local.text || 'Local encontrado';
                         botao.addEventListener('click', () => {
-                            mapa.flyTo({ center: local.center, zoom: 16, essential: true });
+                            mapa.flyTo({ center: local.center || local.geometry.coordinates, zoom: ['place', 'region', 'country'].includes(local.place_type?.[0]) ? 11 : 16, essential: true });
                             resultados.replaceChildren();
                             feedback.textContent = 'Local encontrado! Clique no mapa para marcar a posição exata.';
                         });
