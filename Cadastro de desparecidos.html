@@ -527,13 +527,13 @@
         const pontosLocalizacao = [];
         const marcadoresLocalizacao = [];
         const LIMITE_PONTOS = 3;
-        const estiloRuas = chaveConfigurada
-            ? `https://api.maptiler.com/maps/streets-v2/style.json?key=${encodeURIComponent(MAPTILER_KEY)}`
-            : {
-                version: 8,
-                sources: { esri: { type: 'raster', tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'], tileSize: 256, attribution: 'Esri and contributors' } },
-                layers: [{ id: 'ruas', type: 'raster', source: 'esri' }]
-            };
+        // O fundo do mapa não deve depender da chave do geocodificador.
+        // MapTiler permanece exclusivo para busca de endereços.
+        const estiloRuas = {
+            version: 8,
+            sources: { esri: { type: 'raster', tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'], tileSize: 256, attribution: 'Esri and contributors' } },
+            layers: [{ id: 'ruas', type: 'raster', source: 'esri' }]
+        };
         const estiloSatelite = {
             version: 8,
             sources: { esri: { type: 'raster', tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'], tileSize: 256, attribution: 'Esri and contributors' } },
@@ -609,8 +609,12 @@
             });
             mapa.addControl(new maplibregl.NavigationControl(), 'top-right');
             mapa.on('error', e => {
-                console.error('Erro no mapa:', e.error);
-                feedback.textContent = 'Falha ao carregar o mapa. Confira a conexão e a configuração do provedor de mapas.';
+                console.error('Erro ao carregar recurso cartográfico:', e.error);
+                feedback.textContent = 'Não foi possível carregar parte do mapa. Verifique a conexão ou o serviço de mapas.';
+            });
+            mapa.on('load', () => {
+                feedback.textContent = 'Mapa carregado. Pesquise um endereço ou clique para marcar até três locais.';
+                mapa.resize();
             });
             mapa.on('click', evento => {
                 if (pontosLocalizacao.length >= LIMITE_PONTOS) {
@@ -643,23 +647,55 @@
                 redesenharMarcadores();
                 feedback.textContent = 'Pontos removidos. Clique no mapa para selecionar novos locais.';
             });
+            let ultimaBusca = 0;
             async function pesquisarEndereco() {
+                const agora = Date.now();
+                if (agora - ultimaBusca < 1200) {
+                    document.getElementById('localizacao-feedback').textContent = 'Aguarde um instante antes de pesquisar novamente.';
+                    return;
+                }
+                ultimaBusca = agora;
                 const termo = document.getElementById('busca-endereco').value.trim();
                 const resultados = document.getElementById('resultados-endereco');
                 resultados.replaceChildren();
                 if (!termo) { feedback.textContent = 'Digite um endereço para pesquisar.'; return; }
-                if (!chaveConfigurada) {
-                    feedback.textContent = 'Para pesquisar endereços, configure sua chave pública MapTiler no JavaScript.';
-                    return;
-                }
                 feedback.textContent = 'Pesquisando endereço...';
                 try {
-                    const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(termo)}.json?key=${encodeURIComponent(MAPTILER_KEY)}&language=pt&limit=5&country=br`;
-                    const resposta = await fetch(url);
-                    if (!resposta.ok) throw new Error(resposta.status === 403 ? 'A pesquisa foi bloqueada pelo MapTiler (403). Verifique a chave e os domínios autorizados.' : `Pesquisa indisponível (HTTP ${resposta.status}). Tente novamente.`);
-                    const dados = await resposta.json();
-                    if (!dados.features?.length) { feedback.textContent = 'Nenhum endereço encontrado. Tente uma pesquisa mais específica.'; return; }
-                    dados.features.forEach(local => {
+                    let locais = [];
+                    let erroMapTiler = null;
+                    if (chaveConfigurada) {
+                        try {
+                            const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(termo)}.json?key=${encodeURIComponent(MAPTILER_KEY)}&language=pt&limit=5&country=br`;
+                            const resposta = await fetch(url);
+                            if (!resposta.ok) throw new Error(`MapTiler HTTP ${resposta.status}`);
+                            const dados = await resposta.json();
+                            locais = dados.features || [];
+                        } catch (erro) {
+                            erroMapTiler = erro;
+                            console.warn('Busca MapTiler indisponível:', erro);
+                        }
+                    }
+                    // Alternativa para busca pontual quando o MapTiler estiver indisponível.
+                    // Respeitar a política do Nominatim: no máximo 1 requisição por segundo,
+                    // sem autocompletar nem consultas em lote.
+                    if (!locais.length && (erroMapTiler || !chaveConfigurada)) {
+                        const nominatim = new URL('https://nominatim.openstreetmap.org/search');
+                        nominatim.searchParams.set('q', termo);
+                        nominatim.searchParams.set('format', 'jsonv2');
+                        nominatim.searchParams.set('limit', '5');
+                        nominatim.searchParams.set('countrycodes', 'br');
+                        nominatim.searchParams.set('accept-language', 'pt-BR');
+                        const resposta = await fetch(nominatim.toString(), { headers: { 'Accept': 'application/json' } });
+                        if (!resposta.ok) throw new Error(`Busca alternativa indisponível (HTTP ${resposta.status}).`);
+                        const dados = await resposta.json();
+                        locais = dados.map(local => ({
+                            place_name: local.display_name,
+                            center: [Number(local.lon), Number(local.lat)],
+                            place_type: ['address']
+                        }));
+                    }
+                    if (!locais.length) { feedback.textContent = 'Nenhum endereço encontrado. Tente uma pesquisa mais específica.'; return; }
+                    locais.forEach(local => {
                         const item = document.createElement('li');
                         const botao = document.createElement('button');
                         botao.type = 'button';
@@ -680,7 +716,7 @@
             document.getElementById('botao-busca-mapa').addEventListener('click', pesquisarEndereco);
             document.getElementById('busca-endereco').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); pesquisarEndereco(); } });
             atualizarListaPontos();
-            feedback.textContent = 'Mapa carregado. Pesquise um endereço ou clique para marcar até três locais.';
+            feedback.textContent = 'Carregando mapa...';
         }
         window.addEventListener('load', initMap);
     </script>
